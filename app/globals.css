@@ -1,20 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #111827;
+  --background: #f8f9fa;
+  --foreground: #212529;
   --card-background: #ffffff;
-  --border-color: #e5e7eb;
-  --grid-color: #e5e7eb;
+  --border-color: #dee2e6;
+  --grid-color: rgba(33, 37, 41, 0.05);
+  --primary-color: #007bff;
+  --primary-hover: #0056b3;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0d1117; /* GitHub dark mode background */
-    --foreground: #f0f6fc;
-    --card-background: #161b22;
-    --border-color: #30363d;
-    --grid-color: rgba(55, 65, 81, 0.3);
+    --background: #0a0a0a;
+    --foreground: #f8f9fa;
+    --card-background: #1a1a1a;
+    --border-color: #343a40;
+    --grid-color: rgba(248, 249, 250, 0.07);
+    --primary-color: #0d6efd;
+    --primary-hover: #0b5ed7;
   }
 }
 
@@ -29,39 +33,32 @@ body {
   background-image:
     linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-size: 30px 30px;
 }
 
 /* Animasi untuk hasil pencarian */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .fade-in-up {
-  animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: fadeInUp 0.5s ease-out forwards;
 }
 
 /* Animasi untuk Skeleton Loader */
 @keyframes pulse {
-  50% { opacity: 0.5; }
+  50% { opacity: 0.6; }
 }
 .skeleton-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Gradient Border untuk Search Input */
-.gradient-border-container {
-    position: relative;
-    padding: 2px;
-    border-radius: 9999px; /* rounded-full */
-    background-image: linear-gradient(90deg, #3b82f6, #9333ea, #ec4899, #f59e0b);
-    background-size: 200% 200%;
-    animation: gradient-animation 4s ease infinite;
-}
-
-@keyframes gradient-animation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* Gradient pada Teks */
+.gradient-text {
+  background-image: linear-gradient(90deg, #007bff, #6610f2, #e83e8c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
 }
