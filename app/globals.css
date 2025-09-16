@@ -1,24 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8f9fa;
-  --foreground: #212529;
+  --background: #f7f7f8;
+  --foreground: #0c0c0d;
   --card-background: #ffffff;
-  --border-color: #dee2e6;
-  --grid-color: rgba(33, 37, 41, 0.05);
-  --primary-color: #007bff;
-  --primary-hover: #0056b3;
+  --border-color: #e4e4e7;
+  --subtle-foreground: #52525b;
+  --primary-accent: #0070f3;
+  --primary-accent-foreground: #ffffff;
+  --primary-accent-hover: #0056d1;
+  --kbd-background: #f1f1f1;
+  --kbd-border: #d4d4d4;
+  --grid-pattern: url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23e4e4e7" fill-opacity="0.4" fill-rule="evenodd"%3E%3Cpath d="M0 40L40 0H20L0 20M40 40V20L20 40"/%3E%3C/g%3E%3C/svg%3E');
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #f8f9fa;
-    --card-background: #1a1a1a;
-    --border-color: #343a40;
-    --grid-color: rgba(248, 249, 250, 0.07);
-    --primary-color: #0d6efd;
-    --primary-hover: #0b5ed7;
+    --background: #000000;
+    --foreground: #fafafa;
+    --card-background: #111111;
+    --border-color: #27272a;
+    --subtle-foreground: #a1a1aa;
+    --primary-accent: #0070f3;
+    --primary-accent-foreground: #ffffff;
+    --primary-accent-hover: #2288ff;
+    --kbd-background: #222222;
+    --kbd-border: #444444;
+    --grid-pattern: url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%2327272a" fill-opacity="0.5" fill-rule="evenodd"%3E%3Cpath d="M0 40L40 0H20L0 20M40 40V20L20 40"/%3E%3C/g%3E%3C/svg%3E');
   }
 }
 
@@ -28,37 +36,30 @@ body {
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  /* Pola Grid Halus di Latar Belakang */
-  background-image:
-    linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
-  background-size: 30px 30px;
+  background-image: var(--grid-pattern);
 }
 
-/* Animasi untuk hasil pencarian */
+/* Animasi fade-in */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
-
 .fade-in-up {
-  animation: fadeInUp 0.5s ease-out forwards;
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-/* Animasi untuk Skeleton Loader */
-@keyframes pulse {
-  50% { opacity: 0.6; }
-}
+/* Animasi skeleton */
+@keyframes pulse { 50% { opacity: 0.6; } }
 .skeleton-pulse {
   animation: pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Gradient pada Teks */
-.gradient-text {
-  background-image: linear-gradient(90deg, #007bff, #6610f2, #e83e8c);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent;
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 10px;
+  border: 2px solid var(--background);
 }
+::-webkit-scrollbar-thumb:hover { background-color: var(--subtle-foreground); }
