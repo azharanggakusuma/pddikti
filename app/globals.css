@@ -14,22 +14,6 @@
   --grid-pattern: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23dee2e6" fill-opacity="0.4"%3E%3Cpath d="M.5 1.5l1-1M2.5 3.5l1-1"/%3E%3C/g%3E%3C/svg%3E');
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0d1117;
-    --foreground: #c9d1d9;
-    --card-background: #161b22;
-    --border-color: #30363d;
-    --subtle-foreground: #8b949e;
-    --primary-accent: #58a6ff;
-    --primary-accent-foreground: #0d1117;
-    --primary-accent-hover: #79c0ff;
-    --kbd-background: #21262d;
-    --kbd-border: #414a53;
-    --grid-pattern: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%2330363d" fill-opacity="0.5"%3E%3Cpath d="M.5 1.5l1-1M2.5 3.5l1-1"/%3E%3C/g%3E%3C/svg%3E');
-  }
-}
-
 body {
   background-color: var(--background);
   color: var(--foreground);
