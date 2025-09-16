@@ -1,53 +1,67 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f0f2f5; /* Warna latar belakang lebih lembut */
-  --foreground: #171717;
+  --background: #ffffff;
+  --foreground: #111827;
   --card-background: #ffffff;
-  --shadow-color: rgba(0, 0, 0, 0.1);
+  --border-color: #e5e7eb;
+  --grid-color: #e5e7eb;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --card-background: #1d1d1d;
-    --shadow-color: rgba(0, 0, 0, 0.2);
+    --background: #0d1117; /* GitHub dark mode background */
+    --foreground: #f0f6fc;
+    --card-background: #161b22;
+    --border-color: #30363d;
+    --grid-color: rgba(55, 65, 81, 0.3);
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Pola Grid Halus di Latar Belakang */
+  background-image:
+    linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 /* Animasi untuk hasil pencarian */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
+.fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-/* Custom styles untuk input pencarian */
-.search-input {
-    background-color: var(--card-background);
-    color: var(--foreground);
-    border: 1px solid transparent;
-    transition: all 0.2s ease-in-out;
+/* Animasi untuk Skeleton Loader */
+@keyframes pulse {
+  50% { opacity: 0.5; }
+}
+.skeleton-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.search-input:focus {
-    outline: none;
-    border-color: #3b82f6; /* Aksen biru saat di-klik */
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+/* Gradient Border untuk Search Input */
+.gradient-border-container {
+    position: relative;
+    padding: 2px;
+    border-radius: 9999px; /* rounded-full */
+    background-image: linear-gradient(90deg, #3b82f6, #9333ea, #ec4899, #f59e0b);
+    background-size: 200% 200%;
+    animation: gradient-animation 4s ease infinite;
+}
+
+@keyframes gradient-animation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
