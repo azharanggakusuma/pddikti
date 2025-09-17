@@ -1,4 +1,4 @@
-// app/mahasiswa/[id]/page.tsx
+// app/mahasiswa/page.tsx
 
 import { University, BookOpen, User, Calendar, GraduationCap, Users } from 'lucide-react';
 import Link from 'next/link';
@@ -26,8 +26,14 @@ const InfoItem = ({ label, value, icon }: { label: string, value: string, icon: 
     </div>
 );
 
-export default async function MahasiswaDetailPage({ params }: { params: { id: string } }) {
-    const decodedId = decodeURIComponent(params.id);
+// Menggunakan `searchParams` untuk mendapatkan ID dari query URL
+export default async function MahasiswaDetailPage({ searchParams }: { searchParams: { id: string } }) {
+    const encodedId = searchParams.id;
+    if (!encodedId) {
+        // Handle caso não haja ID
+        return <div>ID tidak ditemukan.</div>;
+    }
+    const decodedId = decodeURIComponent(encodedId);
     const mahasiswa = await getMahasiswaDetail(decodedId);
 
     if (!mahasiswa) {

@@ -32,7 +32,8 @@ export const MahasiswaCard = ({ mhs, index }: MahasiswaCardProps) => {
                         </button>
                     </div>
                 </div>
-                <Link href={`/mahasiswa/${encodeURIComponent(mhs.id)}`}
+                {/* PERUBAHAN KUNCI DI SINI */}
+                <Link href={`/mahasiswa?id=${encodeURIComponent(mhs.id)}`}
                     className="px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all whitespace-nowrap shadow-lg shadow-blue-500/30 hover:bg-blue-700">
                     Lihat Detail
                 </Link>
