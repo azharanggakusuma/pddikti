@@ -1,3 +1,5 @@
+// app/api/mahasiswa/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -8,7 +10,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: 'Query parameter "q" is required' }, { status: 400 });
   }
 
-  // Menggunakan URL endpoint yang benar sesuai contoh Anda
+  // Menggunakan URL endpoint yang benar
   const encodedQuery = encodeURIComponent(query);
   const apiUrl = `https://api-pddikti.ridwaanhall.com/search/mhs/${encodedQuery}`;
 

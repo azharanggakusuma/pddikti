@@ -1,3 +1,5 @@
+// app/mahasiswa/page.tsx
+
 'use client';
 
 import { useState, useEffect, useMemo, FormEvent, useRef } from 'react';
@@ -104,7 +106,7 @@ export default function MahasiswaPage() {
             setCurrentPage(1);
 
             try {
-                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const response = await fetch(`/api/mahasiswa?q=${encodeURIComponent(query)}`); // <-- BARIS INI YANG DIUBAH
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || 'Gagal terhubung ke server');
                 
