@@ -2,12 +2,10 @@
 
 import { useState, useEffect, useMemo, FormEvent, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { FileX, ArrowUp, ChevronLeft, ChevronRight, Search, History } from 'lucide-react';
+import { FileX, ArrowUp, ChevronLeft, ChevronRight, Search, History, Loader2 } from 'lucide-react';
 import { Mahasiswa } from '@/app/types';
 import { MahasiswaCard } from '@/app/components/MahasiswaCard';
 import { SkeletonCard } from '@/app/components/SkeletonCard';
-
-const Kbd = ({ children }: { children: React.ReactNode }) => <kbd className="px-2 py-1.5 text-xs font-mono font-medium text-gray-600 bg-gray-100 border border-gray-300 rounded-lg">{children}</kbd>;
 
 const RESULTS_PER_PAGE = 10;
 
@@ -78,7 +76,7 @@ export default function MahasiswaPage() {
     const handleNewSearch = (e?: FormEvent, historyQuery?: string) => {
         if (e) e.preventDefault();
         const finalQuery = historyQuery || searchQuery;
-        if (!finalQuery.trim()) return;
+        if (!finalQuery.trim() || finalQuery === query) return;
 
         updateSearchHistory(finalQuery);
         router.push(`/mahasiswa?q=${encodeURIComponent(finalQuery)}`);
@@ -116,7 +114,7 @@ export default function MahasiswaPage() {
                     setSuggestion(generateSuggestion(query));
                 }
 
-            } catch (err) { // Ini adalah baris yang diperbaiki
+            } catch (err) {
                 setError(err instanceof Error ? err.message : 'Terjadi kesalahan tidak diketahui');
             } finally {
                 setLoading(false);
@@ -155,7 +153,7 @@ export default function MahasiswaPage() {
             <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800">
                 <main className="w-full max-w-3xl mx-auto">
                     <header className="text-center my-10">
-                        <a href="/" className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 transition-colors">Pencarian Mahasiswa</a>
+                        <a href="/" className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 hover:text-blue-500 transition-colors">Pencarian Mahasiswa</a>
                     </header>
                     
                     <div ref={searchWrapperRef} className="w-full mb-8 sticky top-6 z-10">
@@ -168,10 +166,16 @@ export default function MahasiswaPage() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onFocus={() => setIsSearchFocused(true)}
                                 placeholder="Cari mahasiswa, NIM, atau perguruan tinggi..."
-                                className="w-full p-5 pl-14 pr-36 bg-white border-2 border-gray-200 rounded-xl text-lg focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all duration-300"
+                                className="w-full p-5 pl-14 pr-40 bg-white border-2 border-gray-200 rounded-xl text-lg focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all duration-300"
                             />
                             <div className="absolute inset-y-0 right-0 flex items-center pr-4">
-                                <Kbd>Ctrl+K</Kbd>
+                                <button 
+                                    type="submit"
+                                    disabled={loading || !searchQuery.trim() || searchQuery === query}
+                                    className="px-6 h-12 text-base font-mono font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                                >
+                                    {loading ? <Loader2 size={20} className="animate-spin" /> : 'Cari'}
+                                </button>
                             </div>
                         </form>
 
