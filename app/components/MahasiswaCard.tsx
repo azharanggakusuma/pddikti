@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { University, BookOpen, Loader2 } from 'lucide-react';
+import { University, BookOpen, Loader2, ArrowRight } from 'lucide-react';
 import { Mahasiswa } from '@/app/types';
 import { useRouter } from 'next/navigation';
 
@@ -22,34 +22,27 @@ export const MahasiswaCard = ({ mhs, index }: MahasiswaCardProps) => {
     };
 
     return (
-        <div className="bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-blue-500 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1.5 transition-all duration-300 group" style={{ animation: 'fadeInUp 0.5s ease-out forwards', animationDelay: `${index * 80}ms` }}>
+        <div 
+            className="bg-white p-6 rounded-xl border border-gray-200 transition-all duration-300 hover:shadow-lg hover:border-gray-300 hover:-translate-y-1"
+            style={{ animation: 'fadeInUp 0.5s ease-out forwards', animationDelay: `${index * 80}ms` }}
+        >
             <div className="flex justify-between items-start">
                 <div>
-                    <h2 className="font-bold text-xl truncate" title={mhs.nama}>{mhs.nama}</h2>
-                    <div className="flex items-center gap-2 mt-1">
-                        <p className="text-gray-500 font-mono text-base">NIM: {mhs.nim}</p>
-                    </div>
+                    <h2 className="font-bold text-lg text-gray-800 truncate" title={mhs.nama}>{mhs.nama}</h2>
+                    <p className="text-gray-500 font-mono text-sm">NIM: {mhs.nim}</p>
                 </div>
                 <Link
                     href={`/mahasiswa/detail/${encodeURIComponent(mhs.id)}`}
                     onClick={handleDetailClick}
-                    // Menggunakan bg-blue-500 dan hover:bg-blue-600
-                    className={`px-4 py-2 text-sm font-semibold bg-blue-500 text-white rounded-lg transition-all whitespace-nowrap shadow-lg shadow-blue-500/30 hover:bg-blue-600 disabled:bg-blue-400 disabled:cursor-not-allowed flex items-center justify-center`}
-                    aria-disabled={isLoading}
+                    className="flex items-center justify-center h-10 w-10 rounded-full bg-gray-100 border border-gray-200 text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all"
+                    aria-label="Lihat Detail"
                 >
-                    {isLoading ? (
-                        <>
-                            <Loader2 size={16} className="animate-spin mr-2" />
-                            Memuat...
-                        </>
-                    ) : (
-                        'Lihat Detail'
-                    )}
+                    {isLoading ? <Loader2 size={18} className="animate-spin text-blue-600" /> : <ArrowRight size={18} />}
                 </Link>
             </div>
-            <div className="mt-5 pt-5 border-t-2 border-dashed border-gray-200 text-base text-gray-600 space-y-3">
-                <p className="flex items-center"><BookOpen size={18} className="mr-3"/> {mhs.nama_prodi}</p>
-                <p className="flex items-center"><University size={18} className="mr-3"/> {mhs.nama_pt}</p>
+            <div className="mt-4 pt-4 border-t border-dashed border-gray-200 text-sm text-gray-600 space-y-2">
+                <p className="flex items-center"><University size={16} className="mr-3 text-gray-400"/> {mhs.nama_pt}</p>
+                <p className="flex items-center"><BookOpen size={16} className="mr-3 text-gray-400"/> {mhs.nama_prodi}</p>
             </div>
         </div>
     );
