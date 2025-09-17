@@ -27,7 +27,6 @@ export default function MahasiswaPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [suggestion, setSuggestion] = useState<string | null>(null);
 
-    // State untuk search bar di halaman ini
     const [searchQuery, setSearchQuery] = useState(query);
     const [searchHistory, setSearchHistory] = useState<string[]>([]);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -35,10 +34,9 @@ export default function MahasiswaPage() {
     const searchWrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        setSearchQuery(query); // Sinkronkan input pencarian dengan URL
+        setSearchQuery(query);
     }, [query]);
 
-    // Keyboard shortcut (Ctrl+K)
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
             if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
@@ -50,20 +48,17 @@ export default function MahasiswaPage() {
         return () => document.removeEventListener('keydown', down);
     }, []);
 
-    // Muat riwayat pencarian
     useEffect(() => {
         const history = localStorage.getItem('pddikti_search_history');
         if (history) setSearchHistory(JSON.parse(history));
     }, []);
 
-    // Tombol kembali ke atas
     useEffect(() => {
         const handleScroll = () => setShowBackToTop(window.scrollY > 500);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Klik di luar area pencarian untuk menutup riwayat
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target as Node)) {
@@ -121,7 +116,7 @@ export default function MahasiswaPage() {
                     setSuggestion(generateSuggestion(query));
                 }
 
-            } catch (err) {
+            } catch (err) { // Ini adalah baris yang diperbaiki
                 setError(err instanceof Error ? err.message : 'Terjadi kesalahan tidak diketahui');
             } finally {
                 setLoading(false);
@@ -160,7 +155,7 @@ export default function MahasiswaPage() {
             <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800">
                 <main className="w-full max-w-3xl mx-auto">
                     <header className="text-center my-10">
-                        <a href="/" className="text-5xl sm:text-6xl font-extrabold tracking-tighter text-gray-900 hover:text-blue-600 transition-colors">Pencarian PDDIKTI</a>
+                        <a href="/" className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 transition-colors">Pencarian Mahasiswa</a>
                     </header>
                     
                     <div ref={searchWrapperRef} className="w-full mb-8 sticky top-6 z-10">
@@ -181,12 +176,12 @@ export default function MahasiswaPage() {
                         </form>
 
                         {isSearchFocused && searchHistory.length > 0 && (
-                            <div className="absolute top-full mt-2 w-full bg-white border-2 border-gray-200 rounded-xl shadow-2xl" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
-                                <p className="p-4 text-sm font-semibold text-gray-500 border-b-2 border-gray-200">Riwayat Pencarian</p>
-                                <ul>
+                            <div className="absolute top-full mt-2 w-full bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-20" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
+                                <p className="p-4 text-sm font-semibold text-gray-500 border-b-2 border-gray-100">Riwayat Pencarian</p>
+                                <ul className="max-h-80 overflow-y-auto">
                                 {searchHistory.map(item => (
                                     <li key={item} onClick={() => handleNewSearch(undefined, item)} className="flex items-center p-4 hover:bg-gray-50 cursor-pointer transition-colors text-base text-gray-600">
-                                    <History size={18} className="mr-4"/> <span className="text-gray-800">{item}</span>
+                                    <History size={18} className="mr-4 text-gray-400"/> <span className="text-gray-800">{item}</span>
                                     </li>
                                 ))}
                                 </ul>
@@ -238,7 +233,7 @@ export default function MahasiswaPage() {
                                 <p className="text-base mt-1">Coba sesuaikan filter atau kata kunci pencarian Anda.</p>
                                 {suggestion && (
                                     <p className="text-base mt-4">
-                                        Mungkin maksud Anda: <button onClick={() => handleNewSearch(undefined, suggestion)} className="text-blue-600 hover:underline font-semibold">{suggestion}</button>
+                                        Mungkin maksud Anda: <button onClick={() => handleNewSearch(undefined, suggestion)} className="text-blue-500 hover:underline font-semibold">{suggestion}</button>
                                     </p>
                                 )}
                             </div>
@@ -266,7 +261,7 @@ export default function MahasiswaPage() {
 
                 {showBackToTop && (
                     <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                            className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-2xl shadow-blue-500/40 hover:bg-blue-700 transition-all duration-300 transform hover:scale-110" style={{ animation: 'fadeInUp 0.5s ease-out' }}>
+                            className="fixed bottom-8 right-8 bg-blue-500 text-white p-4 rounded-full shadow-2xl shadow-blue-500/40 hover:bg-blue-600 transition-all duration-300 transform hover:scale-110" style={{ animation: 'fadeInUp 0.5s ease-out' }}>
                         <ArrowUp size={24} />
                     </button>
                 )}
