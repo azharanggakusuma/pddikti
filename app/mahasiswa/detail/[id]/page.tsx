@@ -117,7 +117,7 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
                     </div>
 
                     <div className="mt-8 border-t-2 border-dashed pt-6">
-                        <Link href="/" className="w-full text-center block px-4 py-3 text-base font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30">
+                        <Link href="/mahasiswa" className="w-full text-center block px-4 py-3 text-base font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30">
                             Kembali ke Hasil Pencarian
                         </Link>
                     </div>
