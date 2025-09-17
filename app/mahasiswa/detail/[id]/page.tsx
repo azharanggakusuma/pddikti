@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { University, BookOpen, User, Calendar, GraduationCap, Users, UserPlus, ArrowLeft } from 'lucide-react';
+import { University, BookOpen, User, Calendar, GraduationCap, Users, UserPlus, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import type { MahasiswaDetail } from '@/app/types';
 
@@ -22,6 +22,7 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
     const [mahasiswa, setMahasiswa] = useState<MahasiswaDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isNavigatingBack, setIsNavigatingBack] = useState(false); // State untuk navigasi kembali
     
     const encodedId = params.id;
 
@@ -96,9 +97,17 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
         <div className="min-h-screen bg-gray-50 p-4 sm:p-8 antialiased">
             <main className="max-w-3xl mx-auto">
                  <div className="mb-6">
-                     <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors">
-                        <ArrowLeft size={16} />
-                        Kembali ke Hasil Pencarian
+                     <Link 
+                        href="/" 
+                        onClick={() => setIsNavigatingBack(true)}
+                        className={`inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors ${isNavigatingBack ? 'cursor-wait' : ''}`}
+                     >
+                        {isNavigatingBack ? (
+                            <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                            <ArrowLeft size={16} />
+                        )}
+                        {isNavigatingBack ? 'Kembali...' : 'Kembali ke Halaman Utama'}
                     </Link>
                  </div>
                  <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-200">
@@ -114,7 +123,6 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
                         </div>
                     </div>
 
-                    {/* Garis Pemisah Putus-Putus */}
                     <div className="border-t-2 border-dashed border-gray-200"></div>
 
                     <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
