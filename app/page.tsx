@@ -52,6 +52,11 @@ export default function Home() {
 
         setIsSearching(true);
         updateSearchHistory(finalQuery);
+        
+        // --- BARIS PERBAIKAN ---
+        // Menutup dropdown riwayat sebelum navigasi
+        setIsSearchFocused(false);
+        
         router.push(`/mahasiswa?q=${encodeURIComponent(finalQuery)}`);
     };
     
@@ -88,7 +93,6 @@ export default function Home() {
                              <button 
                                 type="submit"
                                 disabled={isSearching || !query.trim()}
-                                // Mengubah padding dan tinggi tombol
                                 className="px-6 h-12 text-base font-mono font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed"
                             >
                                 {isSearching ? <Loader2 size={20} className="animate-spin" /> : 'Cari'}

@@ -1,10 +1,8 @@
-// app/mahasiswa/page.tsx
-
 'use client';
 
 import { useState, useEffect, useMemo, FormEvent, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { FileX, ArrowUp, ChevronLeft, ChevronRight, Search, History, Loader2 } from 'lucide-react';
+import { FileX, ArrowUp, ChevronLeft, ChevronRight, Search, History, Loader2, X } from 'lucide-react';
 import { Mahasiswa } from '@/app/types';
 import { MahasiswaCard } from '@/app/components/MahasiswaCard';
 import { SkeletonCard } from '@/app/components/SkeletonCard';
@@ -81,7 +79,19 @@ export default function MahasiswaPage() {
         if (!finalQuery.trim() || finalQuery === query) return;
 
         updateSearchHistory(finalQuery);
+
+        // --- BARIS PERBAIKAN ---
+        // Menutup dropdown riwayat sebelum navigasi
+        setIsSearchFocused(false);
+
         router.push(`/mahasiswa?q=${encodeURIComponent(finalQuery)}`);
+    };
+
+    const handleDeleteHistory = (itemToDelete: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        const updatedHistory = searchHistory.filter(item => item !== itemToDelete);
+        setSearchHistory(updatedHistory);
+        localStorage.setItem('pddikti_search_history', JSON.stringify(updatedHistory));
     };
 
     const generateSuggestion = (text: string) => {
@@ -106,7 +116,7 @@ export default function MahasiswaPage() {
             setCurrentPage(1);
 
             try {
-                const response = await fetch(`/api/mahasiswa?q=${encodeURIComponent(query)}`); // <-- BARIS INI YANG DIUBAH
+                const response = await fetch(`/api/mahasiswa?q=${encodeURIComponent(query)}`);
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || 'Gagal terhubung ke server');
                 
@@ -149,7 +159,6 @@ export default function MahasiswaPage() {
     const uniquePT = useMemo(() => ['Semua', ...new Set(allResults.map(mhs => mhs.nama_pt))], [allResults]);
     const uniqueProdi = useMemo(() => ['Semua', ...new Set(allResults.map(mhs => mhs.nama_prodi))], [allResults]);
     
-
     return (
         <>
             <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800">
@@ -186,8 +195,18 @@ export default function MahasiswaPage() {
                                 <p className="p-4 text-sm font-semibold text-gray-500 border-b-2 border-gray-100">Riwayat Pencarian</p>
                                 <ul className="max-h-80 overflow-y-auto">
                                 {searchHistory.map(item => (
-                                    <li key={item} onClick={() => handleNewSearch(undefined, item)} className="flex items-center p-4 hover:bg-gray-50 cursor-pointer transition-colors text-base text-gray-600">
-                                    <History size={18} className="mr-4 text-gray-400"/> <span className="text-gray-800">{item}</span>
+                                    <li key={item} onClick={() => handleNewSearch(undefined, item)} className="group flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors text-base text-gray-600">
+                                        <div className="flex items-center truncate">
+                                            <History size={18} className="mr-4 text-gray-400 flex-shrink-0"/>
+                                            <span className="text-gray-800 truncate">{item}</span>
+                                        </div>
+                                        <button
+                                            onClick={(e) => handleDeleteHistory(item, e)}
+                                            className="ml-4 p-1 rounded-full opacity-0 group-hover:opacity-100 hover:bg-gray-200 transition-opacity flex-shrink-0"
+                                            aria-label={`Hapus "${item}" dari riwayat`}
+                                        >
+                                            <X size={16} className="text-gray-500"/>
+                                        </button>
                                     </li>
                                 ))}
                                 </ul>
@@ -232,7 +251,15 @@ export default function MahasiswaPage() {
                         {loading && Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
                         {error && <p className="text-center text-red-500 p-4">{error}</p>}
 
-                        {!loading && !error && processedResults.length === 0 && (
+                        {!loading && !error && !query && (
+                            <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-16 rounded-xl flex flex-col items-center justify-center">
+                                <Search size={64} className="text-gray-300"/>
+                                <h3 className="mt-6 font-bold text-xl text-gray-800">Mulai Pencarian Anda</h3>
+                                <p className="text-base mt-1">Gunakan kotak pencarian di atas untuk menemukan data mahasiswa.</p>
+                            </div>
+                        )}
+
+                        {!loading && !error && query && processedResults.length === 0 && (
                             <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-16 rounded-xl flex flex-col items-center justify-center">
                                 <FileX size={64} className="text-gray-300"/>
                                 <h3 className="mt-6 font-bold text-xl text-gray-800">Tidak Ada Hasil Ditemukan</h3>
