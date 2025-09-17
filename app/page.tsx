@@ -2,18 +2,9 @@
 
 import { useState, useEffect, FormEvent, useRef, useMemo } from 'react';
 import {
-    Search,
-    University,
-    BookOpen,
-    ArrowUp,
-    History,
-    FileX,
-    Clipboard,
-    ClipboardCheck,
-    ChevronLeft,
-    ChevronRight
+    Search, University, BookOpen, ArrowUp, History, FileX,
+    Clipboard, ClipboardCheck, ChevronLeft, ChevronRight, User, X, LoaderCircle
 } from 'lucide-react';
-
 
 // --- Tipe Data ---
 interface Mahasiswa {
@@ -24,16 +15,85 @@ interface Mahasiswa {
   nama_prodi: string;
 }
 
-// --- Komponen-Kecil ---
+// Tipe data detail diperbarui
+interface MahasiswaDetail {
+    id: string;
+    nama: string;
+    nim: string;
+    nama_pt: string;
+    prodi: string;
+    jenis_kelamin: string;
+    jenjang: string;
+    status_saat_ini: string;
+    tanggal_masuk: string;
+}
+
+
+// --- Komponen ---
 const Kbd = ({ children }: { children: React.ReactNode }) => <kbd className="px-2 py-1.5 text-xs font-mono font-medium text-gray-600 bg-gray-100 border border-gray-300 rounded-lg">{children}</kbd>;
 
-// --- Komponen Skeleton ---
 const SkeletonCard = () => (
     <div className="animate-pulse bg-white rounded-lg p-5 border border-gray-200 space-y-4">
         <div className="flex items-center space-x-4"><div className="flex-1 space-y-2"><div className="h-5 w-4/5 bg-gray-300 rounded-md"></div><div className="h-4 w-1/2 bg-gray-300 rounded-md"></div></div></div>
         <div className="pt-4 border-t border-gray-200 space-y-3"><div className="h-4 w-full bg-gray-300 rounded"></div><div className="h-4 w-5/6 bg-gray-300 rounded"></div></div>
     </div>
 );
+
+// --- Komponen Modal ---
+const MahasiswaDetailModal = ({ mahasiswa, onClose, loading }: { mahasiswa: MahasiswaDetail | null, onClose: () => void, loading: boolean }) => {
+    if (!mahasiswa && !loading) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg" style={{ animation: 'fadeInUp 0.3s ease-out' }} onClick={e => e.stopPropagation()}>
+                <div className="p-6 border-b flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-gray-800">Detail Mahasiswa</h2>
+                    <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 text-gray-500">
+                        <X size={20} />
+                    </button>
+                </div>
+                {loading ? (
+                    <div className="p-8 flex flex-col items-center justify-center text-gray-500">
+                        <LoaderCircle size={40} className="animate-spin mb-4" />
+                        <p>Memuat detail...</p>
+                    </div>
+                ) : mahasiswa && (
+                    <div className="p-6 space-y-4">
+                        <div className="flex items-center space-x-4">
+                             <div className="flex-shrink-0 h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center">
+                                <User size={32} className="text-gray-500" />
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-bold">{mahasiswa.nama}</h3>
+                                <p className="text-gray-500 font-mono">{mahasiswa.nim}</p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                            <InfoItem label="Perguruan Tinggi" value={mahasiswa.nama_pt} />
+                            <InfoItem label="Program Studi" value={mahasiswa.prodi} />
+                            <InfoItem label="Jenjang" value={mahasiswa.jenjang} />
+                            <InfoItem label="Jenis Kelamin" value={mahasiswa.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'} />
+                            <InfoItem label="Tanggal Masuk" value={new Date(mahasiswa.tanggal_masuk).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })} />
+                            <InfoItem label="Status Terakhir" value={mahasiswa.status_saat_ini} />
+                        </div>
+                        <a href={`https://pddikti.kemdikbud.go.id/data_mahasiswa/${mahasiswa.id}`} target="_blank" rel="noopener noreferrer" 
+                           className="block w-full text-center mt-4 px-4 py-3 text-sm font-semibold bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all">
+                           Lihat di Situs PDDIKTI
+                        </a>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+const InfoItem = ({ label, value }: { label: string, value: string }) => (
+    <div>
+        <p className="text-sm text-gray-500">{label}</p>
+        <p className="font-semibold text-gray-800">{value || '-'}</p>
+    </div>
+);
+
 
 const RESULTS_PER_PAGE = 10;
 
@@ -57,27 +117,34 @@ export default function Home() {
     const [currentPage, setCurrentPage] = useState(1);
     const [suggestion, setSuggestion] = useState<string | null>(null);
     const [copiedNim, setCopiedNim] = useState<string | null>(null);
+    const [selectedMahasiswa, setSelectedMahasiswa] = useState<MahasiswaDetail | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalLoading, setIsModalLoading] = useState(false);
 
-    // ... (Hooks useEffect tetap sama) ...
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
             if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
                 searchInputRef.current?.focus();
+            } else if (e.key === 'Escape') {
+                closeModal();
             }
         };
         document.addEventListener('keydown', down);
         return () => document.removeEventListener('keydown', down);
     }, []);
+
     useEffect(() => {
         const history = localStorage.getItem('pddikti_search_history');
         if (history) setSearchHistory(JSON.parse(history));
     }, []);
+
     useEffect(() => {
         const handleScroll = () => setShowBackToTop(window.scrollY > 500);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target as Node)) {
@@ -87,14 +154,13 @@ export default function Home() {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
-
+    
     const updateSearchHistory = (newQuery: string) => {
         const updatedHistory = [newQuery, ...searchHistory.filter(q => q !== newQuery)].slice(0, 5);
         setSearchHistory(updatedHistory);
         localStorage.setItem('pddikti_search_history', JSON.stringify(updatedHistory));
     };
 
-    // Fungsi untuk membuat saran sederhana
     const generateSuggestion = (text: string) => {
         if (text.toLowerCase().includes('muhamad')) return text.replace(/muhamad/i, 'Muhammad');
         if (text.toLowerCase().includes('univ')) return text.replace(/univ/i, 'Universitas');
@@ -136,11 +202,37 @@ export default function Home() {
         }
     };
 
-    // Fungsi untuk menyalin NIM
     const handleCopyNim = (nim: string) => {
         navigator.clipboard.writeText(nim);
         setCopiedNim(nim);
         setTimeout(() => setCopiedNim(null), 2000);
+    };
+
+    const openModalWithDetails = async (mahasiswaId: string) => {
+        setIsModalOpen(true);
+        setIsModalLoading(true);
+        setSelectedMahasiswa(null);
+        try {
+            const encodedId = encodeURIComponent(mahasiswaId);
+            const response = await fetch(`/api/mahasiswa/detail?id=${encodedId}`);
+            
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || "Gagal memuat detail mahasiswa");
+            }
+            setSelectedMahasiswa(data);
+        } catch (error) {
+            console.error(error);
+            alert('Gagal memuat detail mahasiswa.');
+            closeModal();
+        } finally {
+            setIsModalLoading(false);
+        }
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedMahasiswa(null);
     };
     
     const processedResults = useMemo(() => {
@@ -165,6 +257,7 @@ export default function Home() {
     
     const uniquePT = useMemo(() => ['Semua', ...new Set(allResults.map(mhs => mhs.nama_pt))], [allResults]);
     const uniqueProdi = useMemo(() => ['Semua', ...new Set(allResults.map(mhs => mhs.nama_prodi))], [allResults]);
+    
 
     return (
         <>
@@ -240,11 +333,11 @@ export default function Home() {
                             </div>
                         </div>
                     )}
-                    
+
                     <div className="w-full space-y-5">
                         {loading && Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}
                         {error && <p className="text-center text-red-500 p-4">{error}</p>}
-                        
+
                         {!loading && hasSearched && paginatedResults.length === 0 && (
                             <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-16 rounded-xl flex flex-col items-center justify-center">
                                 <FileX size={64} className="text-gray-300"/>
@@ -270,10 +363,10 @@ export default function Home() {
                                             </button>
                                         </div>
                                     </div>
-                                    <a href={`https://pddikti.kemdikbud.go.id/data_mahasiswa/${mhs.id.replace(/=/g, '')}`} target="_blank" rel="noopener noreferrer" 
+                                    <button onClick={() => openModalWithDetails(mhs.id)}
                                         className="px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all whitespace-nowrap shadow-lg shadow-blue-500/30 hover:bg-blue-700">
                                         Lihat Detail
-                                    </a>
+                                    </button>
                                 </div>
                                 <div className="mt-5 pt-5 border-t-2 border-dashed border-gray-200 text-base text-gray-600 space-y-3">
                                     <p className="flex items-center"><BookOpen size={18} className="mr-3"/> {mhs.nama_prodi}</p>
@@ -299,16 +392,17 @@ export default function Home() {
                 </main>
 
                 {showBackToTop && (
-                    <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
+                    <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                             className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-2xl shadow-blue-500/40 hover:bg-blue-700 transition-all duration-300 transform hover:scale-110" style={{ animation: 'fadeInUp 0.5s ease-out' }}>
                         <ArrowUp size={24} />
                     </button>
                 )}
-                
+
                 <footer className="text-center mt-28 mb-8 text-sm text-gray-500/80">
                     <p>Didesain ulang oleh Gemini untuk pengalaman yang lebih baik.</p>
                 </footer>
             </div>
+            {isModalOpen && <MahasiswaDetailModal mahasiswa={selectedMahasiswa} onClose={closeModal} loading={isModalLoading} />}
         </>
     );
 }
