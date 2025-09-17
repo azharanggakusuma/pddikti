@@ -3,8 +3,9 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { University, BookOpen, Clipboard, ClipboardCheck } from 'lucide-react';
+import { University, BookOpen, Loader2 } from 'lucide-react';
 import { Mahasiswa } from '@/app/types';
+import { useRouter } from 'next/navigation';
 
 interface MahasiswaCardProps {
     mhs: Mahasiswa;
@@ -12,12 +13,13 @@ interface MahasiswaCardProps {
 }
 
 export const MahasiswaCard = ({ mhs, index }: MahasiswaCardProps) => {
-    const [copiedNim, setCopiedNim] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
 
-    const handleCopyNim = (nim: string) => {
-        navigator.clipboard.writeText(nim);
-        setCopiedNim(nim);
-        setTimeout(() => setCopiedNim(null), 2000);
+    const handleDetailClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        setIsLoading(true);
+        router.push(e.currentTarget.href);
     };
 
     return (
@@ -27,15 +29,22 @@ export const MahasiswaCard = ({ mhs, index }: MahasiswaCardProps) => {
                     <h2 className="font-bold text-xl truncate" title={mhs.nama}>{mhs.nama}</h2>
                     <div className="flex items-center gap-2 mt-1">
                         <p className="text-gray-500 font-mono text-base">NIM: {mhs.nim}</p>
-                        <button onClick={() => handleCopyNim(mhs.nim)} className="text-gray-400 hover:text-blue-600 transition-colors" title="Salin NIM">
-                            {copiedNim === mhs.nim ? <ClipboardCheck size={16} className="text-blue-600" /> : <Clipboard size={16} />}
-                        </button>
                     </div>
                 </div>
-                {/* PERUBAHAN KUNCI DI SINI */}
-                <Link href={`/mahasiswa?id=${encodeURIComponent(mhs.id)}`}
-                    className="px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all whitespace-nowrap shadow-lg shadow-blue-500/30 hover:bg-blue-700">
-                    Lihat Detail
+                <Link
+                    href={`/mahasiswa?id=${encodeURIComponent(mhs.id)}`}
+                    onClick={handleDetailClick}
+                    className={`px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg transition-all whitespace-nowrap shadow-lg shadow-blue-500/30 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed flex items-center justify-center`}
+                    aria-disabled={isLoading}
+                >
+                    {isLoading ? (
+                        <>
+                            <Loader2 size={16} className="animate-spin mr-2" />
+                            Memuat...
+                        </>
+                    ) : (
+                        'Lihat Detail'
+                    )}
                 </Link>
             </div>
             <div className="mt-5 pt-5 border-t-2 border-dashed border-gray-200 text-base text-gray-600 space-y-3">
