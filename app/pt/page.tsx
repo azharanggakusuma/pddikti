@@ -1,29 +1,36 @@
 'use client';
 
-import { useState, useEffect, FormEvent, useRef } from 'react';
+import { useState, useEffect, useMemo, FormEvent, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { FileX, ArrowUp, Search, History, Loader2, X, School } from 'lucide-react';
+import { FileX, ArrowUp, ChevronLeft, ChevronRight, Search, History, Loader2, X, School } from 'lucide-react';
 import { PerguruanTinggi } from '@/app/types';
 import { PtCard } from '@/app/components/PtCard';
 import { SkeletonCard } from '@/app/components/SkeletonCard';
 import Link from 'next/link';
+
+const RESULTS_PER_PAGE = 10;
 
 export default function PtPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const query = searchParams.get('q') || '';
 
-    const [results, setResults] = useState<PerguruanTinggi[]>([]);
+    // State hooks
+    const [allResults, setAllResults] = useState<PerguruanTinggi[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showBackToTop, setShowBackToTop] = useState(false);
     
+    const [sortBy, setSortBy] = useState('nama-asc');
+    const [currentPage, setCurrentPage] = useState(1);
+
     const [searchQuery, setSearchQuery] = useState(query);
     const [searchHistory, setSearchHistory] = useState<string[]>([]);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const searchWrapperRef = useRef<HTMLDivElement>(null);
 
+    // Effect hooks
     useEffect(() => {
         setSearchQuery(query);
     }, [query]);
@@ -49,6 +56,7 @@ export default function PtPage() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
     
+    // Search functions
     const updateSearchHistory = (newQuery: string) => {
         const updatedHistory = [newQuery, ...searchHistory.filter(q => q !== newQuery)].slice(0, 5);
         setSearchHistory(updatedHistory);
@@ -72,23 +80,26 @@ export default function PtPage() {
         localStorage.setItem('pddikti_pt_history', JSON.stringify(updatedHistory));
     };
 
+    // Data fetching
     useEffect(() => {
         const fetchResults = async () => {
             if (!query.trim()) {
                 setLoading(false);
-                setResults([]);
+                setAllResults([]);
                 return;
             };
 
             setLoading(true);
             setError(null);
+            setCurrentPage(1);
 
             try {
                 const response = await fetch(`/api/pt?q=${encodeURIComponent(query)}`);
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || 'Gagal terhubung ke server');
                 
-                setResults(Array.isArray(data) ? data : []);
+                setAllResults(Array.isArray(data) ? data : []);
+
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Terjadi kesalahan tidak diketahui');
             } finally {
@@ -99,6 +110,24 @@ export default function PtPage() {
         fetchResults();
     }, [query]);
     
+    // Memoized processing
+    const processedResults = useMemo(() => {
+        return [...allResults].sort((a, b) => {
+            if (sortBy === 'nama-asc') return a.nama.localeCompare(b.nama);
+            if (sortBy === 'nama-desc') return b.nama.localeCompare(a.nama);
+            if (sortBy === 'kode-asc') return a.kode.localeCompare(b.kode);
+            if (sortBy === 'kode-desc') return b.kode.localeCompare(a.kode);
+            return 0;
+        });
+    }, [allResults, sortBy]);
+
+    const paginatedResults = useMemo(() => {
+        const startIndex = (currentPage - 1) * RESULTS_PER_PAGE;
+        return processedResults.slice(startIndex, startIndex + RESULTS_PER_PAGE);
+    }, [processedResults, currentPage]);
+    
+    const totalPages = Math.ceil(processedResults.length / RESULTS_PER_PAGE);
+
     return (
         <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800">
             <main className="w-full max-w-4xl mx-auto">
@@ -109,10 +138,11 @@ export default function PtPage() {
                         </h1>
                     </Link>
                     <p className="mt-4 text-lg text-gray-600">
-                        Masukkan nama perguruan tinggi untuk memulai.
+                        Masukkan nama atau kode perguruan tinggi untuk memulai.
                     </p>
                 </header>
                 
+                {/* Search Bar */}
                 <div ref={searchWrapperRef} className="w-full mb-8 sticky top-6 z-20">
                     <form onSubmit={handleNewSearch} className="relative">
                         <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-400"><Search size={20} /></div>
@@ -135,9 +165,10 @@ export default function PtPage() {
                             </button>
                         </div>
                     </form>
+                    {/* Search History */}
                     {isSearchFocused && searchHistory.length > 0 && (
                         <div className="absolute top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-20" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
-                           <p className="p-4 text-sm font-semibold text-gray-500 border-b border-gray-100">Riwayat Pencarian</p>
+                            <p className="p-4 text-sm font-semibold text-gray-500 border-b border-gray-100">Riwayat Pencarian</p>
                             <ul className="max-h-80 overflow-y-auto">
                                 {searchHistory.map(item => (
                                     <li key={item} onClick={() => handleNewSearch(undefined, item)} className="group flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors text-sm text-gray-600">
@@ -149,12 +180,25 @@ export default function PtPage() {
                         </div>
                     )}
                 </div>
-                {!loading && results.length > 0 && (
-                    <div className="text-sm text-gray-600 mb-4">
-                        Ditemukan <strong>{results.length} hasil</strong> untuk <span className="font-semibold text-gray-800">"{query}"</span>
+
+                {/* Sort and Info Section */}
+                {!loading && allResults.length > 0 && (
+                     <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+                        <div className="text-sm text-gray-600">
+                            Ditemukan <strong>{processedResults.length} hasil</strong> untuk <span className="font-semibold text-gray-800">"{query}"</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white font-semibold">
+                                <option value="nama-asc">Nama (A-Z)</option>
+                                <option value="nama-desc">Nama (Z-A)</option>
+                                <option value="kode-asc">Kode (Asc)</option>
+                                <option value="kode-desc">Kode (Desc)</option>
+                            </select>
+                        </div>
                     </div>
                 )}
 
+                {/* Search Results */}
                 <div className="grid grid-cols-1 gap-5">
                     {loading && Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
                     {error && <p className="text-center text-red-500 p-4">{error}</p>}
@@ -164,14 +208,22 @@ export default function PtPage() {
                             <School size={56} className="text-gray-300"/><h3 className="mt-6 font-bold text-xl text-gray-700">Mulai Pencarian PT</h3><p className="text-base mt-1">Gunakan kotak pencarian di atas.</p>
                         </div>
                     )}
-                    {!loading && !error && query && results.length === 0 && (
+                    {!loading && !error && query && processedResults.length === 0 && (
                         <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-16 rounded-xl flex flex-col items-center justify-center">
                             <FileX size={56} className="text-gray-300"/><h3 className="mt-6 font-bold text-xl text-gray-700">Tidak Ada Hasil Ditemukan</h3><p className="text-base mt-1">Coba sesuaikan kata kunci pencarian Anda.</p>
                         </div>
                     )}
-                    {!loading && results.map((pt, index) => <PtCard key={pt.id} pt={pt} index={index} />)}
+                    {!loading && paginatedResults.map((pt, index) => <PtCard key={pt.id} pt={pt} index={index} />)}
                 </div>
 
+                {/* Pagination */}
+                {!loading && totalPages > 1 && (
+                    <div className="mt-8 flex justify-between items-center">
+                        <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 hover:border-gray-400 transition-colors"><ChevronLeft size={20} /></button>
+                        <span className="text-gray-600 text-sm">Halaman <strong>{currentPage}</strong> dari <strong>{totalPages}</strong></span>
+                        <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 hover:border-gray-400 transition-colors"><ChevronRight size={20} /></button>
+                    </div>
+                )}
             </main>
 
             {showBackToTop && (
