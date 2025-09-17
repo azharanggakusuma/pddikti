@@ -96,7 +96,7 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
         <div className="min-h-screen bg-gray-50 p-4 sm:p-8 antialiased">
             <main className="max-w-3xl mx-auto">
                  <div className="mb-6">
-                     <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-blue-600 transition-colors">
+                     <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors">
                         <ArrowLeft size={16} />
                         Kembali ke Hasil Pencarian
                     </Link>

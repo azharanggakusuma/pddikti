@@ -1,4 +1,3 @@
-// app/components/MahasiswaCard.tsx
 'use client';
 
 import Link from 'next/link';
@@ -34,7 +33,8 @@ export const MahasiswaCard = ({ mhs, index }: MahasiswaCardProps) => {
                 <Link
                     href={`/mahasiswa/detail/${encodeURIComponent(mhs.id)}`}
                     onClick={handleDetailClick}
-                    className={`px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg transition-all whitespace-nowrap shadow-lg shadow-blue-500/30 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed flex items-center justify-center`}
+                    // Menggunakan bg-blue-500 dan hover:bg-blue-600
+                    className={`px-4 py-2 text-sm font-semibold bg-blue-500 text-white rounded-lg transition-all whitespace-nowrap shadow-lg shadow-blue-500/30 hover:bg-blue-600 disabled:bg-blue-400 disabled:cursor-not-allowed flex items-center justify-center`}
                     aria-disabled={isLoading}
                 >
                     {isLoading ? (

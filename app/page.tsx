@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, FormEvent, useRef } from 'react';
-import { Search, History } from 'lucide-react';
+import { Search, History, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 
@@ -56,14 +56,22 @@ export default function Home() {
         router.push(`/mahasiswa?q=${encodeURIComponent(finalQuery)}`);
     };
     
+    const handleDeleteHistory = (itemToDelete: string, e: React.MouseEvent) => {
+        e.stopPropagation(); 
+        const updatedHistory = searchHistory.filter(item => item !== itemToDelete);
+        setSearchHistory(updatedHistory);
+        localStorage.setItem('pddikti_search_history', JSON.stringify(updatedHistory));
+    };
+
     return (
         <>
             <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800">
                 <main className="w-full max-w-3xl mx-auto">
                     <header className="text-center my-20">
-                        <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tighter text-gray-900">Pencarian PDDIKTI</h1>
+                        {/* Menggunakan text-blue-500 untuk warna yang lebih soft */}
+                        <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tighter text-gray-900">Pangkalan Data <span className="text-blue-500">Pendidikan Tinggi</span></h1>
                         <p className="mt-5 text-lg text-gray-600 max-w-xl mx-auto">
-                            Antarmuka modern untuk menelusuri Pangkalan Data Pendidikan Tinggi dengan mudah.
+                            Akses cepat dan mudah ke data mahasiswa, dosen, dan perguruan tinggi di seluruh Indonesia.
                         </p>
                     </header>
                     
@@ -85,12 +93,22 @@ export default function Home() {
                         </form>
 
                         {isSearchFocused && searchHistory.length > 0 && (
-                            <div className="absolute top-full mt-2 w-full bg-white border-2 border-gray-200 rounded-xl shadow-2xl" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
+                            <div className="absolute top-full mt-2 w-full bg-white border-2 border-gray-200 rounded-xl shadow-2xl overflow-hidden" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
                                 <p className="p-4 text-sm font-semibold text-gray-500 border-b-2 border-gray-200">Riwayat Pencarian</p>
-                                <ul>
+                                <ul className="max-h-80 overflow-y-auto">
                                 {searchHistory.map(item => (
-                                    <li key={item} onClick={() => handleSearch(undefined, item)} className="flex items-center p-4 hover:bg-gray-50 cursor-pointer transition-colors text-base text-gray-600">
-                                    <History size={18} className="mr-4"/> <span className="text-gray-800">{item}</span>
+                                    <li key={item} onClick={() => handleSearch(undefined, item)} className="group flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors text-base text-gray-600">
+                                        <div className="flex items-center truncate">
+                                            <History size={18} className="mr-4 flex-shrink-0"/>
+                                            <span className="text-gray-800 truncate">{item}</span>
+                                        </div>
+                                        <button
+                                            onClick={(e) => handleDeleteHistory(item, e)}
+                                            className="ml-4 p-1 rounded-full opacity-0 group-hover:opacity-100 hover:bg-gray-200 transition-opacity flex-shrink-0"
+                                            aria-label={`Hapus "${item}" dari riwayat`}
+                                        >
+                                            <X size={16} className="text-gray-500"/>
+                                        </button>
                                     </li>
                                 ))}
                                 </ul>
@@ -100,7 +118,7 @@ export default function Home() {
                 </main>
 
                 <footer className="text-center mt-28 mb-8 text-sm text-gray-500/80">
-                    <p>Dibuat dengan Next.js dan Tailwind CSS.</p>
+                    <p>Sebuah proyek independen untuk memudahkan akses data PDDIKTI Kemdiktisaintek.</p>
                 </footer>
             </div>
         </>
