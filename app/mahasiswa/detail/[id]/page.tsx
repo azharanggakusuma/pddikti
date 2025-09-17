@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react'; // <--- 1. IMPORT 'use' HOOK
 import { University, BookOpen, User, Calendar, GraduationCap, Users, UserPlus, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import type { MahasiswaDetail } from '@/app/types';
@@ -22,9 +22,11 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
     const [mahasiswa, setMahasiswa] = useState<MahasiswaDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isNavigatingBack, setIsNavigatingBack] = useState(false); // State untuk navigasi kembali
+    const [isNavigatingBack, setIsNavigatingBack] = useState(false);
     
-    const encodedId = params.id;
+    // --- THIS IS THE FIX ---
+    // 2. USE THE HOOK TO UNWRAP THE PROMISE-LIKE PARAMS
+    const { id: encodedId } = use(params);
 
     useEffect(() => {
         if (!encodedId) {
