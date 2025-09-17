@@ -110,12 +110,8 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
                         <InfoItem label="Status Terakhir" value={mahasiswa.status_saat_ini} icon={<User size={16}/>} />
                     </div>
 
-                    <div className="mt-8 border-t pt-6 flex flex-col sm:flex-row gap-4">
-                         <a href={`https://pddikti.kemdikbud.go.id/data_mahasiswa/${mahasiswa.id}`} target="_blank" rel="noopener noreferrer" 
-                           className="flex-1 text-center px-4 py-3 text-sm font-semibold bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all">
-                           Lihat di Situs PDDIKTI
-                        </a>
-                        <Link href="/" className="flex-1 text-center px-4 py-3 text-sm font-semibold bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-all">
+                    <div className="mt-8 border-t pt-6">
+                        <Link href="/" className="w-full text-center block px-4 py-3 text-sm font-semibold bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-all">
                             Kembali ke Pencarian
                         </Link>
                     </div>
