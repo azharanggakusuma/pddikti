@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: 'Parameter query "id" is required' }, { status: 400 });
   }
 
-  // URL endpoint yang benar
+  // URL endpoint eksternal
   const apiUrl = `https://api-pddikti.ridwaanhall.com/mhs/detail/${id}/?format=json`;
 
   try {
@@ -16,6 +16,8 @@ export async function GET(request: NextRequest) {
       headers: {
         'Accept': 'application/json',
       },
+      // Revalidasi cache setiap 1 jam
+      next: { revalidate: 3600 } 
     });
 
     if (!response.ok) {

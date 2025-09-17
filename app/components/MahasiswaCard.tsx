@@ -32,7 +32,7 @@ export const MahasiswaCard = ({ mhs, index }: MahasiswaCardProps) => {
                     </div>
                 </div>
                 <Link
-                    href={`/mahasiswa?id=${encodeURIComponent(mhs.id)}`}
+                    href={`/mahasiswa/detail/${encodeURIComponent(mhs.id)}`}
                     onClick={handleDetailClick}
                     className={`px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg transition-all whitespace-nowrap shadow-lg shadow-blue-500/30 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed flex items-center justify-center`}
                     aria-disabled={isLoading}

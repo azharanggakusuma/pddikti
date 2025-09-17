@@ -1,32 +1,19 @@
 'use client';
 
-import { useState, useEffect, FormEvent, useRef, useMemo } from 'react';
-import { Search, History, FileX, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Mahasiswa } from '@/app/types';
-import { MahasiswaCard } from '@/app/components/MahasiswaCard';
-import { SkeletonCard } from '@/app/components/SkeletonCard';
+import { useState, useEffect, FormEvent, useRef } from 'react';
+import { Search, History } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 
 const Kbd = ({ children }: { children: React.ReactNode }) => <kbd className="px-2 py-1.5 text-xs font-mono font-medium text-gray-600 bg-gray-100 border border-gray-300 rounded-lg">{children}</kbd>;
 
-const RESULTS_PER_PAGE = 10;
-
 export default function Home() {
     const [query, setQuery] = useState('');
-    const [allResults, setAllResults] = useState<Mahasiswa[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [hasSearched, setHasSearched] = useState(false);
-    const [showBackToTop, setShowBackToTop] = useState(false);
     const [searchHistory, setSearchHistory] = useState<string[]>([]);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const searchWrapperRef = useRef<HTMLDivElement>(null);
-    
-    const [filterPT, setFilterPT] = useState('Semua');
-    const [filterProdi, setFilterProdi] = useState('Semua');
-    const [sortBy, setSortBy] = useState('nama-asc');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [suggestion, setSuggestion] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -45,12 +32,6 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        const handleScroll = () => setShowBackToTop(window.scrollY > 500);
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target as Node)) {
                 setIsSearchFocused(false);
@@ -66,71 +47,15 @@ export default function Home() {
         localStorage.setItem('pddikti_search_history', JSON.stringify(updatedHistory));
     };
 
-    const generateSuggestion = (text: string) => {
-        if (text.toLowerCase().includes('muhamad')) return text.replace(/muhamad/i, 'Muhammad');
-        if (text.toLowerCase().includes('univ')) return text.replace(/univ/i, 'Universitas');
-        return null;
-    }
-
     const handleSearch = async (e?: FormEvent, historyQuery?: string) => {
         if (e) e.preventDefault();
         const finalQuery = historyQuery || query;
         if (!finalQuery.trim()) return;
 
-        setQuery(finalQuery);
-        setIsSearchFocused(false);
-        setLoading(true);
-        setError(null);
-        setHasSearched(true);
-        setAllResults([]);
-        setSuggestion(null);
-        setFilterPT('Semua');
-        setFilterProdi('Semua');
-        setCurrentPage(1);
         updateSearchHistory(finalQuery);
-
-        try {
-            const response = await fetch(`/api/search?q=${encodeURIComponent(finalQuery)}`);
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message || 'Gagal terhubung ke server');
-            
-            const resultsData = Array.isArray(data) ? data : [];
-            setAllResults(resultsData);
-            if(resultsData.length === 0) {
-                setSuggestion(generateSuggestion(finalQuery));
-            }
-
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Terjadi kesalahan tidak diketahui');
-        } finally {
-            setLoading(false);
-        }
+        router.push(`/mahasiswa?q=${encodeURIComponent(finalQuery)}`);
     };
     
-    const processedResults = useMemo(() => {
-        return allResults
-            .filter(mhs => (filterPT === 'Semua' || mhs.nama_pt === filterPT))
-            .filter(mhs => (filterProdi === 'Semua' || mhs.nama_prodi === filterProdi))
-            .sort((a, b) => {
-                if (sortBy === 'nama-asc') return a.nama.localeCompare(b.nama);
-                if (sortBy === 'nama-desc') return b.nama.localeCompare(a.nama);
-                if (sortBy === 'nim-asc') return a.nim.localeCompare(b.nim);
-                if (sortBy === 'nim-desc') return b.nim.localeCompare(a.nim);
-                return 0;
-            });
-    }, [allResults, filterPT, filterProdi, sortBy]);
-
-    const paginatedResults = useMemo(() => {
-        const startIndex = (currentPage - 1) * RESULTS_PER_PAGE;
-        return processedResults.slice(startIndex, startIndex + RESULTS_PER_PAGE);
-    }, [processedResults, currentPage]);
-    
-    const totalPages = Math.ceil(processedResults.length / RESULTS_PER_PAGE);
-    
-    const uniquePT = useMemo(() => ['Semua', ...new Set(allResults.map(mhs => mhs.nama_pt))], [allResults]);
-    const uniqueProdi = useMemo(() => ['Semua', ...new Set(allResults.map(mhs => mhs.nama_prodi))], [allResults]);
-    
-
     return (
         <>
             <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800">
@@ -172,83 +97,7 @@ export default function Home() {
                             </div>
                         )}
                     </div>
-
-                    {hasSearched && !loading && allResults.length > 0 && (
-                        <div className="mb-6 space-y-4">
-                            <div className="bg-white p-4 rounded-xl border-2 border-gray-200">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-600">Perguruan Tinggi</label>
-                                        <select value={filterPT} onChange={e => { setFilterPT(e.target.value); setCurrentPage(1); }} className="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            {uniquePT.map(pt => <option key={pt} value={pt}>{pt}</option>)}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-600">Program Studi</label>
-                                        <select value={filterProdi} onChange={e => { setFilterProdi(e.target.value); setCurrentPage(1); }} className="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            {uniqueProdi.map(prodi => <option key={prodi} value={prodi}>{prodi}</option>)}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-600">Urutkan</label>
-                                        <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="nama-asc">Nama (A-Z)</option>
-                                            <option value="nama-desc">Nama (Z-A)</option>
-                                            <option value="nim-asc">NIM (Terkecil)</option>
-                                            <option value="nim-desc">NIM (Terbesar)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="text-center text-sm text-gray-600">
-                                Menampilkan <strong>{paginatedResults.length}</strong> dari <strong>{processedResults.length}</strong> hasil
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="w-full space-y-5">
-                        {loading && Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}
-                        {error && <p className="text-center text-red-500 p-4">{error}</p>}
-
-                        {!loading && hasSearched && paginatedResults.length === 0 && (
-                            <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-16 rounded-xl flex flex-col items-center justify-center">
-                                <FileX size={64} className="text-gray-300"/>
-                                <h3 className="mt-6 font-bold text-xl text-gray-800">Tidak Ada Hasil Ditemukan</h3>
-                                <p className="text-base mt-1">Coba sesuaikan filter atau kata kunci pencarian Anda.</p>
-                                {suggestion && (
-                                    <p className="text-base mt-4">
-                                        Mungkin maksud Anda: <button onClick={() => handleSearch(undefined, suggestion)} className="text-blue-600 hover:underline font-semibold">{suggestion}</button>
-                                    </p>
-                                )}
-                            </div>
-                        )}
-
-                        {!loading && paginatedResults.map((mhs, index) => (
-                           <MahasiswaCard key={mhs.id} mhs={mhs} index={index} />
-                        ))}
-                    </div>
-
-                    {!loading && totalPages > 1 && (
-                        <div className="mt-8 flex justify-between items-center">
-                            <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-2 bg-white border-2 border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 hover:border-blue-500 transition-colors">
-                                <ChevronLeft size={20} />
-                            </button>
-                            <span className="text-gray-600">
-                                Halaman <strong>{currentPage}</strong> dari <strong>{totalPages}</strong>
-                            </span>
-                            <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-2 bg-white border-2 border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 hover:border-blue-500 transition-colors">
-                                <ChevronRight size={20} />
-                            </button>
-                        </div>
-                    )}
                 </main>
-
-                {showBackToTop && (
-                    <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                            className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-2xl shadow-blue-500/40 hover:bg-blue-700 transition-all duration-300 transform hover:scale-110" style={{ animation: 'fadeInUp 0.5s ease-out' }}>
-                        <ArrowUp size={24} />
-                    </button>
-                )}
 
                 <footer className="text-center mt-28 mb-8 text-sm text-gray-500/80">
                     <p>Didesain ulang oleh Gemini untuk pengalaman yang lebih baik.</p>
