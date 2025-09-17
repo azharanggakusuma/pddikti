@@ -100,7 +100,7 @@ export default function Home() {
                 </main>
 
                 <footer className="text-center mt-28 mb-8 text-sm text-gray-500/80">
-                    <p>Didesain ulang oleh Gemini untuk pengalaman yang lebih baik.</p>
+                    <p>Dibuat dengan Next.js dan Tailwind CSS.</p>
                 </footer>
             </div>
         </>
