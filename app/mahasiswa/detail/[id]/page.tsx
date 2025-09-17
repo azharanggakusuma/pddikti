@@ -1,13 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { University, BookOpen, User, Calendar, GraduationCap, Users, Loader2 } from 'lucide-react';
+import { University, BookOpen, User, Calendar, GraduationCap, Users, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import type { MahasiswaDetail } from '@/app/types';
-import { SkeletonCard } from '@/app/components/SkeletonCard'; // Menggunakan skeleton untuk loading
 
-const InfoItem = ({ label, value, icon }: { label: string, value: string, icon: React.ReactNode }) => (
-    <div className="bg-gray-100 p-4 rounded-lg">
+const InfoItem = ({ label, value, icon, className = '' }: { label: string, value: string, icon: React.ReactNode, className?: string }) => (
+    <div className={`bg-gray-100 p-4 rounded-lg ${className}`}>
         <p className="text-sm text-gray-500 flex items-center gap-2">{icon} {label}</p>
         <p className="font-semibold text-gray-800 mt-1">{value || '-'}</p>
     </div>
@@ -62,7 +61,7 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
                             </div>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {Array.from({ length: 6 }).map((_, i) => (
+                            {Array.from({ length: 8 }).map((_, i) => (
                                 <div key={i} className="bg-gray-100 p-4 rounded-lg space-y-2">
                                     <div className="h-4 w-1/3 bg-gray-300 rounded"></div>
                                     <div className="h-5 w-2/3 bg-gray-300 rounded"></div>
@@ -103,9 +102,9 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <InfoItem label="Perguruan Tinggi" value={mahasiswa.nama_pt} icon={<University size={16}/>} />
-                        <InfoItem label="Program Studi" value={mahasiswa.prodi} icon={<BookOpen size={16}/>} />
-                        <InfoItem label="Jenjang" value={mahasiswa.jenjang} icon={<GraduationCap size={16}/>} />
+                        <InfoItem label="Jenjang - Program Studi" value={`${mahasiswa.jenjang} - ${mahasiswa.prodi}`} icon={<BookOpen size={16}/>} />
                         <InfoItem label="Jenis Kelamin" value={mahasiswa.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'} icon={<Users size={16}/>} />
+                        <InfoItem label="Status Awal Mahasiswa" value={mahasiswa.jenis_daftar} icon={<UserPlus size={16}/>} />
                         <InfoItem label="Tanggal Masuk" value={new Date(mahasiswa.tanggal_masuk).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })} icon={<Calendar size={16}/>} />
                         <InfoItem label="Status Terakhir" value={mahasiswa.status_saat_ini} icon={<User size={16}/>} />
                     </div>
