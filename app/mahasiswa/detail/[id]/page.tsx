@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use } from 'react'; // <--- 1. IMPORT 'use' HOOK
+import { useEffect, useState, use } from 'react';
 import { University, BookOpen, User, Calendar, GraduationCap, Users, UserPlus, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import type { MahasiswaDetail } from '@/app/types';
@@ -23,10 +23,12 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isNavigatingBack, setIsNavigatingBack] = useState(false);
-    
+
     // --- THIS IS THE FIX ---
-    // 2. USE THE HOOK TO UNWRAP THE PROMISE-LIKE PARAMS
-    const { id: encodedId } = use(params);
+    // In Next.js 15+, 'params' is a Promise-like object that needs to be unwrapped with React's 'use' hook.
+    // We can then safely access the 'id' property from the resolved object.
+    const resolvedParams = use(params);
+    const encodedId = resolvedParams.id;
 
     useEffect(() => {
         if (!encodedId) {
@@ -39,7 +41,7 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
             setLoading(true);
             setError(null);
             try {
-                const decodedId = decodeURIComponent(encodedId);
+                const decodedId = decodeURIComponent(encodedId as string);
                 const response = await fetch(`/api/mahasiswa/detail?id=${decodedId}`);
                 if (!response.ok) {
                     throw new Error('Gagal memuat data mahasiswa.');
@@ -99,8 +101,8 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
         <div className="min-h-screen bg-gray-50 p-4 sm:p-8 antialiased">
             <main className="max-w-3xl mx-auto">
                  <div className="mb-6">
-                     <Link 
-                        href="/" 
+                     <Link
+                        href="/"
                         onClick={() => setIsNavigatingBack(true)}
                         className={`inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors ${isNavigatingBack ? 'cursor-wait' : ''}`}
                      >
@@ -133,7 +135,7 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
                         <InfoItem label="Jenis Kelamin" value={mahasiswa.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'} icon={<Users size={20}/>} />
                         <InfoItem label="Tanggal Masuk" value={new Date(mahasiswa.tanggal_masuk).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })} icon={<Calendar size={20}/>} />
                         <InfoItem label="Status Awal" value={mahasiswa.jenis_daftar} icon={<UserPlus size={20}/>} />
-                        <InfoItem label="Status Saat Ini" value={mahasiswa.status_saat_ini} icon={<GraduationCap size={20}/>} />     
+                        <InfoItem label="Status Saat Ini" value={mahasiswa.status_saat_ini} icon={<GraduationCap size={20}/>} />
                     </div>
                 </div>
             </main>

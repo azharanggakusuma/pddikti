@@ -7,6 +7,7 @@ import { PerguruanTinggi } from '@/app/types';
 import { PtCard } from '@/app/components/PtCard';
 import { SkeletonCard } from '@/app/components/SkeletonCard';
 import Link from 'next/link';
+import { Breadcrumbs } from '@/app/components/Breadcrumbs';
 
 const RESULTS_PER_PAGE = 10;
 
@@ -127,11 +128,14 @@ export default function PtPage() {
     }, [processedResults, currentPage]);
     
     const totalPages = Math.ceil(processedResults.length / RESULTS_PER_PAGE);
+    
+    const breadcrumbItems = [{ label: "Perguruan Tinggi" }];
 
     return (
         <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800">
             <main className="w-full max-w-4xl mx-auto">
-                <header className="text-center my-8 sm:my-12">
+                <Breadcrumbs items={breadcrumbItems} />
+                <header className="text-center mb-8 sm:mb-12">
                     <Link href="/">
                         <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
                             Pencarian <span className="text-blue-600">Perguruan Tinggi</span>

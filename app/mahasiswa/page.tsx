@@ -18,6 +18,7 @@ import { MahasiswaCard } from "@/app/components/MahasiswaCard";
 import { SkeletonCard } from "@/app/components/SkeletonCard";
 import Link from "next/link";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
+import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 
 const RESULTS_PER_PAGE = 10;
 
@@ -200,10 +201,13 @@ export default function MahasiswaPage() {
     [allResults]
   );
 
+  const breadcrumbItems = [{ label: "Mahasiswa" }];
+
   return (
     <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800">
       <main className="w-full max-w-4xl mx-auto">
-        <header className="text-center my-8 sm:my-12">
+        <Breadcrumbs items={breadcrumbItems} />
+        <header className="text-center mb-8 sm:my-12">
           <Link href="/">
             <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
               Pencarian <span className="text-blue-600">Mahasiswa</span>
@@ -226,7 +230,7 @@ export default function MahasiswaPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
-              placeholder="Ketik nama, NIM, atau PT..."
+              placeholder="Ketik Nama, NIM, atau Perguruan Tinggi..."
               className="w-full p-3 sm:p-4 pl-12 sm:pl-14 pr-24 sm:pr-32 bg-white border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:shadow-md"
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-2">
