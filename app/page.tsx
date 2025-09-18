@@ -63,7 +63,7 @@ export default function Home() {
                 <header className="text-center">
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium tracking-wide mb-8 border border-gray-200">
                         <Info size={14} />
-                        <span>Ini bukan situs web resmi dari Kemdiktisaintek.</span>
+                        <span>Bukan situs web resmi dari Kemdiktisaintek.</span>
                     </div>
                     <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-gray-900">
                         Pangkalan Data
@@ -72,7 +72,7 @@ export default function Home() {
                         </span>
                     </h1>
                     <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
-                        Akses cepat, mudah, dan terintegrasi untuk data mahasiswa, dosen, dan perguruan tinggi di seluruh Indonesia.
+                        Akses cepat, mudah, dan terintegrasi ke API PDDIKTI untuk mencari data mahasiswa, dosen, program studi dan perguruan tinggi di seluruh Indonesia.
                     </p>
                 </header>
 
