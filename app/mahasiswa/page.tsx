@@ -210,7 +210,7 @@ export default function MahasiswaPage() {
             </h1>
           </Link>
           <p className="mt-4 text-lg text-gray-600">
-            Masukkan nama, NIM, atau perguruan tinggi untuk memulai.
+            Temukan mahasiswa berdasarkan nama, NIM, atau perguruan tinggi.
           </p>
         </header>
 
@@ -226,7 +226,7 @@ export default function MahasiswaPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
-              placeholder="Cari mahasiswa..."
+              placeholder="Ketik nama mahasiswa, NIM, atau perguruan tinggi..."
               className="w-full p-4 pl-14 pr-32 bg-white border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:shadow-md"
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-2">
