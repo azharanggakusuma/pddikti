@@ -99,7 +99,8 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih...
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+            const target = event.target as HTMLElement;
+            if (wrapperRef.current && !wrapperRef.current.contains(target) && !target.closest('.prodi-select-dropdown-portal')) {
                 setIsOpen(false);
             }
         };
@@ -119,6 +120,7 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih...
         onChange(null);
         setSearchTerm("");
         setOptions([]);
+        setIsOpen(false);
     }
 
     const dropdownVariants = {
@@ -130,26 +132,27 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih...
     return (
         <div className="relative w-full" ref={wrapperRef}>
             {value ? (
-                <div className="w-full p-3 text-left bg-blue-50 border-2 border-blue-500 rounded-lg flex justify-between items-center cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
-                    <div className="flex items-center gap-3 min-w-0">
-                        <BookOpen className="text-blue-600 flex-shrink-0" size={20} />
-                        <div className="flex-grow min-w-0">
-                            <p className="text-sm font-semibold text-gray-800 truncate">{value.jenjang} - {value.nama}</p>
-                            <p className="text-xs text-gray-500 truncate">{value.pt}</p>
-                        </div>
+                <div className="relative w-full p-3 pl-4 pr-16 text-left bg-blue-50 border-2 border-blue-500 rounded-lg flex items-center gap-3 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+                    <BookOpen className="text-blue-600 flex-shrink-0" size={20} />
+                    <div className="flex-grow min-w-0">
+                        <p className="text-sm font-semibold text-gray-800 truncate">{value.jenjang} - {value.nama}</p>
+                        <p className="text-xs text-gray-500 truncate">{value.pt}</p>
                     </div>
-                    <button type="button" onClick={handleClear} className="p-1 text-gray-400 hover:text-gray-700 transition-colors flex-shrink-0 ml-2">
-                        <X size={18} />
-                    </button>
+                    <div className="absolute top-1/2 right-3 -translate-y-1/2 flex items-center gap-1">
+                        <button type="button" onClick={handleClear} className="p-1 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-200 transition-colors">
+                            <X size={16} />
+                        </button>
+                        <ChevronDown size={20} className={`text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                    </div>
                 </div>
             ) : (
                 <button
                     type="button"
                     onClick={() => setIsOpen(!isOpen)}
-                    className="w-full p-3 pr-10 text-left bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm flex justify-between items-center transition-colors hover:border-gray-400"
+                    className="relative w-full p-3 pl-4 pr-10 text-left bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-colors hover:border-gray-400"
                 >
                     <span className="text-gray-500">{placeholder}</span>
-                    <ChevronDown size={18} className={`text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown size={18} className={`absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
             )}
 
@@ -167,7 +170,7 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih...
                                 left: `${coords.left}px`,
                                 width: `${coords.width}px`,
                             }}
-                            className="bg-white border border-gray-200 rounded-lg shadow-2xl shadow-gray-200/60 z-50 max-h-80 flex flex-col"
+                            className="prodi-select-dropdown-portal bg-white border border-gray-200 rounded-lg shadow-2xl shadow-gray-200/60 z-50 max-h-80 flex flex-col"
                         >
                             <div className="p-2 border-b border-gray-200 sticky top-0 bg-white z-10">
                                 <div className="relative">
