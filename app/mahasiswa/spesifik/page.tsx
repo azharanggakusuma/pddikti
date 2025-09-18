@@ -83,18 +83,21 @@ export default function SpesifikPage() {
             
             {/* Kolom Kiri - Informasi */}
             <div className="p-8 sm:p-10 bg-gray-50/70">
-                <div className="flex items-center gap-3">
-                    <CheckCircle className="text-blue-600" size={32}/>
-                    <h1 className="text-2xl font-bold text-gray-900">
-                        Pencarian Spesifik
-                    </h1>
+                <div className="flex items-center gap-4">
+                    <CheckCircle className="text-blue-600" size={36}/>
+                    <div>
+                        <h1 className="text-xl font-bold text-gray-900">
+                            Pencarian Spesifik
+                        </h1>
+                        <p className="text-sm text-gray-500">Akurasi dan presisi data.</p>
+                    </div>
                 </div>
-                <p className="mt-4 text-gray-600">
+                <p className="mt-6 text-base text-gray-600">
                     Gunakan pencarian ini untuk hasil yang paling akurat. Memastikan data yang ditemukan adalah benar milik mahasiswa yang dituju.
                 </p>
-                <div className="mt-6 pt-6 border-t border-gray-200 space-y-3 text-sm text-gray-500">
-                    <p><strong className="font-semibold text-gray-700">NIM:</strong> Masukkan Nomor Induk Mahasiswa yang valid.</p>
-                    <p><strong className="font-semibold text-gray-700">Prodi:</strong> Pilih Perguruan Tinggi dan Program Studi.</p>
+                <div className="mt-6 pt-6 border-t border-gray-200 space-y-4 text-sm">
+                    <p className="flex items-start gap-2"><strong className="font-semibold text-gray-800 w-16 flex-shrink-0">NIM:</strong> <span className="text-gray-600">Masukkan Nomor Induk Mahasiswa yang valid.</span></p>
+                    <p className="flex items-start gap-2"><strong className="font-semibold text-gray-800 w-16 flex-shrink-0">Prodi:</strong> <span className="text-gray-600">Pilih Perguruan Tinggi dan Program Studi.</span></p>
                 </div>
             </div>
 
@@ -112,7 +115,7 @@ export default function SpesifikPage() {
                         value={nim}
                         onChange={(e) => setNim(e.target.value)}
                         placeholder="Contoh: 11223344"
-                        className="w-full p-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        className="w-full p-3 text-base bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                         required
                     />
                   </div>
@@ -149,7 +152,7 @@ export default function SpesifikPage() {
                   <button
                       type="submit"
                       disabled={loading}
-                      className="w-full px-5 h-11 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed group"
+                      className="w-full px-5 h-12 text-base bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed group"
                   >
                       {loading ? (
                           <Loader2 size={20} className="animate-spin" />
