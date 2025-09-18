@@ -79,14 +79,14 @@ export default function Home() {
         <header className="text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-100 text-amber-800 rounded-full text-xs font-medium tracking-wide mb-8 border border-amber-200">
             <Info size={14} className="text-amber-600" />
-            <span>Situs ini bukan laman resmi dari Kemendikbudristek.</span>
+            <span>Situs ini bukan laman resmi dari Kemdiktisaintek.</span>
           </div>
           <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-gray-900">
             Pangkalan Data
             <span className="mt-2 block text-blue-600">Pendidikan Tinggi</span>
           </h1>
           <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
-            Temukan data mahasiswa, dosen, program studi, dan perguruan tinggi
+            Cari data mahasiswa, dosen, program studi, dan perguruan tinggi
             di seluruh Indonesia dengan cepat, mudah, dan terintegrasi langsung
             dari data PDDIKTI.
           </p>
@@ -102,7 +102,7 @@ export default function Home() {
               />
             }
             title="Pencarian Mahasiswa"
-            description="Temukan data mahasiswa berdasarkan nama atau NIM."
+            description="Cari data mahasiswa di seluruh Indonesia berdasarkan nama atau NIM."
           />
           <MenuItem
             href="/dosen"
@@ -113,7 +113,7 @@ export default function Home() {
               />
             }
             title="Pencarian Dosen"
-            description="Temukan data dosen dan riwayat mengajarnya."
+            description="Telusuri data dosen, NIDN, beserta riwayat aktivitas mengajarnya."
           />
           <MenuItem
             href="/prodi"
@@ -124,7 +124,7 @@ export default function Home() {
               />
             }
             title="Pencarian Program Studi"
-            description="Lihat informasi detail tentang program studi."
+            description="Dapatkan informasi lengkap mengenai program studi dan akreditasinya."
           />
           <MenuItem
             href="/pt"
@@ -135,7 +135,7 @@ export default function Home() {
               />
             }
             title="Pencarian Perguruan Tinggi"
-            description="Cari informasi mengenai perguruan tinggi."
+            description="Temukan profil, alamat, dan detail lain dari perguruan tinggi."
           />
         </div>
       </main>
