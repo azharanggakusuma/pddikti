@@ -48,7 +48,7 @@ export const Navbar = () => {
                     <div className="flex items-center">
                         <Link href="/" className="flex-shrink-0 flex items-center gap-2" onClick={() => setIsOpen(false)}>
                              <GraduationCap className="h-8 w-8 text-blue-600" />
-                             <span className="font-bold text-lg text-gray-800">PDDIKTI Search</span>
+                             <span className="font-bold text-lg text-gray-800">DataDIKTI</span>
                         </Link>
                     </div>
 

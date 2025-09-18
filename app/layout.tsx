@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PDDIKTI Search",
+  title: "DataDIKTI",
   description: "Search for student data in the PDDIKTI database",
 };
 
