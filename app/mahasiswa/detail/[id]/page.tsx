@@ -4,6 +4,7 @@ import { useEffect, useState, use } from 'react';
 import { University, BookOpen, User, Calendar, GraduationCap, Users, UserPlus, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import type { MahasiswaDetail } from '@/app/types';
+import { Breadcrumbs } from '@/app/components/Breadcrumbs';
 
 const InfoItem = ({ label, value, icon }: { label: string, value: string | React.ReactNode, icon: React.ReactNode }) => (
     <div className="flex items-start space-x-4 p-4 rounded-lg bg-gray-50">
@@ -22,13 +23,8 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
     const [mahasiswa, setMahasiswa] = useState<MahasiswaDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isNavigatingBack, setIsNavigatingBack] = useState(false);
-
-    // --- THIS IS THE FIX ---
-    // In Next.js 15+, 'params' is a Promise-like object that needs to be unwrapped with React's 'use' hook.
-    // We can then safely access the 'id' property from the resolved object.
-    const resolvedParams = use(params);
-    const encodedId = resolvedParams.id;
+    
+    const { id: encodedId } = use(params);
 
     useEffect(() => {
         if (!encodedId) {
@@ -41,7 +37,7 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
             setLoading(true);
             setError(null);
             try {
-                const decodedId = decodeURIComponent(encodedId as string);
+                const decodedId = decodeURIComponent(encodedId);
                 const response = await fetch(`/api/mahasiswa/detail?id=${decodedId}`);
                 if (!response.ok) {
                     throw new Error('Gagal memuat data mahasiswa.');
@@ -58,23 +54,36 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
         fetchDetail();
     }, [encodedId]);
 
+    const breadcrumbItems = [
+      { label: "Mahasiswa", href: "/mahasiswa" },
+      { label: mahasiswa ? mahasiswa.nama : "Detail" }
+    ];
+
     if (loading) {
         return (
-             <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
-                <main className="max-w-2xl mx-auto">
-                    <div className="animate-pulse bg-white rounded-xl shadow-lg p-6 sm:p-8">
-                        <div className="flex items-center space-x-4 mb-6">
-                            <div className="h-20 w-20 bg-gray-300 rounded-full"></div>
-                            <div className="space-y-2">
-                                <div className="h-8 w-64 bg-gray-300 rounded"></div>
-                                <div className="h-6 w-40 bg-gray-300 rounded"></div>
+             <div className="min-h-screen bg-gray-50 p-4 sm:p-8 antialiased">
+                <main className="max-w-3xl mx-auto">
+                    <Breadcrumbs items={breadcrumbItems} />
+                    <div className="mt-8 animate-pulse bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-200">
+                        <div className="p-6 sm:p-8">
+                            {/* --- SKELETON HEADER YANG DIPERBAIKI --- */}
+                            <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                                <div className="flex-shrink-0 h-24 w-24 bg-gray-300 rounded-full"></div>
+                                <div className="flex flex-col items-center sm:items-start space-y-2">
+                                    <div className="h-8 w-64 bg-gray-300 rounded"></div>
+                                    <div className="h-6 w-40 bg-gray-300 rounded"></div>
+                                </div>
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {Array.from({ length: 8 }).map((_, i) => (
-                                <div key={i} className="bg-gray-100 p-4 rounded-lg space-y-2">
-                                    <div className="h-4 w-1/3 bg-gray-300 rounded"></div>
-                                    <div className="h-5 w-2/3 bg-gray-300 rounded"></div>
+                        <div className="border-t-2 border-dashed border-gray-200"></div>
+                        <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <div key={i} className="flex items-start space-x-4 p-4 rounded-lg bg-gray-50">
+                                    <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full"></div>
+                                    <div className="flex-grow space-y-2">
+                                        <div className="h-4 w-1/3 bg-gray-300 rounded"></div>
+                                        <div className="h-5 w-2/3 bg-gray-300 rounded"></div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -100,21 +109,8 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
     return (
         <div className="min-h-screen bg-gray-50 p-4 sm:p-8 antialiased">
             <main className="max-w-3xl mx-auto">
-                 <div className="mb-6">
-                     <Link
-                        href="/"
-                        onClick={() => setIsNavigatingBack(true)}
-                        className={`inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors ${isNavigatingBack ? 'cursor-wait' : ''}`}
-                     >
-                        {isNavigatingBack ? (
-                            <Loader2 size={16} className="animate-spin" />
-                        ) : (
-                            <ArrowLeft size={16} />
-                        )}
-                        {isNavigatingBack ? 'Kembali...' : 'Kembali ke Halaman Utama'}
-                    </Link>
-                 </div>
-                 <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-200">
+                 <Breadcrumbs items={breadcrumbItems} />
+                 <div className="mt-8 bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-200">
                     <div className="p-6 sm:p-8">
                         <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
                             <div className="flex-shrink-0 h-24 w-24 bg-gray-100 rounded-full flex items-center justify-center border border-gray-200">
@@ -135,7 +131,7 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
                         <InfoItem label="Jenis Kelamin" value={mahasiswa.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'} icon={<Users size={20}/>} />
                         <InfoItem label="Tanggal Masuk" value={new Date(mahasiswa.tanggal_masuk).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })} icon={<Calendar size={20}/>} />
                         <InfoItem label="Status Awal" value={mahasiswa.jenis_daftar} icon={<UserPlus size={20}/>} />
-                        <InfoItem label="Status Saat Ini" value={mahasiswa.status_saat_ini} icon={<GraduationCap size={20}/>} />
+                        <InfoItem label="Status Saat Ini" value={mahasiswa.status_saat_ini} icon={<GraduationCap size={20}/>} />     
                     </div>
                 </div>
             </main>
