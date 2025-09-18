@@ -15,6 +15,7 @@ import {
   ChevronDown
 } from "lucide-react";
 import { useState, FormEvent } from "react";
+import { motion } from "framer-motion";
 
 // Tipe props untuk MenuItem
 type MenuItemProps = {
@@ -97,7 +98,13 @@ export default function Home() {
     };
 
   return (
-    <div className="min-h-screen w-full antialiased bg-gray-50 text-gray-800 flex flex-col">
+    <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.5 }}
+        className="min-h-screen w-full antialiased bg-gray-50 text-gray-800 flex flex-col"
+    >
       <div
         className="absolute top-0 left-0 w-full h-full bg-repeat -z-10 opacity-50"
         style={{
@@ -215,6 +222,6 @@ export default function Home() {
           />
         </div>
       </main>
-    </div>
+    </motion.div>
   );
 }

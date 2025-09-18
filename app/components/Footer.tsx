@@ -15,7 +15,7 @@ export const Footer = () => {
 
                     {/* Sisi Kanan: Kredit dan Disclaimer */}
                     <div className="text-center sm:text-right text-xs text-gray-500">
-                         <p className="text-xs text-gray-400">
+                         <p className="text-xs">
                             Situs ini menggunakan data dari{" "}
                             <a
                                 href="https://pddikti.kemdiktisaintek.go.id"

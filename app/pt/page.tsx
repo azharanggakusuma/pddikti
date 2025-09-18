@@ -8,6 +8,7 @@ import { PtCard } from '@/app/components/PtCard';
 import { SkeletonCard } from '@/app/components/SkeletonCard';
 import Link from 'next/link';
 import { Breadcrumbs } from '@/app/components/Breadcrumbs';
+import { motion } from 'framer-motion';
 
 const RESULTS_PER_PAGE = 10;
 
@@ -132,7 +133,13 @@ export default function PtPage() {
     const breadcrumbItems = [{ label: "Perguruan Tinggi" }];
 
     return (
-        <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800">
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800"
+        >
             <main className="w-full max-w-4xl mx-auto">
                 <Breadcrumbs items={breadcrumbItems} />
                 <header className="text-center mb-8 sm:mb-12">
@@ -240,6 +247,6 @@ export default function PtPage() {
             {showBackToTop && (
                 <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-110" style={{ animation: 'fadeInUp 0.5s ease-out' }}><ArrowUp size={24} /></button>
             )}
-        </div>
+        </motion.div>
     );
 }

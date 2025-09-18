@@ -15,6 +15,7 @@ import { ProdiCard } from '@/app/components/ProdiCard';
 import { Breadcrumbs } from '@/app/components/Breadcrumbs';
 import { SkeletonCard } from '@/app/components/SkeletonCard';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 interface SearchResult {
     mahasiswa: Mahasiswa[];
@@ -179,7 +180,13 @@ export default function SearchPage() {
     
     // --- Render ---
     return (
-        <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800">
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800"
+        >
             <main className="w-full max-w-4xl mx-auto">
                 <Breadcrumbs items={breadcrumbItems} />
                 <header className="text-center mb-8 sm:mb-12">
@@ -324,6 +331,6 @@ export default function SearchPage() {
                     )}
                 </div>
             </main>
-        </div>
+        </motion.div>
     );
 }

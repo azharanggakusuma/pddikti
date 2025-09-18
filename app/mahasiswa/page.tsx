@@ -19,6 +19,7 @@ import { SkeletonCard } from "@/app/components/SkeletonCard";
 import Link from "next/link";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
+import { motion } from "framer-motion";
 
 const RESULTS_PER_PAGE = 10;
 
@@ -204,7 +205,13 @@ export default function MahasiswaPage() {
   const breadcrumbItems = [{ label: "Mahasiswa" }];
 
   return (
-    <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800">
+    <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.5 }}
+        className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800"
+    >
       <main className="w-full max-w-4xl mx-auto">
         <Breadcrumbs items={breadcrumbItems} />
         <header className="text-center mb-8 sm:my-12">
@@ -442,6 +449,6 @@ export default function MahasiswaPage() {
           <ArrowUp size={24} />
         </button>
       )}
-    </div>
+    </motion.div>
   );
 }

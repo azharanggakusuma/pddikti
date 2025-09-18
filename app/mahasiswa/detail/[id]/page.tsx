@@ -5,6 +5,7 @@ import { University, BookOpen, User, Calendar, GraduationCap, Users, UserPlus, A
 import Link from 'next/link';
 import type { MahasiswaDetail } from '@/app/types';
 import { Breadcrumbs } from '@/app/components/Breadcrumbs';
+import { motion } from 'framer-motion';
 
 const InfoItem = ({ label, value, icon }: { label: string, value: string | React.ReactNode, icon: React.ReactNode }) => (
     <div className="flex items-start space-x-4 p-4 rounded-lg bg-gray-50">
@@ -107,7 +108,13 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 sm:p-8 antialiased">
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="min-h-screen bg-gray-50 p-4 sm:p-8 antialiased"
+        >
             <main className="max-w-3xl mx-auto">
                  <Breadcrumbs items={breadcrumbItems} />
                  <div className="mt-8 bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-200">
@@ -135,6 +142,6 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
                     </div>
                 </div>
             </main>
-        </div>
+        </motion.div>
     );
 }
