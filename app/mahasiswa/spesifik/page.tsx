@@ -3,9 +3,8 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Loader2, AlertCircle } from "lucide-react";
+import { Search, Loader2, AlertCircle, CheckCircle } from "lucide-react";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { ProdiSearchableSelect } from "@/app/components/ProdiSearchableSelect";
 import { ProgramStudi } from "@/app/types";
@@ -21,7 +20,7 @@ export default function SpesifikPage() {
   const handleSearch = async (e: FormEvent) => {
     e.preventDefault();
     if (!nim.trim() || !selectedProdi) {
-      setError("NIM dan Perguruan Tinggi/Prodi harus diisi.");
+      setError("NIM dan Program Studi harus diisi.");
       return;
     }
 
@@ -44,7 +43,8 @@ export default function SpesifikPage() {
       }
 
       if (!response.ok) {
-        throw new Error("Gagal terhubung ke server.");
+        const data = await response.json();
+        throw new Error(data.message || "Gagal terhubung ke server.");
       }
       
       const data = await response.json();
@@ -73,77 +73,98 @@ export default function SpesifikPage() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800"
+      className="min-h-screen p-4 sm:p-8 flex flex-col items-center justify-center antialiased bg-gray-50 text-gray-800"
     >
-      <main className="w-full max-w-xl mx-auto">
+      <main className="w-full max-w-4xl mx-auto">
         <Breadcrumbs items={breadcrumbItems} />
-        <header className="text-center mb-8 sm:mb-12">
-          <Link href="/">
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
-              Pencarian <span className="text-blue-600">Spesifik</span>
-            </h1>
-          </Link>
-          <p className="mt-4 text-base sm:text-lg text-gray-600">
-            Temukan data mahasiswa secara akurat menggunakan NIM dan Perguruan Tinggi.
-          </p>
-        </header>
 
-        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200/80 shadow-sm">
-          <form onSubmit={handleSearch} className="space-y-6">
-            <div>
-              <label htmlFor="nim" className="block text-sm font-semibold text-gray-700 mb-2">
-                Nomor Induk Mahasiswa (NIM)
-              </label>
-              <input
-                id="nim"
-                type="text"
-                value={nim}
-                onChange={(e) => setNim(e.target.value)}
-                placeholder="Masukkan NIM..."
-                className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Perguruan Tinggi & Program Studi
-              </label>
-              <ProdiSearchableSelect
-                value={selectedProdi}
-                onChange={setSelectedProdi}
-                placeholder="Cari & pilih prodi..."
-              />
-            </div>
+        <div className="mt-4 bg-white rounded-xl border border-gray-200/80 shadow-lg shadow-gray-200/40 overflow-hidden">
+          <div className="grid md:grid-cols-2">
             
-            {error && (
-              <div className="flex items-center gap-3 text-red-600 bg-red-50 p-3 rounded-lg">
-                <AlertCircle size={20} />
-                <span className="text-sm font-medium">{error}</span>
-              </div>
-            )}
-            
-            {notFound && (
-                <div className="flex items-center gap-3 text-amber-700 bg-amber-50 p-3 rounded-lg">
-                    <AlertCircle size={20} />
-                    <span className="text-sm font-medium">Mahasiswa tidak ditemukan. Pastikan NIM dan Prodi sudah benar.</span>
+            {/* Kolom Kiri - Informasi */}
+            <div className="p-8 sm:p-10 bg-gray-50/70">
+                <div className="flex items-center gap-3">
+                    <CheckCircle className="text-blue-600" size={32}/>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                        Pencarian Spesifik
+                    </h1>
                 </div>
-            )}
+                <p className="mt-4 text-gray-600">
+                    Gunakan pencarian ini untuk hasil yang paling akurat. Memastikan data yang ditemukan adalah benar milik mahasiswa yang dituju.
+                </p>
+                <div className="mt-6 pt-6 border-t border-gray-200 space-y-3 text-sm text-gray-500">
+                    <p><strong className="font-semibold text-gray-700">NIM:</strong> Masukkan Nomor Induk Mahasiswa yang valid.</p>
+                    <p><strong className="font-semibold text-gray-700">Prodi:</strong> Pilih Perguruan Tinggi dan Program Studi.</p>
+                </div>
+            </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full px-5 h-12 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <Loader2 size={20} className="animate-spin" />
-              ) : (
-                <>
-                  <Search size={20} className="mr-2" />
-                  <span className="font-semibold">Cari Mahasiswa</span>
-                </>
-              )}
-            </button>
-          </form>
+            {/* Kolom Kanan - Form */}
+            <div className="p-8 sm:p-10">
+              <form onSubmit={handleSearch} className="flex flex-col h-full">
+                <div className="flex-grow space-y-6">
+                  <div className="space-y-2">
+                    <label htmlFor="nim" className="text-sm font-semibold text-gray-700">
+                      Nomor Induk Mahasiswa (NIM)
+                    </label>
+                    <input
+                        id="nim"
+                        type="text"
+                        value={nim}
+                        onChange={(e) => setNim(e.target.value)}
+                        placeholder="Contoh: 11223344"
+                        className="w-full p-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-gray-700">
+                      Perguruan Tinggi & Program Studi
+                    </label>
+                    <ProdiSearchableSelect
+                        value={selectedProdi}
+                        onChange={setSelectedProdi}
+                        placeholder="Ketik untuk mencari..."
+                    />
+                  </div>
+                  
+                  {/* Alert Messages */}
+                  <div className="!mt-4 space-y-4">
+                      {error && (
+                        <motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="flex items-center gap-3 text-red-700 bg-red-50 p-3 rounded-lg border border-red-200">
+                            <AlertCircle className="flex-shrink-0" size={20} />
+                            <span className="text-sm font-medium">{error}</span>
+                        </motion.div>
+                      )}
+                      {notFound && (
+                          <motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="flex items-center gap-3 text-amber-800 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                              <AlertCircle className="flex-shrink-0" size={20} />
+                              <span className="text-sm font-medium">Mahasiswa tidak ditemukan. Periksa kembali data Anda.</span>
+                          </motion.div>
+                      )}
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full px-5 h-11 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed group"
+                  >
+                      {loading ? (
+                          <Loader2 size={20} className="animate-spin" />
+                      ) : (
+                          <>
+                          <Search size={18} className="mr-2" />
+                          Cari Mahasiswa
+                          </>
+                      )}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+          </div>
         </div>
       </main>
     </motion.div>
