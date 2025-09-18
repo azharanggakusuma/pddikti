@@ -3,35 +3,25 @@
 
 import { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronDown, Search, X, Loader2, BookOpen, University } from 'lucide-react';
+import { ChevronDown, Search, X, Loader2, BookOpen, University, Info } from 'lucide-react';
 import { ProgramStudi } from '@/app/types';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Portal Component remains the same for stacking context fix
 interface PortalProps {
   children: React.ReactNode;
 }
-
 const Portal: React.FC<PortalProps> = ({ children }) => {
   const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-  
-  const portalRoot = document.getElementById('portal-root');
-  if (!portalRoot) {
+  useEffect(() => { setMounted(true); return () => setMounted(false); }, []);
+  if (!mounted) return null;
+  const portalRoot = document.getElementById('portal-root') || (() => {
     const newRoot = document.createElement('div');
     newRoot.id = 'portal-root';
     document.body.appendChild(newRoot);
-    return createPortal(children, newRoot);
-  }
-
+    return newRoot;
+  })();
   return createPortal(children, portalRoot);
 };
 
@@ -42,19 +32,19 @@ interface ProdiSearchableSelectProps {
     placeholder?: string;
 }
 
-export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih..." }: ProdiSearchableSelectProps) => {
+export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih Program Studi..." }: ProdiSearchableSelectProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [options, setOptions] = useState<ProgramStudi[]>([]);
     const [loading, setLoading] = useState(false);
     const [coords, setCoords] = useState<{ top: number, left: number, width: number }>({ top: 0, left: 0, width: 0 });
     
-    const wrapperRef = useRef<HTMLDivElement>(null);
+    const controlRef = useRef<HTMLDivElement>(null);
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
     const updateCoords = useCallback(() => {
-        if (wrapperRef.current) {
-            const rect = wrapperRef.current.getBoundingClientRect();
+        if (controlRef.current) {
+            const rect = controlRef.current.getBoundingClientRect();
             setCoords({
                 top: rect.top + window.scrollY + rect.height,
                 left: rect.left + window.scrollX,
@@ -66,12 +56,12 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih...
     useLayoutEffect(() => {
         if (isOpen) {
             updateCoords();
-            window.addEventListener('resize', updateCoords);
-            window.addEventListener('scroll', updateCoords);
+            window.addEventListener('resize', updateCoords, true);
+            window.addEventListener('scroll', updateCoords, true);
         }
         return () => {
-            window.removeEventListener('resize', updateCoords);
-            window.removeEventListener('scroll', updateCoords);
+            window.removeEventListener('resize', updateCoords, true);
+            window.removeEventListener('scroll', updateCoords, true);
         };
     }, [isOpen, updateCoords]);
 
@@ -100,7 +90,7 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih...
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as HTMLElement;
-            if (wrapperRef.current && !wrapperRef.current.contains(target) && !target.closest('.prodi-select-dropdown-portal')) {
+            if (controlRef.current && !controlRef.current.contains(target) && !target.closest('.prodi-select-dropdown-portal')) {
                 setIsOpen(false);
             }
         };
@@ -124,38 +114,51 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih...
     }
 
     const dropdownVariants = {
-        hidden: { opacity: 0, y: -10, scale: 0.98 },
-        visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 500, damping: 30 } },
-        exit: { opacity: 0, y: -10, scale: 0.98, transition: { duration: 0.15 } }
+        hidden: { opacity: 0, scale: 0.95, y: -10 },
+        visible: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 400, damping: 25 } },
+        exit: { opacity: 0, scale: 0.95, y: -10, transition: { duration: 0.1 } }
     };
 
     return (
-        <div className="relative w-full" ref={wrapperRef}>
-            {value ? (
-                <div className="relative w-full p-3 pl-4 pr-16 text-left bg-blue-50 border-2 border-blue-500 rounded-lg flex items-center gap-3 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
-                    <BookOpen className="text-blue-600 flex-shrink-0" size={20} />
+        <div className="relative w-full" ref={controlRef}>
+            <div 
+                onClick={() => setIsOpen(!isOpen)}
+                className={`flex items-center w-full p-3 text-left bg-white border rounded-lg transition-all duration-200 cursor-pointer
+                    ${isOpen ? 'ring-2 ring-blue-500 border-blue-500' : 'border-gray-300 hover:border-gray-400'}`
+                }
+            >
+                {/* Bagian Kiri: Ikon dan Teks */}
+                <div className="flex items-center gap-3 flex-grow min-w-0">
+                    {value ? (
+                        <BookOpen className="text-blue-600 flex-shrink-0" size={20} />
+                    ) : (
+                        <Search className="text-gray-400 flex-shrink-0" size={20} />
+                    )}
+
                     <div className="flex-grow min-w-0">
-                        <p className="text-sm font-semibold text-gray-800 truncate">{value.jenjang} - {value.nama}</p>
-                        <p className="text-xs text-gray-500 truncate">{value.pt}</p>
-                    </div>
-                    <div className="absolute top-1/2 right-3 -translate-y-1/2 flex items-center gap-1">
-                        <button type="button" onClick={handleClear} className="p-1 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-200 transition-colors">
-                            <X size={16} />
-                        </button>
-                        <ChevronDown size={20} className={`text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                        {value ? (
+                            <>
+                                <p className="text-sm font-semibold text-gray-800 truncate">{value.jenjang} - {value.nama}</p>
+                                <p className="text-xs text-gray-500 truncate">{value.pt}</p>
+                            </>
+                        ) : (
+                            <p className="text-sm text-gray-500">{placeholder}</p>
+                        )}
                     </div>
                 </div>
-            ) : (
-                <button
-                    type="button"
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="relative w-full p-3 pl-4 pr-10 text-left bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-colors hover:border-gray-400"
-                >
-                    <span className="text-gray-500">{placeholder}</span>
-                    <ChevronDown size={18} className={`absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-                </button>
-            )}
 
+                {/* Bagian Kanan: Aksi (Clear & Dropdown Arrow) */}
+                <div className="flex items-center flex-shrink-0 ml-2">
+                    {value && (
+                         <button type="button" onClick={handleClear} className="p-1 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-200 transition-colors">
+                            <X size={16} />
+                        </button>
+                    )}
+                    <ChevronDown size={20} className={`text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                </div>
+            </div>
+
+            {/* Dropdown Menu via Portal */}
             <AnimatePresence>
                 {isOpen && (
                     <Portal>
@@ -172,6 +175,7 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih...
                             }}
                             className="prodi-select-dropdown-portal bg-white border border-gray-200 rounded-lg shadow-2xl shadow-gray-200/60 z-50 max-h-80 flex flex-col"
                         >
+                            {/* Search Input */}
                             <div className="p-2 border-b border-gray-200 sticky top-0 bg-white z-10">
                                 <div className="relative">
                                     <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -181,31 +185,29 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih...
                                         autoFocus
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-2.5 border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                                     />
                                     {loading && <Loader2 size={18} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 animate-spin" />}
                                 </div>
                             </div>
                             
+                            {/* Options List */}
                             <div className="flex-grow overflow-y-auto">
                                 <ul>
                                     {options.length > 0 ? (
                                         options.map(option => (
-                                            <li
-                                                key={option.id}
-                                                onClick={() => handleSelect(option)}
-                                                className="p-4 cursor-pointer hover:bg-blue-50 text-gray-800 border-b border-gray-100 last:border-b-0 transition-colors"
-                                            >
+                                            <li key={option.id} onClick={() => handleSelect(option)} className="p-4 cursor-pointer hover:bg-blue-50 text-gray-800 border-b border-gray-100 last:border-b-0 transition-colors">
                                                 <p className="font-semibold text-sm flex items-center gap-2"><BookOpen size={14}/> {option.jenjang} - {option.nama}</p>
                                                 <p className="text-xs text-gray-500 flex items-center gap-2 mt-1 pl-6"><University size={12}/> {option.pt}</p>
                                             </li>
                                         ))
                                     ) : (
-                                        <li className="p-6 text-sm text-gray-500 text-center">
-                                            {!loading && debouncedSearchTerm.length < 3 && "Ketik minimal 3 huruf untuk mencari."}
-                                            {!loading && debouncedSearchTerm.length >= 3 && "Tidak ada hasil ditemukan."}
-                                            {loading && "Mencari..."}
-                                        </li>
+                                        <div className="flex flex-col items-center justify-center text-center p-8 text-sm text-gray-500">
+                                             <Info size={32} className="text-gray-300 mb-4" />
+                                            {!loading && debouncedSearchTerm.length < 3 && <p>Ketik minimal <strong className="text-gray-600">3 huruf</strong> di atas untuk memulai pencarian.</p>}
+                                            {!loading && debouncedSearchTerm.length >= 3 && <p>Tidak ada prodi yang cocok dengan <strong className="text-gray-600">"{debouncedSearchTerm}"</strong>.</p>}
+                                            {loading && <p>Mencari...</p>}
+                                        </div>
                                     )}
                                 </ul>
                             </div>
