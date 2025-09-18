@@ -78,7 +78,7 @@ export default function SpesifikPage() {
       <main className="w-full max-w-4xl mx-auto">
         <Breadcrumbs items={breadcrumbItems} />
 
-        <div className="mt-4 bg-white rounded-xl border border-gray-200/80 shadow-lg shadow-gray-200/40 overflow-hidden">
+        <div className="mt-4 bg-white rounded-xl border border-gray-200/60 shadow-lg shadow-gray-200/40 overflow-hidden">
           <div className="grid md:grid-cols-2">
             
             {/* Kolom Kiri - Informasi */}
@@ -95,7 +95,7 @@ export default function SpesifikPage() {
                 <p className="mt-6 text-base text-gray-600">
                     Gunakan pencarian ini untuk hasil yang paling akurat. Memastikan data yang ditemukan adalah benar milik mahasiswa yang dituju.
                 </p>
-                <div className="mt-6 pt-6 border-t border-gray-200 space-y-4 text-sm">
+                <div className="mt-6 pt-6 border-t border-gray-200/80 space-y-4 text-sm">
                     <p className="flex items-start gap-2"><strong className="font-semibold text-gray-800 w-16 flex-shrink-0">NIM:</strong> <span className="text-gray-600">Masukkan Nomor Induk Mahasiswa yang valid.</span></p>
                     <p className="flex items-start gap-2"><strong className="font-semibold text-gray-800 w-16 flex-shrink-0">Prodi:</strong> <span className="text-gray-600">Pilih Perguruan Tinggi dan Program Studi.</span></p>
                 </div>
@@ -105,7 +105,8 @@ export default function SpesifikPage() {
             <div className="p-8 sm:p-10">
               <form onSubmit={handleSearch} className="flex flex-col h-full">
                 <div className="flex-grow space-y-6">
-                  <div className="space-y-2">
+                  {/* --- PERUBAHAN JARAK LABEL & INPUT --- */}
+                  <div className="space-y-2.5">
                     <label htmlFor="nim" className="text-sm font-semibold text-gray-700">
                       Nomor Induk Mahasiswa (NIM)
                     </label>
@@ -115,12 +116,13 @@ export default function SpesifikPage() {
                         value={nim}
                         onChange={(e) => setNim(e.target.value)}
                         placeholder="Contoh: 11223344"
-                        className="w-full p-3 text-base bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        className="w-full h-12 px-3 text-base bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-blue-400 transition-all"
                         required
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  {/* --- PERUBAHAN JARAK LABEL & INPUT --- */}
+                  <div className="space-y-2.5">
                     <label className="text-sm font-semibold text-gray-700">
                       Perguruan Tinggi & Program Studi
                     </label>
@@ -131,7 +133,6 @@ export default function SpesifikPage() {
                     />
                   </div>
                   
-                  {/* Alert Messages */}
                   <div className="!mt-4 space-y-4">
                       {error && (
                         <motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="flex items-center gap-3 text-red-700 bg-red-50 p-3 rounded-lg border border-red-200">

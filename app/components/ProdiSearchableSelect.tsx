@@ -8,7 +8,7 @@ import { ProgramStudi } from '@/app/types';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Portal Component remains the same for stacking context fix
+// Portal Component for stacking context fix
 interface PortalProps {
   children: React.ReactNode;
 }
@@ -32,7 +32,7 @@ interface ProdiSearchableSelectProps {
     placeholder?: string;
 }
 
-export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih Program Studi..." }: ProdiSearchableSelectProps) => {
+export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Ketik untuk mencari prodi..." }: ProdiSearchableSelectProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [options, setOptions] = useState<ProgramStudi[]>([]);
@@ -40,7 +40,22 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih Pr
     const [coords, setCoords] = useState<{ top: number, left: number, width: number }>({ top: 0, left: 0, width: 0 });
     
     const controlRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+    const openDropdown = () => {
+        setIsOpen(true);
+        if (value) {
+            setSearchTerm(`${value.jenjang} - ${value.nama}`);
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen && inputRef.current) {
+            inputRef.current.focus();
+            inputRef.current.select();
+        }
+    }, [isOpen]);
 
     const updateCoords = useCallback(() => {
         if (controlRef.current) {
@@ -87,17 +102,6 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih Pr
         fetchProdi(debouncedSearchTerm);
     }, [debouncedSearchTerm, fetchProdi]);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as HTMLElement;
-            if (controlRef.current && !controlRef.current.contains(target) && !target.closest('.prodi-select-dropdown-portal')) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-    
     const handleSelect = (option: ProgramStudi) => {
         onChange(option);
         setSearchTerm("");
@@ -105,13 +109,22 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih Pr
         setIsOpen(false);
     };
 
-    const handleClear = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleClear = (e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
         onChange(null);
         setSearchTerm("");
         setOptions([]);
         setIsOpen(false);
-    }
+    };
+    
+    const handleBlur = () => {
+        setTimeout(() => {
+            if (!document.activeElement || !document.activeElement.closest('.prodi-select-dropdown-portal')) {
+                setIsOpen(false);
+                setSearchTerm("");
+            }
+        }, 150);
+    };
 
     const dropdownVariants = {
         hidden: { opacity: 0, scale: 0.95, y: -10 },
@@ -121,92 +134,83 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Pilih Pr
 
     return (
         <div className="relative w-full" ref={controlRef}>
-            <div 
-                onClick={() => setIsOpen(!isOpen)}
-                className={`flex items-center w-full p-3 text-left bg-white border rounded-lg transition-all duration-200 cursor-pointer
-                    ${isOpen ? 'ring-2 ring-blue-500 border-blue-500' : 'border-gray-300 hover:border-gray-400'}`
-                }
-            >
-                {/* Bagian Kiri: Ikon dan Teks */}
-                <div className="flex items-center gap-3 flex-grow min-w-0">
-                    {value ? (
-                        <BookOpen className="text-blue-600 flex-shrink-0" size={20} />
-                    ) : (
-                        <Search className="text-gray-400 flex-shrink-0" size={20} />
-                    )}
-
-                    <div className="flex-grow min-w-0">
+            {isOpen ? (
+                // --- Input Mode ---
+                <div className="relative">
+                    <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onBlur={handleBlur}
+                        placeholder={placeholder}
+                        // --- PENYESUAIAN UKURAN & BORDER ---
+                        className="w-full h-12 pl-10 pr-4 text-base bg-white border border-blue-400 rounded-lg outline-none ring-1 ring-blue-400"
+                    />
+                </div>
+            ) : (
+                // --- Display Mode ---
+                <div 
+                    onClick={openDropdown}
+                    // --- PENYESUAIAN UKURAN & BORDER ---
+                    className="flex items-center w-full h-12 px-3 text-left bg-white border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer hover:border-gray-400"
+                >
+                    <div className="flex items-center gap-3 flex-grow min-w-0">
                         {value ? (
-                            <>
-                                <p className="text-sm font-semibold text-gray-800 truncate">{value.jenjang} - {value.nama}</p>
-                                <p className="text-xs text-gray-500 truncate">{value.pt}</p>
-                            </>
+                            <BookOpen className="text-blue-600 flex-shrink-0" size={20} />
                         ) : (
-                            <p className="text-sm text-gray-500">{placeholder}</p>
+                            <Search className="text-gray-400 flex-shrink-0" size={20} />
                         )}
+                        <div className="flex-grow min-w-0">
+                            {value ? (
+                                <>
+                                    <p className="text-sm font-semibold text-gray-800 truncate">{value.jenjang} - {value.nama}</p>
+                                    <p className="text-xs text-gray-500 truncate">{value.pt}</p>
+                                </>
+                            ) : (
+                                <p className="text-sm text-gray-500">{placeholder}</p>
+                            )}
+                        </div>
+                    </div>
+                    <div className="flex items-center flex-shrink-0 ml-2">
+                        {value && (
+                            <button type="button" onClick={handleClear} className="p-1 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-200 transition-colors">
+                                <X size={16} />
+                            </button>
+                        )}
+                        <ChevronDown size={20} className="text-gray-400" />
                     </div>
                 </div>
-
-                {/* Bagian Kanan: Aksi (Clear & Dropdown Arrow) */}
-                <div className="flex items-center flex-shrink-0 ml-2">
-                    {value && (
-                         <button type="button" onClick={handleClear} className="p-1 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-200 transition-colors">
-                            <X size={16} />
-                        </button>
-                    )}
-                    <ChevronDown size={20} className={`text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-                </div>
-            </div>
+            )}
 
             {/* Dropdown Menu via Portal */}
             <AnimatePresence>
                 {isOpen && (
-                    <Portal>
+                     <Portal>
                         <motion.div
                             variants={dropdownVariants}
                             initial="hidden"
                             animate="visible"
                             exit="exit"
-                            style={{
-                                position: 'absolute',
-                                top: `${coords.top + 8}px`,
-                                left: `${coords.left}px`,
-                                width: `${coords.width}px`,
-                            }}
-                            className="prodi-select-dropdown-portal bg-white border border-gray-200 rounded-lg shadow-2xl shadow-gray-200/60 z-50 max-h-80 flex flex-col"
+                            style={{ position: 'absolute', top: `${coords.top + 8}px`, left: `${coords.left}px`, width: `${coords.width}px` }}
+                            className="prodi-select-dropdown-portal bg-white border border-gray-200 rounded-lg shadow-2xl shadow-gray-200/60 z-50 max-h-72 flex flex-col"
                         >
-                            {/* Search Input */}
-                            <div className="p-2 border-b border-gray-200 sticky top-0 bg-white z-10">
-                                <div className="relative">
-                                    <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                                    <input
-                                        type="text"
-                                        placeholder="Ketik nama prodi atau PT..."
-                                        autoFocus
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    />
-                                    {loading && <Loader2 size={18} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 animate-spin" />}
-                                </div>
-                            </div>
-                            
-                            {/* Options List */}
                             <div className="flex-grow overflow-y-auto">
                                 <ul>
                                     {options.length > 0 ? (
                                         options.map(option => (
-                                            <li key={option.id} onClick={() => handleSelect(option)} className="p-4 cursor-pointer hover:bg-blue-50 text-gray-800 border-b border-gray-100 last:border-b-0 transition-colors">
+                                            <li key={option.id} onMouseDown={() => handleSelect(option)} className="p-4 cursor-pointer hover:bg-blue-50 text-gray-800 border-b border-gray-100 last:border-b-0 transition-colors">
                                                 <p className="font-semibold text-sm flex items-center gap-2"><BookOpen size={14}/> {option.jenjang} - {option.nama}</p>
                                                 <p className="text-xs text-gray-500 flex items-center gap-2 mt-1 pl-6"><University size={12}/> {option.pt}</p>
                                             </li>
                                         ))
                                     ) : (
                                         <div className="flex flex-col items-center justify-center text-center p-8 text-sm text-gray-500">
-                                             <Info size={32} className="text-gray-300 mb-4" />
-                                            {!loading && debouncedSearchTerm.length < 3 && <p>Ketik minimal <strong className="text-gray-600">3 huruf</strong> di atas untuk memulai pencarian.</p>}
+                                            <Info size={32} className="text-gray-300 mb-4" />
+                                            {!loading && debouncedSearchTerm.length < 3 && <p>Ketik minimal <strong className="text-gray-600">3 huruf</strong> untuk memulai pencarian.</p>}
                                             {!loading && debouncedSearchTerm.length >= 3 && <p>Tidak ada prodi yang cocok dengan <strong className="text-gray-600">"{debouncedSearchTerm}"</strong>.</p>}
-                                            {loading && <p>Mencari...</p>}
+                                            {loading && <div className="flex items-center gap-2"><Loader2 size={16} className="animate-spin" /><p>Mencari...</p></div>}
                                         </div>
                                     )}
                                 </ul>
