@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, FormEvent, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
-  Loader2, FileX, Search, ChevronLeft, ChevronRight, SlidersHorizontal,
+  Loader2, FileX, Search, ChevronLeft, ChevronRight,
   GraduationCap, User, School, BookOpen, History, X
 } from 'lucide-react';
 import { Mahasiswa, Dosen, PerguruanTinggi, ProgramStudi } from '@/app/types';
@@ -65,7 +65,7 @@ export default function SearchPage() {
     const [error, setError] = useState<string | null>(null);
     
     // State untuk UI dan filter
-    const [activeFilter, setActiveFilter] = useState('semua');
+    const [activeFilter, setActiveFilter] = useState('Semua');
     const [pageState, setPageState] = useState({
         mahasiswa: 1,
         dosen: 1,
@@ -163,11 +163,12 @@ export default function SearchPage() {
     
     const totalResultsCount = useMemo(() => {
         if (!results) return 0;
-        switch (activeFilter) {
+        const filterKey = activeFilter.toLowerCase().replace(' ', '_');
+        switch (filterKey) {
             case 'mahasiswa': return results.mahasiswa?.length || 0;
             case 'dosen': return results.dosen?.length || 0;
-            case 'pt': return results.pt?.length || 0;
-            case 'prodi': return results.prodi?.length || 0;
+            case 'perguruan_tinggi': return results.pt?.length || 0;
+            case 'program_studi': return results.prodi?.length || 0;
             default: return Object.values(results).reduce((acc, val) => acc + (val?.length || 0), 0);
         }
     }, [results, activeFilter]);
@@ -231,18 +232,18 @@ export default function SearchPage() {
                             <div className="text-sm text-gray-600 text-center sm:text-left">
                                 Ditemukan <strong>{totalResultsCount} hasil</strong> untuk <span className="font-semibold text-gray-800">"{query}"</span>
                             </div>
-                            <div className="flex items-center gap-4">
-                                <label className="text-sm font-semibold text-gray-600">Filter Kategori:</label>
-                                <select
+                            <div className="flex items-center gap-4 w-full sm:w-auto">
+                                <label className="text-sm font-semibold text-gray-600 hidden sm:block">Kategori:</label>
+                                 <select
                                     value={activeFilter}
                                     onChange={(e) => setActiveFilter(e.target.value)}
-                                    className="p-2 pr-10 text-left bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold"
+                                    className="w-full sm:w-56 p-2 pr-10 text-left bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold"
                                 >
-                                    <option value="semua">Semua</option>
-                                    {results?.mahasiswa?.length > 0 && <option value="mahasiswa">Mahasiswa</option>}
-                                    {results?.dosen?.length > 0 && <option value="dosen">Dosen</option>}
-                                    {results?.pt?.length > 0 && <option value="pt">Perguruan Tinggi</option>}
-                                    {results?.prodi?.length > 0 && <option value="prodi">Program Studi</option>}
+                                    <option value="Semua">Semua</option>
+                                    {results?.mahasiswa?.length > 0 && <option value="Mahasiswa">Mahasiswa</option>}
+                                    {results?.dosen?.length > 0 && <option value="Dosen">Dosen</option>}
+                                    {results?.pt?.length > 0 && <option value="Perguruan Tinggi">Perguruan Tinggi</option>}
+                                    {results?.prodi?.length > 0 && <option value="Program Studi">Program Studi</option>}
                                 </select>
                             </div>
                         </div>
@@ -264,7 +265,7 @@ export default function SearchPage() {
                     
                     {!loading && hasAnyResults && (
                         <>
-                            {(activeFilter === 'semua' || activeFilter === 'mahasiswa') && paginatedData.mahasiswa.data.length > 0 && (
+                            {(activeFilter === 'Semua' || activeFilter === 'Mahasiswa') && paginatedData.mahasiswa.data.length > 0 && (
                                 <section>
                                     <h2 className="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200 flex items-center gap-3"><GraduationCap className="text-blue-500" /> Mahasiswa ({results?.mahasiswa?.length})</h2>
                                     <div className="grid grid-cols-1 gap-5">
@@ -273,7 +274,7 @@ export default function SearchPage() {
                                     <PaginationControls currentPage={pageState.mahasiswa} totalPages={paginatedData.mahasiswa.totalPages} onPageChange={(p) => handlePageChange('mahasiswa', p)} categoryName="Mahasiswa" />
                                 </section>
                             )}
-                             {(activeFilter === 'semua' || activeFilter === 'dosen') && paginatedData.dosen.data.length > 0 && (
+                             {(activeFilter === 'Semua' || activeFilter === 'Dosen') && paginatedData.dosen.data.length > 0 && (
                                 <section>
                                     <h2 className="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200 flex items-center gap-3"><User className="text-blue-500" /> Dosen ({results?.dosen?.length})</h2>
                                     <div className="grid grid-cols-1 gap-5">
@@ -282,7 +283,7 @@ export default function SearchPage() {
                                      <PaginationControls currentPage={pageState.dosen} totalPages={paginatedData.dosen.totalPages} onPageChange={(p) => handlePageChange('dosen', p)} categoryName="Dosen" />
                                 </section>
                             )}
-                            {(activeFilter === 'semua' || activeFilter === 'pt') && paginatedData.pt.data.length > 0 && (
+                            {(activeFilter === 'Semua' || activeFilter === 'Perguruan Tinggi') && paginatedData.pt.data.length > 0 && (
                                 <section>
                                     <h2 className="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200 flex items-center gap-3"><School className="text-blue-500" /> Perguruan Tinggi ({results?.pt?.length})</h2>
                                     <div className="grid grid-cols-1 gap-5">
@@ -291,7 +292,7 @@ export default function SearchPage() {
                                      <PaginationControls currentPage={pageState.pt} totalPages={paginatedData.pt.totalPages} onPageChange={(p) => handlePageChange('pt', p)} categoryName="Perguruan Tinggi" />
                                 </section>
                             )}
-                            {(activeFilter === 'semua' || activeFilter === 'prodi') && paginatedData.prodi.data.length > 0 && (
+                            {(activeFilter === 'Semua' || activeFilter === 'Program Studi') && paginatedData.prodi.data.length > 0 && (
                                 <section>
                                     <h2 className="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200 flex items-center gap-3"><BookOpen className="text-blue-500" /> Program Studi ({results?.prodi?.length})</h2>
                                     <div className="grid grid-cols-1 gap-5">
