@@ -37,9 +37,7 @@ const MenuItem = ({ href, icon, title, description }: MenuItemProps) => {
       <div
         className={`bg-white p-6 rounded-2xl border border-gray-200/80 h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1.5 hover:shadow-blue-500/10 relative overflow-hidden`}
       >
-        {/* Garis aksen di atas kartu */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
         <div
           className={`transition-all duration-300 ${
             isLoading ? "opacity-50 cursor-wait" : ""
@@ -100,7 +98,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-full antialiased bg-gray-50 text-gray-800 flex flex-col">
-      {/* Latar belakang dengan pola grid */}
       <div
         className="absolute top-0 left-0 w-full h-full bg-repeat -z-10 opacity-50"
         style={{
@@ -109,13 +106,13 @@ export default function Home() {
         }}
       ></div>
 
-      <main className="w-full max-w-4xl mx-auto px-4 py-16 sm:py-24 flex-grow">
+      <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-24 flex-grow">
         <header className="text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-100 text-amber-800 rounded-full text-xs font-medium tracking-wide mb-8 border border-amber-200">
             <Info size={14} className="text-amber-600" />
             <span>Situs ini bukan laman resmi dari Kemdiktisaintek.</span>
           </div>
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-gray-900">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900">
             Pangkalan Data
             <span className="mt-2 block text-blue-600">Pendidikan Tinggi</span>
           </h1>
@@ -126,7 +123,6 @@ export default function Home() {
           </p>
         </header>
 
-        {/* --- KOTAK PENCARIAN DENGAN SHADOW YANG LEBIH TIPIS --- */}
         <div className="mt-12 w-full max-w-2xl mx-auto">
             <form onSubmit={handleSearch} className="flex items-center w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                 <div className="relative flex items-center">
@@ -166,8 +162,7 @@ export default function Home() {
             </form>
         </div>
 
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-16">
           <MenuItem
             href="/mahasiswa"
             icon={
