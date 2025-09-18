@@ -131,35 +131,35 @@ export default function PtPage() {
     return (
         <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800">
             <main className="w-full max-w-4xl mx-auto">
-                <header className="text-center my-12">
+                <header className="text-center my-8 sm:my-12">
                     <Link href="/">
-                        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
+                        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
                             Pencarian <span className="text-blue-600">Perguruan Tinggi</span>
                         </h1>
                     </Link>
-                    <p className="mt-4 text-lg text-gray-600">
+                    <p className="mt-4 text-base sm:text-lg text-gray-600">
                         Cari informasi perguruan tinggi di Indonesia menggunakan nama atau kodenya.
                     </p>
                 </header>
                 
                 {/* Search Bar */}
-                <div ref={searchWrapperRef} className="w-full mb-8 sticky top-6 z-20">
+                <div ref={searchWrapperRef} className="w-full mb-8 sticky top-4 sm:top-6 z-20">
                     <form onSubmit={handleNewSearch} className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-400"><Search size={20} /></div>
+                        <div className="absolute inset-y-0 left-0 pl-4 sm:pl-5 flex items-center pointer-events-none text-gray-400"><Search size={20} /></div>
                         <input
                             ref={searchInputRef}
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onFocus={() => setIsSearchFocused(true)}
-                            placeholder="Ketik nama atau kode perguruan tinggi..."
-                            className="w-full p-4 pl-14 pr-32 bg-white border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:shadow-md"
+                            placeholder="Ketik nama atau kode PT..."
+                            className="w-full p-3 sm:p-4 pl-12 sm:pl-14 pr-24 sm:pr-32 bg-white border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:shadow-md"
                         />
                         <div className="absolute inset-y-0 right-0 flex items-center pr-2">
                             <button 
                                 type="submit"
                                 disabled={loading || !searchQuery.trim() || searchQuery === query}
-                                className="px-5 h-10 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center justify-center"
+                                className="px-4 sm:px-5 h-9 sm:h-10 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center justify-center"
                             >
                                 {loading ? <Loader2 size={20} className="animate-spin" /> : 'Cari'}
                             </button>
@@ -184,11 +184,11 @@ export default function PtPage() {
                 {/* Sort and Info Section */}
                 {!loading && allResults.length > 0 && (
                      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 text-center sm:text-left">
                             Ditemukan <strong>{processedResults.length} hasil</strong> untuk <span className="font-semibold text-gray-800">"{query}"</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white font-semibold">
+                            <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="px-3 py-1.5 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white font-semibold">
                                 <option value="nama-asc">Nama (A-Z)</option>
                                 <option value="nama-desc">Nama (Z-A)</option>
                                 <option value="kode-asc">Kode (Asc)</option>
@@ -204,13 +204,13 @@ export default function PtPage() {
                     {error && <p className="text-center text-red-500 p-4">{error}</p>}
 
                     {!loading && !error && !query && (
-                        <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-16 rounded-xl flex flex-col items-center justify-center">
-                            <School size={56} className="text-gray-300"/><h3 className="mt-6 font-bold text-xl text-gray-700">Mulai Pencarian PT</h3><p className="text-base mt-1">Gunakan kotak pencarian di atas.</p>
+                        <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-10 sm:p-16 rounded-xl flex flex-col items-center justify-center">
+                            <School size={56} className="text-gray-300"/><h3 className="mt-6 font-bold text-lg sm:text-xl text-gray-700">Mulai Pencarian PT</h3><p className="text-sm sm:text-base mt-1">Gunakan kotak pencarian di atas.</p>
                         </div>
                     )}
                     {!loading && !error && query && processedResults.length === 0 && (
-                        <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-16 rounded-xl flex flex-col items-center justify-center">
-                            <FileX size={56} className="text-gray-300"/><h3 className="mt-6 font-bold text-xl text-gray-700">Tidak Ada Hasil Ditemukan</h3><p className="text-base mt-1">Coba sesuaikan kata kunci pencarian Anda.</p>
+                        <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-10 sm:p-16 rounded-xl flex flex-col items-center justify-center">
+                            <FileX size={56} className="text-gray-300"/><h3 className="mt-6 font-bold text-lg sm:text-xl text-gray-700">Tidak Ada Hasil Ditemukan</h3><p className="text-sm sm:text-base mt-1">Coba sesuaikan kata kunci pencarian Anda.</p>
                         </div>
                     )}
                     {!loading && paginatedResults.map((pt, index) => <PtCard key={pt.id} pt={pt} index={index} />)}

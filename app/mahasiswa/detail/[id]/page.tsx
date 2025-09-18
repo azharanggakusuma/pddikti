@@ -113,21 +113,21 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
                     </Link>
                  </div>
                  <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-200">
-                    <div className="p-8">
+                    <div className="p-6 sm:p-8">
                         <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
                             <div className="flex-shrink-0 h-24 w-24 bg-gray-100 rounded-full flex items-center justify-center border border-gray-200">
                                 <User size={48} className="text-gray-500" />
                             </div>
                             <div className="text-center sm:text-left">
-                                <h1 className="text-3xl font-bold text-gray-900">{mahasiswa.nama}</h1>
-                                <p className="text-gray-500 font-mono text-lg mt-1">NIM: {mahasiswa.nim}</p>
+                                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{mahasiswa.nama}</h1>
+                                <p className="text-gray-500 font-mono text-base sm:text-lg mt-1">NIM: {mahasiswa.nim}</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="border-t-2 border-dashed border-gray-200"></div>
 
-                    <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
                         <InfoItem label="Perguruan Tinggi" value={mahasiswa.nama_pt} icon={<University size={20}/>} />
                         <InfoItem label="Program Studi" value={`${mahasiswa.jenjang} - ${mahasiswa.prodi}`} icon={<BookOpen size={20}/>} />
                         <InfoItem label="Jenis Kelamin" value={mahasiswa.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'} icon={<Users size={20}/>} />
@@ -137,9 +137,6 @@ export default function MahasiswaDetailPage({ params }: { params: { id: string }
                     </div>
                 </div>
             </main>
-             <footer className="text-center mt-12 text-sm text-gray-500/80">
-                <p>Data bersumber dari PDDIKTI Kemdiktisaintek</p>
-            </footer>
         </div>
     );
 }

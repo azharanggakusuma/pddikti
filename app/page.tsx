@@ -81,18 +81,18 @@ export default function Home() {
             <Info size={14} className="text-amber-600" />
             <span>Situs ini bukan laman resmi dari Kemdiktisaintek.</span>
           </div>
-          <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-gray-900">
+          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-gray-900">
             Pangkalan Data
             <span className="mt-2 block text-blue-600">Pendidikan Tinggi</span>
           </h1>
-          <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="mt-6 text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
             Cari data mahasiswa, dosen, program studi, dan perguruan tinggi
             di seluruh Indonesia dengan cepat, mudah, dan terintegrasi langsung
             dari data PDDIKTI.
           </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 sm:mt-16">
           <MenuItem
             href="/mahasiswa"
             icon={
