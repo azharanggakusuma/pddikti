@@ -126,14 +126,15 @@ export default function Home() {
           </p>
         </header>
 
-        {/* Search Box */}
+        {/* --- KOTAK PENCARIAN DENGAN SHADOW YANG LEBIH TIPIS --- */}
         <div className="mt-12 w-full max-w-2xl mx-auto">
-            <form onSubmit={handleSearch} className="relative flex items-center w-full bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-200/50 focus-within:ring-2 focus-within:ring-blue-500 transition-all">
-                <div className="relative h-full">
-                     <select
+            <form onSubmit={handleSearch} className="flex items-center w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                <div className="relative flex items-center">
+                    <select
                         value={searchCategory}
                         onChange={(e) => setSearchCategory(e.target.value)}
-                        className="h-full pl-4 pr-10 bg-transparent text-gray-600 font-semibold text-sm rounded-l-xl focus:outline-none appearance-none cursor-pointer border-r border-gray-200"
+                        className="pl-5 pr-10 py-5 appearance-none bg-transparent rounded-l-xl text-gray-700 font-semibold text-sm focus:outline-none cursor-pointer"
+                        aria-label="Pilih kategori pencarian"
                     >
                         <option value="semua">Semua</option>
                         <option value="mahasiswa">Mahasiswa</option>
@@ -143,19 +144,24 @@ export default function Home() {
                     </select>
                     <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 </div>
+                
+                <div className="w-px bg-gray-200 h-8"></div>
+
                 <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Ketikkan kata kunci pencarian..."
-                    className="w-full p-4 bg-transparent focus:outline-none text-base"
+                    placeholder="Ketikkan kata kunci..."
+                    className="w-full pl-4 pr-2 py-5 bg-transparent focus:outline-none text-base text-gray-800 placeholder-gray-500"
                 />
+
                 <button
                     type="submit"
-                    className="m-2 px-6 h-10 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center justify-center"
+                    className="m-2 px-4 sm:px-5 h-12 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    aria-label="Cari"
                 >
-                    <Search size={18} />
-                    <span className="ml-2 hidden sm:inline">Cari</span>
+                    <Search size={20} className="sm:mr-2 transition-all"/>
+                    <span className="hidden sm:inline font-semibold">Cari</span>
                 </button>
             </form>
         </div>
