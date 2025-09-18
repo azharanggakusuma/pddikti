@@ -125,8 +125,9 @@ export default function Home() {
 
         <div className="mt-12 w-full max-w-2xl mx-auto">
             <form onSubmit={handleSearch} className="w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 overflow-hidden">
-                <div className="flex flex-col sm:flex-row items-center w-full">
-                    <div className="relative flex items-center w-full sm:w-auto border-b sm:border-b-0 sm:border-r border-gray-200/80">
+                <div className="flex flex-col sm:flex-row sm:items-center w-full">
+                    {/* Select Kategori */}
+                    <div className="relative flex items-center w-full sm:w-auto border-b sm:border-b-0 border-gray-200/80">
                         <select
                             value={searchCategory}
                             onChange={(e) => setSearchCategory(e.target.value)}
@@ -141,7 +142,11 @@ export default function Home() {
                         </select>
                         <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                     </div>
+
+                    {/* Garis Pemisah (Hanya Desktop) */}
+                    <div className="hidden sm:block w-px bg-gray-200 h-8"></div>
                     
+                    {/* Input & Tombol Cari */}
                     <div className="flex items-center w-full">
                         <input
                             type="text"
@@ -150,7 +155,6 @@ export default function Home() {
                             placeholder="Ketikkan kata kunci..."
                             className="w-full pl-4 pr-2 py-4 bg-transparent focus:outline-none text-base text-gray-800 placeholder-gray-500"
                         />
-
                         <button
                             type="submit"
                             className="mr-2 ml-1 px-4 sm:px-5 h-11 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
