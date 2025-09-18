@@ -197,33 +197,34 @@ export default function ProdiPage() {
 
         {/* Search Bar */}
         <div ref={searchWrapperRef} className="w-full mb-8 sticky top-4 sm:top-6 z-20">
-          <form onSubmit={handleNewSearch} className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 sm:pl-5 flex items-center pointer-events-none text-gray-400">
-              <Search size={20} />
-            </div>
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              placeholder="Ketik nama prodi atau PT..."
-              className="w-full p-3 sm:p-4 pl-12 sm:pl-14 pr-24 sm:pr-32 bg-white border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:shadow-md"
-            />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-2">
-              <button
-                type="submit"
-                disabled={
-                  loading || !searchQuery.trim() || searchQuery === query
-                }
-                className="px-4 sm:px-5 h-9 sm:h-10 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center justify-center"
-              >
-                {loading ? (
-                  <Loader2 size={20} className="animate-spin" />
-                ) : (
-                  "Cari"
-                )}
-              </button>
+          <form onSubmit={handleNewSearch} className="w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 overflow-hidden">
+            <div className="flex items-center w-full">
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  placeholder="Ketik nama prodi atau PT..."
+                  className="w-full pl-5 pr-2 py-4 bg-transparent focus:outline-none text-base text-gray-800 placeholder-gray-500 truncate"
+                />
+                <button
+                  type="submit"
+                  disabled={
+                    loading || !searchQuery.trim() || searchQuery === query
+                  }
+                  className="mr-2 ml-1 px-4 sm:px-5 h-11 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                  aria-label="Cari"
+                >
+                  {loading ? (
+                    <Loader2 size={20} className="animate-spin" />
+                  ) : (
+                    <>
+                      <Search size={20} className="sm:mr-2"/>
+                      <span className="hidden sm:inline font-semibold">Cari</span>
+                    </>
+                  )}
+                </button>
             </div>
           </form>
           {/* Search History */}

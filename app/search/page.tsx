@@ -195,19 +195,28 @@ export default function SearchPage() {
                 
                 {/* Search Bar */}
                 <div ref={searchWrapperRef} className="w-full mb-8 sticky top-4 sm:top-6 z-20">
-                    <form onSubmit={handleNewSearch} className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 sm:pl-5 flex items-center pointer-events-none text-gray-400"><Search size={20} /></div>
-                        <input
-                            ref={searchInputRef} type="text" value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)} onFocus={() => setIsSearchFocused(true)}
-                            placeholder="Ketik Nama, NIM, NIDN, Prodi, atau PT..."
-                            className="w-full p-3 sm:p-4 pl-12 sm:pl-14 pr-24 sm:pr-32 bg-white border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:shadow-md"
-                        />
-                        <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+                    <form onSubmit={handleNewSearch} className="w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 overflow-hidden">
+                        <div className="flex items-center w-full">
+                            <input
+                                ref={searchInputRef} type="text" value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)} onFocus={() => setIsSearchFocused(true)}
+                                placeholder="Ketik Nama, NIM, NIDN, Prodi, atau PT..."
+                                className="w-full pl-5 pr-2 py-4 bg-transparent focus:outline-none text-base text-gray-800 placeholder-gray-500 truncate"
+                            />
                             <button
                                 type="submit" disabled={loading || !searchQuery.trim() || searchQuery === query}
-                                className="px-4 sm:px-5 h-9 sm:h-10 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center justify-center"
-                            >{loading ? <Loader2 size={20} className="animate-spin" /> : "Cari"}</button>
+                                className="mr-2 ml-1 px-4 sm:px-5 h-11 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                                aria-label="Cari"
+                            >
+                                {loading ? (
+                                    <Loader2 size={20} className="animate-spin" />
+                                ) : (
+                                    <>
+                                        <Search size={20} className="sm:mr-2"/>
+                                        <span className="hidden sm:inline font-semibold">Cari</span>
+                                    </>
+                                )}
+                            </button>
                         </div>
                     </form>
                     {isSearchFocused && searchHistory.length > 0 && (
@@ -254,6 +263,16 @@ export default function SearchPage() {
                 <div className="space-y-16">
                     {loading && <div className="grid grid-cols-1 gap-5">{Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}</div>}
                     {error && <p className="text-center text-red-500 p-4">{error}</p>}
+
+                    {!loading && !error && !query && (
+                        <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-10 sm:p-16 rounded-xl flex flex-col items-center justify-center">
+                            <Search size={56} className="text-gray-300" />
+                            <h3 className="mt-6 font-bold text-lg sm:text-xl text-gray-700">
+                                Mulai Pencarian Umum
+                            </h3>
+                            <p className="text-sm sm:text-base mt-1">Gunakan kotak pencarian di atas untuk mencari di semua kategori.</p>
+                        </div>
+                    )}
                     
                     {!loading && !error && query && !hasAnyResults && (
                         <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-10 sm:p-16 rounded-xl flex flex-col items-center justify-center">

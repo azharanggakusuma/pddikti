@@ -38,7 +38,7 @@ export default function MahasiswaPage() {
   const [sortBy, setSortBy] = useState("nama-asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [suggestion, setSuggestion] = useState<string | null>(null);
-  const [showFilters, setShowFilters] = useState(false); // State untuk menampilkan/menyembunyikan filter
+  const [showFilters, setShowFilters] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState(query);
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
@@ -46,7 +46,7 @@ export default function MahasiswaPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchWrapperRef = useRef<HTMLDivElement>(null);
 
-  // Effect hooks dan functions (tidak ada perubahan di sini)
+  // Effect hooks
   useEffect(() => {
     setSearchQuery(query);
   }, [query]);
@@ -220,31 +220,32 @@ export default function MahasiswaPage() {
 
         {/* Search Bar */}
         <div ref={searchWrapperRef} className="w-full mb-8 sticky top-4 sm:top-6 z-20">
-          <form onSubmit={handleNewSearch} className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 sm:pl-5 flex items-center pointer-events-none text-gray-400">
-              <Search size={20} />
-            </div>
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              placeholder="Ketik Nama, NIM, atau Perguruan Tinggi..."
-              className="w-full p-3 sm:p-4 pl-12 sm:pl-14 pr-24 sm:pr-32 bg-white border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:shadow-md"
-            />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+          <form onSubmit={handleNewSearch} className="w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 overflow-hidden">
+            <div className="flex items-center w-full">
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                placeholder="Ketik Nama, NIM, atau Perguruan Tinggi..."
+                className="w-full pl-5 pr-2 py-4 bg-transparent focus:outline-none text-base text-gray-800 placeholder-gray-500 truncate"
+              />
               <button
                 type="submit"
                 disabled={
                   loading || !searchQuery.trim() || searchQuery === query
                 }
-                className="px-4 sm:px-5 h-9 sm:h-10 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center justify-center"
+                className="mr-2 ml-1 px-4 sm:px-5 h-11 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                aria-label="Cari"
               >
                 {loading ? (
                   <Loader2 size={20} className="animate-spin" />
                 ) : (
-                  "Cari"
+                  <>
+                    <Search size={20} className="sm:mr-2"/>
+                    <span className="hidden sm:inline font-semibold">Cari</span>
+                  </>
                 )}
               </button>
             </div>
@@ -286,10 +287,9 @@ export default function MahasiswaPage() {
           )}
         </div>
 
-        {/* --- BAGIAN FILTER DAN INFO HASIL YANG DIPERBARUI --- */}
+        {/* Filter and Info Section */}
         {!loading && allResults.length > 0 && (
           <div className="mb-6">
-            {/* Baris Info Hasil dan Opsi Urutkan/Filter */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
               <div className="text-sm text-gray-600 text-center sm:text-left">
                 Ditemukan <strong>{processedResults.length} hasil</strong> untuk{" "}
@@ -320,7 +320,6 @@ export default function MahasiswaPage() {
               </div>
             </div>
 
-            {/* Panel Filter yang Bisa Dibuka/Tutup */}
             {showFilters && (
               <div
                 className="bg-white p-4 rounded-xl border border-gray-200 mb-4 animate-fadeIn"
@@ -331,7 +330,6 @@ export default function MahasiswaPage() {
                     <label className="text-xs font-semibold text-gray-500">
                       Perguruan Tinggi
                     </label>
-                    {/* GANTI <select> DENGAN INI */}
                     <div className="mt-1">
                       <SearchableSelect
                         options={uniquePT}
@@ -347,7 +345,6 @@ export default function MahasiswaPage() {
                     <label className="text-xs font-semibold text-gray-500">
                       Program Studi
                     </label>
-                    {/* GANTI <select> DENGAN INI */}
                     <div className="mt-1">
                       <SearchableSelect
                         options={uniqueProdi}
@@ -365,7 +362,7 @@ export default function MahasiswaPage() {
           </div>
         )}
 
-        {/* Hasil Pencarian */}
+        {/* Search Results */}
         <div className="grid grid-cols-1 gap-5">
           {loading &&
             Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
@@ -410,7 +407,7 @@ export default function MahasiswaPage() {
             ))}
         </div>
 
-        {/* Paginasi */}
+        {/* Pagination */}
         {!loading && totalPages > 1 && (
           <div className="mt-8 flex justify-between items-center">
             <button
@@ -435,7 +432,7 @@ export default function MahasiswaPage() {
         )}
       </main>
 
-      {/* Tombol Back to Top */}
+      {/* Back to Top Button */}
       {showBackToTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
