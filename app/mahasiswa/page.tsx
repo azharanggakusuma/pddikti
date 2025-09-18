@@ -12,6 +12,7 @@ import {
   Loader2,
   X,
   SlidersHorizontal,
+  UserCheck, // <-- Tambahkan import ikon ini
 } from "lucide-react";
 import { Mahasiswa } from "@/app/types";
 import { MahasiswaCard } from "@/app/components/MahasiswaCard";
@@ -226,7 +227,7 @@ export default function MahasiswaPage() {
         </header>
 
         {/* Search Bar */}
-        <div ref={searchWrapperRef} className="w-full mb-8 sticky top-4 sm:top-6 z-20">
+        <div ref={searchWrapperRef} className="w-full mb-4 sticky top-4 sm:top-6 z-20">
           <form onSubmit={handleNewSearch} className="w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 overflow-hidden">
             <div className="flex items-center w-full">
               <input
@@ -293,6 +294,16 @@ export default function MahasiswaPage() {
             </div>
           )}
         </div>
+
+        {/* --- PENAMBAHAN LINK KE HALAMAN SPESIFIK --- */}
+        <div className="text-center mb-8">
+            <Link href="/mahasiswa/spesifik" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 group transition-colors">
+                <UserCheck size={16} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                <span>Butuh hasil lebih akurat? Coba <strong>Pencarian Spesifik</strong></span>
+            </Link>
+        </div>
+        {/* --- BATAS PENAMBAHAN --- */}
+
 
         {/* Filter and Info Section */}
         {!loading && allResults.length > 0 && (
