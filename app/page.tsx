@@ -1,6 +1,8 @@
+// app/page.tsx
 "use client";
 
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 import {
   BookOpen,
   GraduationCap,
@@ -9,8 +11,10 @@ import {
   ArrowRight,
   Loader2,
   Info,
+  Search,
+  ChevronDown
 } from "lucide-react";
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 
 // Tipe props untuk MenuItem
 type MenuItemProps = {
@@ -64,6 +68,36 @@ const MenuItem = ({ href, icon, title, description }: MenuItemProps) => {
 };
 
 export default function Home() {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchCategory, setSearchCategory] = useState('semua');
+    const router = useRouter();
+
+    const handleSearch = (e: FormEvent) => {
+        e.preventDefault();
+        if (!searchQuery.trim()) return;
+
+        let path = '';
+        switch (searchCategory) {
+            case 'mahasiswa':
+                path = '/mahasiswa';
+                break;
+            case 'dosen':
+                path = '/dosen';
+                break;
+            case 'prodi':
+                path = '/prodi';
+                break;
+            case 'pt':
+                path = '/pt';
+                break;
+            case 'semua':
+            default:
+                path = '/search';
+                break;
+        }
+        router.push(`${path}?q=${encodeURIComponent(searchQuery)}`);
+    };
+
   return (
     <div className="min-h-screen w-full antialiased bg-gray-50 text-gray-800 flex flex-col">
       {/* Latar belakang dengan pola grid */}
@@ -92,7 +126,42 @@ export default function Home() {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 sm:mt-16">
+        {/* Search Box */}
+        <div className="mt-12 w-full max-w-2xl mx-auto">
+            <form onSubmit={handleSearch} className="relative flex items-center w-full bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-200/50 focus-within:ring-2 focus-within:ring-blue-500 transition-all">
+                <div className="relative h-full">
+                     <select
+                        value={searchCategory}
+                        onChange={(e) => setSearchCategory(e.target.value)}
+                        className="h-full pl-4 pr-10 bg-transparent text-gray-600 font-semibold text-sm rounded-l-xl focus:outline-none appearance-none cursor-pointer border-r border-gray-200"
+                    >
+                        <option value="semua">Semua</option>
+                        <option value="mahasiswa">Mahasiswa</option>
+                        <option value="dosen">Dosen</option>
+                        <option value="prodi">Prodi</option>
+                        <option value="pt">Perguruan Tinggi</option>
+                    </select>
+                    <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                </div>
+                <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Ketikkan kata kunci pencarian..."
+                    className="w-full p-4 bg-transparent focus:outline-none text-base"
+                />
+                <button
+                    type="submit"
+                    className="m-2 px-6 h-10 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center justify-center"
+                >
+                    <Search size={18} />
+                    <span className="ml-2 hidden sm:inline">Cari</span>
+                </button>
+            </form>
+        </div>
+
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
           <MenuItem
             href="/mahasiswa"
             icon={
