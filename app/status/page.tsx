@@ -23,7 +23,7 @@ const StatusHeader = ({ status, loading }: { status: StatusData['status'] | null
         },
         online: {
             Icon: CheckCircle,
-            label: 'Berfungsi Normal',
+            label: 'Layanan Beroperasi Normal',
             iconColor: 'text-emerald-500',
             textColor: 'text-emerald-900',
             animateIcon: false,
