@@ -35,7 +35,7 @@ const StatusIndicator = ({ status }: { status: StatusData['status'] }) => {
   const { Icon, color, label } = statusConfig[status];
 
   return (
-    <div className={`flex items-center gap-2 p-2.5 rounded-full font-semibold ${color.replace('text-', 'bg-').replace('500', '100')}`}>
+    <div className={`flex items-center gap-2 py-2 px-4 rounded-full font-semibold ${color.replace('text-', 'bg-').replace('500', '100')}`}>
       <Icon className={color} size={20} />
       <span className={color}>{label}</span>
     </div>
@@ -79,7 +79,6 @@ export default function StatusPage() {
       className="min-h-screen p-4 sm:p-8 flex flex-col items-center bg-gray-50 text-gray-800"
     >
       <main className="w-full max-w-2xl mx-auto">
-        {/* CSS untuk rotasi ikon panah */}
         <style jsx>{`
             details[open] .details-arrow {
                 transform: rotate(180deg);
@@ -96,28 +95,37 @@ export default function StatusPage() {
             </p>
         </header>
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-lg shadow-gray-200/40 p-6 sm:p-8">
-            <div className="flex flex-col sm:flex-row justify-between items-center pb-6 border-b border-dashed border-gray-200">
-                <div className="flex items-center gap-3">
-                    <Server size={24} className="text-gray-500" />
-                    <h2 className="text-lg font-semibold text-gray-800">API PDDIKTI</h2>
-                </div>
-                {loading && (
-                    <div className="flex items-center gap-2 p-2.5 rounded-full text-gray-500 bg-gray-100 mt-4 sm:mt-0">
-                        <Loader2 size={20} className="animate-spin" />
-                        <span className="font-semibold">Memeriksa...</span>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-gray-200/40 p-6 sm:p-8">
+            <div className="flex flex-col sm:flex-row justify-between items-center pb-6 border-b-2 border-dashed border-gray-200">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 bg-blue-50 rounded-full border-4 border-white shadow-sm">
+                        <Server size={28} className="text-blue-600" />
                     </div>
-                )}
-                {!loading && status && <StatusIndicator status={status.status} />}
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-800">API PDDIKTI</h2>
+                        <a href="https://api-pddikti.ridwaanhall.com/" target="_blank" rel="noopener noreferrer" className="text-xs text-gray-500 hover:text-blue-600 transition-colors">
+                            api-pddikti.ridwaanhall.com
+                        </a>
+                    </div>
+                </div>
+                <div className="mt-4 sm:mt-0">
+                    {loading && (
+                        <div className="flex items-center gap-2 py-2 px-4 rounded-full text-gray-500 bg-gray-100">
+                            <Loader2 size={20} className="animate-spin" />
+                            <span className="font-semibold">Memeriksa...</span>
+                        </div>
+                    )}
+                    {!loading && status && <StatusIndicator status={status.status} />}
+                </div>
             </div>
 
-            <div className="mt-6 space-y-4">
-                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-sm text-gray-600">
+            <div className="mt-6 space-y-5">
+                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                    <div className="flex items-center gap-3 text-sm text-gray-600 mb-2 sm:mb-0">
                         <Zap size={16} className="text-gray-400"/>
                         <span>Pesan Status</span>
                     </div>
-                    <p className="font-semibold text-sm text-right">
+                    <p className="font-semibold text-sm text-right text-gray-800 bg-gray-50 py-1 px-3 rounded-md border border-gray-200">
                         {loading ? '...' : status?.message}
                     </p>
                 </div>
@@ -127,19 +135,19 @@ export default function StatusPage() {
                             <Clock size={16} className="text-gray-400"/>
                             <span>Waktu Respons</span>
                         </div>
-                        <p className="font-mono text-sm font-semibold bg-gray-100 px-2 py-0.5 rounded">
+                        <p className="font-mono text-sm font-semibold bg-gray-100 px-2 py-1 rounded-md border border-gray-200">
                             {status.latency}
                         </p>
                     </div>
                 )}
                  {status?.details && (
                     <div className="pt-2">
-                        <details>
-                            <summary className="cursor-pointer text-sm font-semibold text-blue-600 hover:underline flex items-center justify-between list-none">
+                        <details className="bg-gray-50 rounded-lg border border-gray-200">
+                            <summary className="p-3 cursor-pointer text-sm font-semibold text-blue-600 hover:bg-gray-100 flex items-center justify-between list-none rounded-t-lg">
                                 <span>Tampilkan Detail Teknis</span>
                                 <ChevronDown size={16} className="text-gray-500 transition-transform details-arrow"/>
                             </summary>
-                            <pre className="mt-2 bg-gray-100 p-3 rounded-lg text-xs text-gray-700 whitespace-pre-wrap">
+                            <pre className="p-3 border-t border-gray-200 bg-gray-100/50 text-xs text-gray-700 whitespace-pre-wrap rounded-b-lg">
                                 <code>{status.details}</code>
                             </pre>
                         </details>
@@ -151,14 +159,14 @@ export default function StatusPage() {
                  <button 
                     onClick={checkStatus} 
                     disabled={loading}
-                    className="w-full h-11 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed font-semibold group"
+                    className="w-full h-12 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed font-semibold group"
                 >
                     {loading ? (
                         <Loader2 size={20} className="animate-spin" />
                     ) : (
                        <div className="flex items-center gap-2">
                             <RefreshCw size={16} className="transition-transform group-hover:rotate-90"/>
-                            <span>Periksa Ulang</span>
+                            <span>Periksa Ulang Status</span>
                        </div>
                     )}
                 </button>
@@ -173,4 +181,3 @@ export default function StatusPage() {
     </motion.div>
   );
 }
-
