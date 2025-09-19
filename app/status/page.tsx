@@ -2,44 +2,73 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Server, Zap, Clock, AlertTriangle, CheckCircle, Loader2, RefreshCw, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Server, Zap, Clock, AlertTriangle, CheckCircle, Loader2, RefreshCw } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 
 interface StatusData {
   status: 'online' | 'offline' | 'error';
   message: string;
   latency?: string;
-  details?: string;
 }
 
-const StatusIndicator = ({ status }: { status: StatusData['status'] }) => {
-  const statusConfig = {
-    online: {
-      Icon: CheckCircle,
-      color: 'text-green-500',
-      label: 'Online',
-    },
-    offline: {
-      Icon: AlertTriangle,
-      color: 'text-red-500',
-      label: 'Offline',
-    },
-    error: {
-      Icon: AlertTriangle,
-      color: 'text-yellow-500',
-      label: 'Error',
-    },
-  };
+const StatusCardHeader = ({ status, loading }: { status: StatusData['status'] | null, loading: boolean }) => {
+    const baseClasses = "relative flex flex-col items-center justify-center p-8 sm:p-12 rounded-t-2xl text-white overflow-hidden transition-all duration-500";
+    
+    const statusConfig = {
+        loading: {
+            gradient: 'bg-gradient-to-br from-gray-500 to-gray-700',
+            Icon: Loader2,
+            label: 'Memeriksa Status...',
+            animateIcon: true,
+        },
+        online: {
+            gradient: 'bg-gradient-to-br from-emerald-500 to-green-600',
+            Icon: CheckCircle,
+            label: 'Semua Sistem Berfungsi',
+            animateIcon: false,
+        },
+        offline: {
+            gradient: 'bg-gradient-to-br from-rose-500 to-red-600',
+            Icon: AlertTriangle,
+            label: 'Layanan Terputus',
+            animateIcon: false,
+        },
+        error: {
+            gradient: 'bg-gradient-to-br from-amber-500 to-orange-600',
+            Icon: AlertTriangle,
+            label: 'Terjadi Gangguan',
+            animateIcon: false,
+        },
+    };
 
-  const { Icon, color, label } = statusConfig[status];
+    const currentStatusKey = loading ? 'loading' : status || 'loading';
+    const { gradient, Icon, label, animateIcon } = statusConfig[currentStatusKey];
 
-  return (
-    <div className={`flex items-center gap-2 py-2 px-4 rounded-full font-semibold ${color.replace('text-', 'bg-').replace('500', '100')}`}>
-      <Icon className={color} size={20} />
-      <span className={color}>{label}</span>
-    </div>
-  );
+    return (
+        <div className={`${baseClasses} ${gradient}`}>
+            {/* Background decorative pattern */}
+            <div className="absolute inset-0 bg-repeat bg-center opacity-5" style={{backgroundImage: 'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="white" fill-opacity="0.4"%3E%3Cpath d="M.5 1.5l1-1M2.5 3.5l1-1"/%3E%3C/g%3E%3C/svg%3E\')'}}></div>
+            
+            <motion.div
+                key={currentStatusKey}
+                initial={{ opacity: 0, scale: 0.7 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+            >
+                <Icon size={48} className={animateIcon ? 'animate-spin' : ''} />
+            </motion.div>
+            <motion.h2 
+                 key={label}
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ delay: 0.1 }}
+                className="mt-4 text-2xl font-bold tracking-tight text-center"
+            >
+                {label}
+            </motion.h2>
+        </div>
+    );
 };
 
 
@@ -51,13 +80,14 @@ export default function StatusPage() {
   const checkStatus = async () => {
     setLoading(true);
     try {
+      await new Promise(resolve => setTimeout(resolve, 500));
       const response = await fetch('/api/status');
       const data: StatusData = await response.json();
       setStatus(data);
     } catch (error) {
       setStatus({
         status: 'offline',
-        message: 'Gagal memuat status. Periksa koneksi Anda.',
+        message: 'Gagal menghubungi server.',
       });
     } finally {
       setLoading(false);
@@ -67,6 +97,9 @@ export default function StatusPage() {
 
   useEffect(() => {
     checkStatus();
+    // Set interval to re-check status every 1 minute
+    const interval = setInterval(checkStatus, 60000);
+    return () => clearInterval(interval);
   }, []);
   
   const breadcrumbItems = [{ label: "Status API" }];
@@ -79,104 +112,82 @@ export default function StatusPage() {
       className="min-h-screen p-4 sm:p-8 flex flex-col items-center bg-gray-50 text-gray-800"
     >
       <main className="w-full max-w-2xl mx-auto">
-        <style jsx>{`
-            details[open] .details-arrow {
-                transform: rotate(180deg);
-            }
-        `}</style>
-
         <Breadcrumbs items={breadcrumbItems} />
-        <header className="text-center mb-8">
+        <header className="text-center mb-10">
             <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
                 Status <span className="text-blue-600">Layanan API</span>
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-gray-600">
-                Memeriksa konektivitas ke API eksternal PDDIKTI.
+            <p className="mt-4 text-base sm:text-lg text-gray-600 max-w-xl mx-auto">
+                Laporan real-time mengenai status konektivitas dan waktu respons dari API PDDIKTI.
             </p>
         </header>
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-gray-200/40 p-6 sm:p-8">
-            <div className="flex flex-col sm:flex-row justify-between items-center pb-6 border-b-2 border-dashed border-gray-200">
-                <div className="flex items-center gap-4">
-                    <div className="p-3 bg-blue-50 rounded-full border-4 border-white shadow-sm">
-                        <Server size={28} className="text-blue-600" />
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-bold text-gray-800">API PDDIKTI</h2>
-                        <a href="https://api-pddikti.ridwaanhall.com/" target="_blank" rel="noopener noreferrer" className="text-xs text-gray-500 hover:text-blue-600 transition-colors">
-                            api-pddikti.ridwaanhall.com
-                        </a>
-                    </div>
-                </div>
-                <div className="mt-4 sm:mt-0">
-                    {loading && (
-                        <div className="flex items-center gap-2 py-2 px-4 rounded-full text-gray-500 bg-gray-100">
-                            <Loader2 size={20} className="animate-spin" />
-                            <span className="font-semibold">Memeriksa...</span>
+        <motion.div 
+            className="bg-white rounded-2xl border border-gray-200 shadow-2xl shadow-gray-200/50"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+        >
+            <StatusCardHeader status={status?.status || null} loading={loading} />
+            
+            <div className="p-6 sm:p-8">
+                <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-3 text-sm text-gray-500 font-medium">
+                            <Server size={16} />
+                            <span>Endpoint Target</span>
                         </div>
-                    )}
-                    {!loading && status && <StatusIndicator status={status.status} />}
-                </div>
-            </div>
-
-            <div className="mt-6 space-y-5">
-                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-                    <div className="flex items-center gap-3 text-sm text-gray-600 mb-2 sm:mb-0">
-                        <Zap size={16} className="text-gray-400"/>
-                        <span>Pesan Status</span>
+                        <code className="text-sm font-semibold bg-gray-100 px-2.5 py-1 rounded-md border border-gray-200">api-pddikti</code>
                     </div>
-                    <p className="font-semibold text-sm text-right text-gray-800 bg-gray-50 py-1 px-3 rounded-md border border-gray-200">
-                        {loading ? '...' : status?.message}
-                    </p>
-                </div>
-                {status?.latency && (
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 text-sm text-gray-600">
-                            <Clock size={16} className="text-gray-400"/>
-                            <span>Waktu Respons</span>
+                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-3 text-sm text-gray-500 font-medium">
+                            <Zap size={16} />
+                            <span>Pesan</span>
                         </div>
-                        <p className="font-mono text-sm font-semibold bg-gray-100 px-2 py-1 rounded-md border border-gray-200">
-                            {status.latency}
+                        <p className="text-sm font-semibold text-gray-800 text-left sm:text-right">
+                           {loading ? 'Menunggu respons...' : status?.message}
                         </p>
                     </div>
-                )}
-                 {status?.details && (
-                    <div className="pt-2">
-                        <details className="bg-gray-50 rounded-lg border border-gray-200">
-                            <summary className="p-3 cursor-pointer text-sm font-semibold text-blue-600 hover:bg-gray-100 flex items-center justify-between list-none rounded-t-lg">
-                                <span>Tampilkan Detail Teknis</span>
-                                <ChevronDown size={16} className="text-gray-500 transition-transform details-arrow"/>
-                            </summary>
-                            <pre className="p-3 border-t border-gray-200 bg-gray-100/50 text-xs text-gray-700 whitespace-pre-wrap rounded-b-lg">
-                                <code>{status.details}</code>
-                            </pre>
-                        </details>
-                    </div>
-                )}
-            </div>
-            
-            <div className="mt-8 pt-6 border-t border-gray-200">
-                 <button 
-                    onClick={checkStatus} 
-                    disabled={loading}
-                    className="w-full h-12 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed font-semibold group"
-                >
-                    {loading ? (
-                        <Loader2 size={20} className="animate-spin" />
-                    ) : (
-                       <div className="flex items-center gap-2">
-                            <RefreshCw size={16} className="transition-transform group-hover:rotate-90"/>
-                            <span>Periksa Ulang Status</span>
-                       </div>
+                     {!loading && status?.latency && (
+                        <AnimatePresence>
+                           <motion.div
+                             initial={{ opacity: 0, y: -10 }}
+                             animate={{ opacity: 1, y: 0 }}
+                             className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2"
+                           >
+                                <div className="flex items-center gap-3 text-sm text-gray-500 font-medium">
+                                    <Clock size={16} />
+                                    <span>Latensi</span>
+                                </div>
+                                <p className="font-mono text-sm font-semibold text-gray-800">
+                                    {status.latency}
+                                </p>
+                            </motion.div>
+                        </AnimatePresence>
                     )}
-                </button>
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+                     <p className="text-xs text-gray-500">
+                        Terakhir diperbarui: <span className="font-semibold">{lastChecked.toLocaleTimeString('id-ID')}</span>
+                    </p>
+                     <button 
+                        onClick={checkStatus} 
+                        disabled={loading}
+                        className="w-full sm:w-auto px-6 h-10 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed font-semibold group"
+                    >
+                        {loading ? (
+                            <Loader2 size={18} className="animate-spin" />
+                        ) : (
+                           <div className="flex items-center gap-2">
+                                <RefreshCw size={14} className="transition-transform group-hover:rotate-180"/>
+                                <span>Periksa Ulang</span>
+                           </div>
+                        )}
+                    </button>
+                </div>
             </div>
-        </div>
-        <div className="mt-4 text-center">
-            <p className="text-xs text-gray-500">
-                Pembaruan terakhir: {lastChecked.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit'})}
-            </p>
-        </div>
+        </motion.div>
       </main>
     </motion.div>
   );
