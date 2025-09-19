@@ -1,21 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
 import { PageTransitionLoader } from "@/app/components/PageTransitionLoader";
-// --- 1. Impor Provider dan Popup (ganti Banner) ---
 import { StatusProvider } from "@/app/context/StatusContext";
-import { StatusPopup } from "@/app/components/StatusPopup"; // Ganti import ini
+import { StatusPopup } from "@/app/components/StatusPopup";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Inisialisasi font Poppins
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ['400', '500', '600', '700'], // Tentukan weight yang akan dipakai
 });
 
 export const metadata: Metadata = {
@@ -31,14 +27,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 flex flex-col min-h-screen`}
+        // --- INI BAGIAN YANG DIPERBAIKI ---
+        className={`${poppins.variable} ${poppins.className} antialiased bg-gray-50 flex flex-col min-h-screen`}
       >
         <StatusProvider>
           <PageTransitionLoader />
           <Navbar />
-          {/* --- 2. Ganti StatusBanner dengan StatusPopup --- */}
           <StatusPopup />
-          <main className="flex-grow w-full"> {/* Padding atas tidak lagi diperlukan */}
+          <main className="flex-grow w-full">
             {children}
           </main>
           <Footer />
