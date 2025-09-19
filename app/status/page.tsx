@@ -112,10 +112,10 @@ export default function StatusPage() {
   };
   
   const headerBgConfig = {
-    loading: 'bg-gray-100/50',
-    online: 'bg-emerald-100/50',
-    offline: 'bg-rose-100/50',
-    error: 'bg-amber-100/50',
+    loading: 'bg-gradient-to-br from-gray-100 to-gray-200/60',
+    online: 'bg-gradient-to-br from-emerald-100 to-green-200/60',
+    offline: 'bg-gradient-to-br from-rose-100 to-red-200/60',
+    error: 'bg-gradient-to-br from-amber-100 to-yellow-200/60',
   };
 
   const currentStatusKey = loading ? 'loading' : status?.status || 'loading';
@@ -152,6 +152,17 @@ export default function StatusPage() {
             
             <div className="p-6 sm:p-8">
                 <dl className="space-y-5">
+                    <div className="flex flex-col sm:flex-row items-baseline justify-between gap-2">
+                        <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium">
+                            <Server size={16} />
+                            <span>Server</span>
+                        </dt>
+                        <dd className="w-full sm:w-auto text-left sm:text-right">
+                            <code className="text-base font-semibold font-mono bg-gray-100/80 px-2.5 py-1 rounded-md border border-gray-200/80">
+                                PDDIKTI Public API
+                            </code>
+                        </dd>
+                    </div>
                     <div className="flex flex-col sm:flex-row items-baseline justify-between gap-2">
                         <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium">
                             <Server size={16} />
