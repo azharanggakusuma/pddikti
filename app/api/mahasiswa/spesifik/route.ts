@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      return NextResponse.json({ message: "Terjadi gangguan saat memverifikasi data mahasiswa. Coba beberapa saat lagi.", details: errorText }, { status: response.status });
+      return NextResponse.json({ message: `Error dari API PDDIKTI: ${response.statusText}`, details: errorText }, { status: response.status });
     }
 
     const responseText = await response.text();
@@ -51,8 +51,8 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     if (error instanceof Error) {
-        return NextResponse.json({ message: "Tidak dapat terhubung ke server." }, { status: 500 });
+        return NextResponse.json({ message: error.message }, { status: 500 });
     }
-    return NextResponse.json({ message: "Terjadi kesalahan yang tidak diketahui"}, {status:500})
+    return NextResponse.json({ message: "Terjadi kesalahan tidak diketahui"}, {status:500})
   }
 }
