@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   const query = searchParams.get('q');
 
   if (!query) {
-    return NextResponse.json({ message: 'Query parameter "q" is required' }, { status: 400 });
+    return NextResponse.json({ message: 'Parameter "q" harus diisi' }, { status: 400 });
   }
 
   const encodedQuery = encodeURIComponent(query);
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
         const errorText = await response.text();
-        return NextResponse.json({ message: `Error from PDDIKTI API: ${response.statusText}`, details: errorText }, { status: response.status });
+        return NextResponse.json({ message: "Terjadi gangguan saat mengambil data. Silakan coba lagi nanti.", details: errorText }, { status: response.status });
     }
     
     const responseText = await response.text();
@@ -35,13 +35,13 @@ export async function GET(request: NextRequest) {
       const data = JSON.parse(responseText);
       return NextResponse.json(data);
     } catch (e) {
-      return NextResponse.json({ message: 'Gagal mem-parsing data dari API eksternal.', details: responseText }, { status: 500 });
+      return NextResponse.json({ message: 'Gagal memproses data dari server eksternal.', details: responseText }, { status: 500 });
     }
     
   } catch (error) {
     if (error instanceof Error) {
-        return NextResponse.json({ message: error.message }, { status: 500 });
+        return NextResponse.json({ message: "Tidak dapat terhubung ke server. Periksa koneksi internet Anda." }, { status: 500 });
     }
-    return NextResponse.json({ message: "An unknown error occured"}, {status:500})
+    return NextResponse.json({ message: "Terjadi kesalahan yang tidak diketahui"}, {status:500})
   }
 }

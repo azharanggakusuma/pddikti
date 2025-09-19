@@ -27,7 +27,7 @@ export async function GET() {
       // Dianggap error jika respons tidak OK atau kosong
       return NextResponse.json({
         status: 'error',
-        message: `API merespons, namun gagal memproses data (Status: ${response.status}).`,
+        message: "API merespons, namun terjadi gangguan dalam pemrosesan data.",
         details: responseText || "Respons dari API kosong.",
         latency: `${duration}ms`,
       }, { status: 503 });
@@ -37,7 +37,7 @@ export async function GET() {
     if (error instanceof Error) {
       return NextResponse.json({
         status: 'offline',
-        message: 'Gagal terhubung ke API PDDIKTI.',
+        message: 'Gagal terhubung ke API PDDIKTI. Server mungkin sedang tidak aktif atau periksa koneksi Anda.',
         details: error.message,
         latency: `${duration}ms`,
       }, { status: 503 });
