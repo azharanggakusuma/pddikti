@@ -12,58 +12,58 @@ interface StatusData {
   latency?: string;
 }
 
-const StatusCardHeader = ({ status, loading }: { status: StatusData['status'] | null, loading: boolean }) => {
-    const baseClasses = "relative flex flex-col items-center justify-center p-8 sm:p-12 rounded-t-2xl text-white overflow-hidden transition-all duration-500";
-    
+const StatusHeader = ({ status, loading }: { status: StatusData['status'] | null, loading: boolean }) => {
     const statusConfig = {
         loading: {
-            gradient: 'bg-gradient-to-br from-gray-500 to-gray-700',
             Icon: Loader2,
-            label: 'Memeriksa Status...',
+            label: 'Memeriksa Koneksi...',
+            iconColor: 'text-gray-500',
+            textColor: 'text-gray-800',
             animateIcon: true,
         },
         online: {
-            gradient: 'bg-gradient-to-br from-emerald-500 to-green-600',
             Icon: CheckCircle,
-            label: 'Semua Sistem Berfungsi',
+            label: 'Berfungsi Normal',
+            iconColor: 'text-emerald-500',
+            textColor: 'text-emerald-900',
             animateIcon: false,
         },
         offline: {
-            gradient: 'bg-gradient-to-br from-rose-500 to-red-600',
             Icon: AlertTriangle,
-            label: 'Layanan Terputus',
+            label: 'Layanan API Tidak Terjangkau',
+            iconColor: 'text-rose-500',
+            textColor: 'text-rose-900',
             animateIcon: false,
         },
         error: {
-            gradient: 'bg-gradient-to-br from-amber-500 to-orange-600',
             Icon: AlertTriangle,
-            label: 'Terjadi Gangguan',
+            label: 'Gangguan Terdeteksi',
+            iconColor: 'text-amber-500',
+            textColor: 'text-amber-900',
             animateIcon: false,
         },
     };
 
     const currentStatusKey = loading ? 'loading' : status || 'loading';
-    const { gradient, Icon, label, animateIcon } = statusConfig[currentStatusKey];
+    const { Icon, label, iconColor, textColor, animateIcon } = statusConfig[currentStatusKey];
 
     return (
-        <div className={`${baseClasses} ${gradient}`}>
-            {/* Background decorative pattern */}
-            <div className="absolute inset-0 bg-repeat bg-center opacity-5" style={{backgroundImage: 'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="white" fill-opacity="0.4"%3E%3Cpath d="M.5 1.5l1-1M2.5 3.5l1-1"/%3E%3C/g%3E%3C/svg%3E\')'}}></div>
-            
+        <div className="flex flex-col items-center text-center">
             <motion.div
                 key={currentStatusKey}
-                initial={{ opacity: 0, scale: 0.7 }}
+                initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                className={`flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-md mb-4 ${iconColor}`}
             >
-                <Icon size={48} className={animateIcon ? 'animate-spin' : ''} />
+                <Icon size={32} className={animateIcon ? 'animate-spin' : ''} />
             </motion.div>
-            <motion.h2 
+            <motion.h2
                  key={label}
                  initial={{ opacity: 0, y: 10 }}
                  animate={{ opacity: 1, y: 0 }}
                  transition={{ delay: 0.1 }}
-                className="mt-4 text-2xl font-bold tracking-tight text-center"
+                 className={`text-2xl font-bold tracking-tight ${textColor}`}
             >
                 {label}
             </motion.h2>
@@ -71,14 +71,15 @@ const StatusCardHeader = ({ status, loading }: { status: StatusData['status'] | 
     );
 };
 
-
 export default function StatusPage() {
   const [status, setStatus] = useState<StatusData | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastChecked, setLastChecked] = useState(new Date());
 
-  const checkStatus = async () => {
-    setLoading(true);
+  const checkStatus = async (isInitial = false) => {
+    if (!isInitial) {
+        setLoading(true);
+    }
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
       const response = await fetch('/api/status');
@@ -96,57 +97,71 @@ export default function StatusPage() {
   };
 
   useEffect(() => {
-    checkStatus();
-    // Set interval to re-check status every 1 minute
-    const interval = setInterval(checkStatus, 60000);
+    checkStatus(true);
+    const interval = setInterval(() => checkStatus(true), 60000); // Auto-refresh every minute
     return () => clearInterval(interval);
   }, []);
   
   const breadcrumbItems = [{ label: "Status API" }];
 
+  const statusColorConfig = {
+    loading: 'from-gray-300/40 to-gray-100/40',
+    online: 'from-green-300/40 to-emerald-100/40',
+    offline: 'from-red-300/40 to-rose-100/40',
+    error: 'from-yellow-300/40 to-amber-100/40',
+  };
+  const currentStatusKey = loading ? 'loading' : status?.status || 'loading';
+  const auroraGradient = statusColorConfig[currentStatusKey];
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen p-4 sm:p-8 flex flex-col items-center bg-gray-50 text-gray-800"
-    >
-      <main className="w-full max-w-2xl mx-auto">
+    <div className="relative min-h-screen p-4 sm:p-8 flex flex-col items-center bg-gray-50 text-gray-800 overflow-hidden">
+      {/* Aurora Background */}
+      <div
+        className={`absolute top-0 left-1/2 -translate-x-1/2 w-[150%] h-[600px] bg-gradient-to-tr ${auroraGradient} rounded-full blur-3xl -z-10 transition-all duration-1000`}
+      ></div>
+      
+      <main className="w-full max-w-2xl mx-auto z-10">
         <Breadcrumbs items={breadcrumbItems} />
-        <header className="text-center mb-10">
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
-                Status <span className="text-blue-600">Layanan API</span>
+        <header className="text-center my-10">
+            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
+                Status Layanan
             </h1>
             <p className="mt-4 text-base sm:text-lg text-gray-600 max-w-xl mx-auto">
-                Laporan real-time mengenai status konektivitas dan waktu respons dari API PDDIKTI.
+                Laporan real-time untuk konektivitas dan performa API PDDIKTI.
             </p>
         </header>
 
         <motion.div 
-            className="bg-white rounded-2xl border border-gray-200 shadow-2xl shadow-gray-200/50"
+            className="bg-white/70 backdrop-blur-xl rounded-2xl border border-gray-200/80 shadow-2xl shadow-gray-300/30"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
+            transition={{ delay: 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
-            <StatusCardHeader status={status?.status || null} loading={loading} />
+            <div className="p-8 sm:p-10 border-b border-gray-200/80">
+                <StatusHeader status={status?.status || null} loading={loading} />
+            </div>
             
             <div className="p-6 sm:p-8">
-                <div className="space-y-4">
+                <dl className="space-y-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                        <div className="flex items-center gap-3 text-sm text-gray-500 font-medium">
+                        <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium">
                             <Server size={16} />
-                            <span>Endpoint Target</span>
-                        </div>
-                        <code className="text-sm font-semibold bg-gray-100 px-2.5 py-1 rounded-md border border-gray-200">api-pddikti</code>
+                            <span>Endpoint</span>
+                        </dt>
+                        <dd className="w-full sm:w-auto text-left sm:text-right">
+                            <code className="text-sm font-semibold bg-gray-100/80 px-2.5 py-1 rounded-md border border-gray-200/80">
+                                api-pddikti
+                            </code>
+                        </dd>
                     </div>
-                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                        <div className="flex items-center gap-3 text-sm text-gray-500 font-medium">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                        <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium">
                             <Zap size={16} />
                             <span>Pesan</span>
-                        </div>
-                        <p className="text-sm font-semibold text-gray-800 text-left sm:text-right">
-                           {loading ? 'Menunggu respons...' : status?.message}
-                        </p>
+                        </dt>
+                        <dd className="text-sm font-semibold text-gray-800 text-left sm:text-right">
+                           {loading ? 'Menunggu respons server...' : status?.message}
+                        </dd>
                     </div>
                      {!loading && status?.latency && (
                         <AnimatePresence>
@@ -155,26 +170,26 @@ export default function StatusPage() {
                              animate={{ opacity: 1, y: 0 }}
                              className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2"
                            >
-                                <div className="flex items-center gap-3 text-sm text-gray-500 font-medium">
+                                <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium">
                                     <Clock size={16} />
                                     <span>Latensi</span>
-                                </div>
-                                <p className="font-mono text-sm font-semibold text-gray-800">
+                                </dt>
+                                <dd className="font-mono text-sm font-semibold text-gray-800">
                                     {status.latency}
-                                </p>
+                                </dd>
                             </motion.div>
                         </AnimatePresence>
                     )}
-                </div>
+                </dl>
 
-                <div className="mt-8 pt-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+                <div className="mt-8 pt-6 border-t border-gray-200/80 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
                      <p className="text-xs text-gray-500">
-                        Terakhir diperbarui: <span className="font-semibold">{lastChecked.toLocaleTimeString('id-ID')}</span>
+                        Terakhir diperbarui: <span className="font-semibold">{lastChecked.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
                     </p>
                      <button 
-                        onClick={checkStatus} 
+                        onClick={() => checkStatus()} 
                         disabled={loading}
-                        className="w-full sm:w-auto px-6 h-10 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed font-semibold group"
+                        className="w-full sm:w-auto px-6 h-10 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed font-semibold group shadow-sm hover:shadow-md"
                     >
                         {loading ? (
                             <Loader2 size={18} className="animate-spin" />
@@ -189,6 +204,6 @@ export default function StatusPage() {
             </div>
         </motion.div>
       </main>
-    </motion.div>
+    </div>
   );
 }
