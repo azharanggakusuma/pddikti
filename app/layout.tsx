@@ -3,7 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
-import { PageTransitionLoader } from "@/app/components/PageTransitionLoader"; // <-- 1. Impor komponen
+import { PageTransitionLoader } from "@/app/components/PageTransitionLoader";
+// --- 1. Impor Provider dan Popup (ganti Banner) ---
+import { StatusProvider } from "@/app/context/StatusContext";
+import { StatusPopup } from "@/app/components/StatusPopup"; // Ganti import ini
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,12 +33,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 flex flex-col min-h-screen`}
       >
-        <PageTransitionLoader /> {/* <-- 2. Tambahkan komponen di sini */}
-        <Navbar />
-        <main className="flex-grow w-full">
-          {children}
-        </main>
-        <Footer />
+        <StatusProvider>
+          <PageTransitionLoader />
+          <Navbar />
+          {/* --- 2. Ganti StatusBanner dengan StatusPopup --- */}
+          <StatusPopup />
+          <main className="flex-grow w-full"> {/* Padding atas tidak lagi diperlukan */}
+            {children}
+          </main>
+          <Footer />
+        </StatusProvider>
       </body>
     </html>
   );
