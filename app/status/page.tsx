@@ -124,7 +124,7 @@ export default function StatusPage() {
         <Breadcrumbs items={breadcrumbItems} />
         <header className="text-center my-10">
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
-                Status Layanan
+                Status <span className="text-blue-600">Layanan</span>
             </h1>
             <p className="mt-4 text-base sm:text-lg text-gray-600 max-w-xl mx-auto">
                 Laporan real-time untuk konektivitas dan performa API PDDIKTI.
