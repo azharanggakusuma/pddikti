@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Server, Zap, Clock, AlertTriangle, CheckCircle, Loader2, RefreshCw } from 'lucide-react';
+import { Server, Zap, Clock, AlertTriangle, CheckCircle, Loader2, RefreshCw, Globe } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 
 interface StatusData {
@@ -158,19 +158,17 @@ export default function StatusPage() {
                             <span>Server</span>
                         </dt>
                         <dd className="w-full sm:w-auto text-left sm:text-right">
-                            <code className="text-base font-semibold font-mono bg-gray-100/80 px-2.5 py-1 rounded-md border border-gray-200/80">
-                                PDDIKTI Public API
-                            </code>
+                           <span className="text-base font-semibold text-gray-800">PDDIKTI PUBLIC API</span>
                         </dd>
                     </div>
                     <div className="flex flex-col sm:flex-row items-baseline justify-between gap-2">
                         <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium">
-                            <Server size={16} />
+                            <Globe size={16} />
                             <span>Endpoint</span>
                         </dt>
                         <dd className="w-full sm:w-auto text-left sm:text-right">
                             <code className="text-base font-semibold font-mono bg-gray-100/80 px-2.5 py-1 rounded-md border border-gray-200/80">
-                                api-pddikti
+                                GET /search/all/&#123;query&#125;
                             </code>
                         </dd>
                     </div>
