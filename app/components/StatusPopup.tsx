@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { useApiStatus } from '@/app/context/StatusContext';
 import { AnimatePresence, motion } from 'framer-motion';
-import Link from 'next/link';
 
 export const StatusPopup = () => {
   const { status, isLoading } = useApiStatus();
@@ -80,21 +79,14 @@ export const StatusPopup = () => {
               {config.message}
             </p>
             
-            {/* Tombol Aksi */}
-            <div className="mt-8 flex flex-col sm:flex-row-reverse gap-3">
-              <Link
-                href="/status"
-                className="w-full inline-flex justify-center items-center px-6 h-11 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
-                onClick={() => setIsOpen(false)}
-              >
-                Cek Status
-              </Link>
+            {/* Tombol Aksi yang Sudah Disederhanakan */}
+            <div className="mt-8">
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="w-full px-6 h-11 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all"
+                className="w-full px-6 h-11 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
               >
-                Tutup
+                Mengerti
               </button>
             </div>
           </motion.div>
