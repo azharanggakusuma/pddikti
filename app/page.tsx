@@ -12,9 +12,10 @@ import {
   Loader2,
   Info,
   Search,
-  ChevronDown
+  ChevronDown,
+  ArrowUp,
 } from "lucide-react";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { motion } from "framer-motion";
 
 // Tipe props untuk MenuItem
@@ -69,7 +70,24 @@ const MenuItem = ({ href, icon, title, description }: MenuItemProps) => {
 export default function Home() {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchCategory, setSearchCategory] = useState('semua');
+    const [showBackToTop, setShowBackToTop] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 400) {
+                setShowBackToTop(true);
+            } else {
+                setShowBackToTop(false);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
 
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
@@ -222,6 +240,15 @@ export default function Home() {
           />
         </div>
       </main>
+      {showBackToTop && (
+            <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-110"
+                style={{ animation: 'fadeInUp 0.5s ease-out' }}
+            >
+                <ArrowUp size={24} />
+            </button>
+      )}
     </motion.div>
   );
 }
