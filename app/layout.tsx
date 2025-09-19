@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
+import { PageTransitionLoader } from "@/app/components/PageTransitionLoader"; // <-- 1. Impor komponen
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "DataDIKTI",
-  description: "Search for student data in the PDDIKTI database",
+  description: "Search for university data in the PDDIKTI database",
 };
 
 export default function RootLayout({
@@ -29,6 +30,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 flex flex-col min-h-screen`}
       >
+        <PageTransitionLoader /> {/* <-- 2. Tambahkan komponen di sini */}
         <Navbar />
         <main className="flex-grow w-full">
           {children}
