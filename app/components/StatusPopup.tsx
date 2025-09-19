@@ -1,6 +1,8 @@
+// app/components/StatusPopup.tsx
+
 'use client';
 
-import { useState, useEffect } from 'react'; // 1. Tambahkan useEffect
+import { useState, useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { useApiStatus } from '@/app/context/StatusContext';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -10,16 +12,12 @@ export const StatusPopup = () => {
   const { status, isLoading } = useApiStatus();
   const [isOpen, setIsOpen] = useState(true);
 
-  // 2. Tambahkan hook useEffect di sini.
-  //    Ini akan me-reset state `isOpen` menjadi true setiap kali
-  //    status gangguan baru terdeteksi.
   useEffect(() => {
     if (status && status.status !== 'online') {
       setIsOpen(true);
     }
-  }, [status]); // Efek ini akan berjalan setiap kali 'status' berubah
+  }, [status]);
 
-  // Tentukan apakah popup harus ditampilkan
   const shouldShow = !isLoading && status && status.status !== 'online' && isOpen;
 
   if (!shouldShow) {
@@ -45,7 +43,8 @@ export const StatusPopup = () => {
     },
   };
 
-  const config = statusConfig[status.status];
+  // FIX: Assert the type of status.status to be either 'error' or 'offline'
+  const config = statusConfig[status.status as 'error' | 'offline'];
 
   return (
     <AnimatePresence>
