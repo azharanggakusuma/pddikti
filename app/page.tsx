@@ -138,7 +138,7 @@ export default function Home() {
             <span>Situs ini bukan laman resmi dari Kemdiktisaintek.</span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900">
-            Pangkalan Data
+            Jelajahi Data
             <span className="mt-2 block text-blue-600">Pendidikan Tinggi</span>
           </h1>
           <p className="mt-6 text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
