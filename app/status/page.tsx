@@ -12,6 +12,24 @@ interface StatusData {
   latency?: string;
 }
 
+// Komponen Skeleton untuk loading
+const StatusSkeleton = () => (
+    <div className="space-y-5 animate-pulse">
+        {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex flex-col sm:flex-row items-baseline justify-between gap-2">
+                <div className="flex items-center gap-3 w-1/3">
+                    <div className="h-4 w-4 bg-gray-200 rounded-full"></div>
+                    <div className="h-4 w-20 bg-gray-200 rounded-md"></div>
+                </div>
+                <div className="w-full sm:w-auto text-left sm:text-right">
+                   <div className="h-6 w-48 bg-gray-200 rounded-md"></div>
+                </div>
+            </div>
+        ))}
+    </div>
+);
+
+
 const StatusHeader = ({ status, loading }: { status: StatusData['status'] | null, loading: boolean }) => {
     const statusConfig = {
         loading: {
@@ -151,6 +169,9 @@ export default function StatusPage() {
             </div>
             
             <div className="p-6 sm:p-8">
+                {loading ? (
+                    <StatusSkeleton />
+                ) : (
                 <dl className="space-y-5">
                     <div className="flex flex-col sm:flex-row items-baseline justify-between gap-2">
                         <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium">
@@ -178,7 +199,7 @@ export default function StatusPage() {
                             <span>Latensi</span>
                         </dt>
                         <dd className="font-mono text-base font-semibold text-gray-800">
-                           {loading ? 'Menghitung...' : (status?.latency || '-')}
+                           {status?.latency || '-'}
                         </dd>
                     </div>
                     <div className="flex flex-col sm:flex-row items-baseline justify-between gap-2">
@@ -187,10 +208,11 @@ export default function StatusPage() {
                             <span>Pesan</span>
                         </dt>
                         <dd className="text-base font-semibold text-gray-800 text-left sm:text-right max-w-md">
-                           {loading ? 'Memeriksa...' : status?.message}
+                           {status?.message}
                         </dd>
                     </div>
                 </dl>
+                )}
 
                 <div className="mt-10 pt-6 border-t border-gray-200/80 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
                      <p className="text-xs text-gray-500">

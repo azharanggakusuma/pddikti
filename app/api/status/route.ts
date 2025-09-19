@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   // URL diubah untuk menargetkan endpoint pencarian spesifik
-  const externalApiUrl = 'https://api-pddikti.ridwaanhall.com/';
+  const externalApiUrl = 'https://api-pddikti.ridwaanhall.com/search/all/test';
   const startTime = Date.now();
 
   try {
