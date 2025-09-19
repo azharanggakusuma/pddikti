@@ -106,12 +106,21 @@ export default function StatusPage() {
 
   const statusColorConfig = {
     loading: 'from-gray-300/40 to-gray-100/40',
-    online: 'from-green-300/40 to-emerald-100/40',
-    offline: 'from-red-300/40 to-rose-100/40',
-    error: 'from-yellow-300/40 to-amber-100/40',
+    online: 'from-sky-300/40 via-green-300/40 to-emerald-100/40',
+    offline: 'from-rose-300/40 via-red-300/40 to-orange-100/40',
+    error: 'from-amber-300/40 via-yellow-300/40 to-orange-100/40',
   };
+  
+  const headerBgConfig = {
+    loading: 'bg-gray-100/50',
+    online: 'bg-emerald-100/50',
+    offline: 'bg-rose-100/50',
+    error: 'bg-amber-100/50',
+  };
+
   const currentStatusKey = loading ? 'loading' : status?.status || 'loading';
   const auroraGradient = statusColorConfig[currentStatusKey];
+  const headerBg = headerBgConfig[currentStatusKey];
 
   return (
     <div className="relative min-h-screen p-4 sm:p-8 flex flex-col items-center bg-gray-50 text-gray-800 overflow-hidden">
@@ -122,67 +131,59 @@ export default function StatusPage() {
       
       <main className="w-full max-w-2xl mx-auto z-10">
         <Breadcrumbs items={breadcrumbItems} />
-        <header className="text-center my-10">
+        <header className="text-center my-12">
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
                 Status <span className="text-blue-600">Layanan</span>
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-gray-600 max-w-xl mx-auto">
+            <p className="mt-6 text-base sm:text-lg text-gray-600 max-w-xl mx-auto leading-relaxed">
                 Laporan real-time untuk konektivitas dan performa API PDDIKTI.
             </p>
         </header>
 
         <motion.div 
-            className="bg-white/70 backdrop-blur-xl rounded-2xl border border-gray-200/80 shadow-2xl shadow-gray-300/30"
+            className="bg-white/70 backdrop-blur-xl rounded-2xl border border-gray-200/80 shadow-2xl shadow-gray-300/30 overflow-hidden"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
-            <div className="p-8 sm:p-10 border-b border-gray-200/80">
+            <div className={`p-8 sm:p-10 border-b border-gray-200/80 transition-colors duration-500 ${headerBg}`}>
                 <StatusHeader status={status?.status || null} loading={loading} />
             </div>
             
             <div className="p-6 sm:p-8">
-                <dl className="space-y-4">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <dl className="space-y-5">
+                    <div className="flex flex-col sm:flex-row items-baseline justify-between gap-2">
                         <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium">
                             <Server size={16} />
                             <span>Endpoint</span>
                         </dt>
                         <dd className="w-full sm:w-auto text-left sm:text-right">
-                            <code className="text-sm font-semibold bg-gray-100/80 px-2.5 py-1 rounded-md border border-gray-200/80">
+                            <code className="text-base font-semibold font-mono bg-gray-100/80 px-2.5 py-1 rounded-md border border-gray-200/80">
                                 api-pddikti
                             </code>
                         </dd>
                     </div>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <div className="flex flex-col sm:flex-row items-baseline justify-between gap-2">
+                        <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium">
+                            <Clock size={16} />
+                            <span>Latensi</span>
+                        </dt>
+                        <dd className="font-mono text-base font-semibold text-gray-800">
+                           {loading ? 'Menghitung...' : (status?.latency || '-')}
+                        </dd>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-baseline justify-between gap-2">
                         <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium">
                             <Zap size={16} />
                             <span>Pesan</span>
                         </dt>
-                        <dd className="text-sm font-semibold text-gray-800 text-left sm:text-right">
-                           {loading ? 'Menunggu respons server...' : status?.message}
+                        <dd className="text-base font-semibold text-gray-800 text-left sm:text-right max-w-md">
+                           {loading ? 'Memeriksa...' : status?.message}
                         </dd>
                     </div>
-                     {!loading && status?.latency && (
-                        <AnimatePresence>
-                           <motion.div
-                             initial={{ opacity: 0, y: -10 }}
-                             animate={{ opacity: 1, y: 0 }}
-                             className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2"
-                           >
-                                <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium">
-                                    <Clock size={16} />
-                                    <span>Latensi</span>
-                                </dt>
-                                <dd className="font-mono text-sm font-semibold text-gray-800">
-                                    {status.latency}
-                                </dd>
-                            </motion.div>
-                        </AnimatePresence>
-                    )}
                 </dl>
 
-                <div className="mt-8 pt-6 border-t border-gray-200/80 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+                <div className="mt-10 pt-6 border-t border-gray-200/80 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
                      <p className="text-xs text-gray-500">
                         Terakhir diperbarui: <span className="font-semibold">{lastChecked.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
                     </p>
