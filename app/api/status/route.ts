@@ -16,22 +16,56 @@ export async function GET() {
     const duration = Date.now() - startTime;
     const responseText = await response.text(); // Baca respons untuk diagnosis
 
-    if (response.ok && responseText.trim() !== "") {
-      // Sukses jika respons OK dan tidak kosong
+    if (!response.ok) {
+      // Menangani error non-200 OK
+      return NextResponse.json({
+        status: 'error',
+        message: `API merespons dengan status error (Status: ${response.status}).`,
+        details: responseText || "Respons dari API kosong.",
+        latency: `${duration}ms`,
+      }, { status: response.status });
+    }
+    
+    if (!responseText.trim()) {
+        // Menangani respons kosong
+        return NextResponse.json({
+            status: 'error',
+            message: 'API memberikan respons kosong.',
+            latency: `${duration}ms`,
+        }, { status: 503 });
+    }
+
+    // Coba parsing JSON
+    try {
+      const data = JSON.parse(responseText);
+      
+      // Deteksi error spesifik dari konten JSON, seperti timeout
+      if (data.error) {
+        return NextResponse.json({
+          status: 'error',
+          message: `API Mengalami Gangguan: ${data.message || 'Pesan error tidak tersedia'}`,
+          details: `Kode Error: ${data.code}`,
+          latency: `${duration}ms`,
+        }, { status: 503 });
+      }
+
+      // Jika tidak ada field 'error' dan response OK, anggap online
       return NextResponse.json({
         status: 'online',
         message: 'API PDDIKTI berfungsi normal.',
         latency: `${duration}ms`,
       });
-    } else {
-      // Dianggap error jika respons tidak OK atau kosong
+
+    } catch (e) {
+      // Jika JSON tidak valid
       return NextResponse.json({
         status: 'error',
-        message: `API merespons, namun gagal memproses data (Status: ${response.status}).`,
-        details: responseText || "Respons dari API kosong.",
+        message: 'Gagal mem-parsing respons dari API.',
+        details: responseText,
         latency: `${duration}ms`,
       }, { status: 503 });
     }
+
   } catch (error) {
     const duration = Date.now() - startTime;
     if (error instanceof Error) {
