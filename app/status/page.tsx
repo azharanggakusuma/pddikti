@@ -92,7 +92,12 @@ const StatusHeader = ({ status, loading }: { status: StatusData['status'] | null
 export default function StatusPage() {
   const [status, setStatus] = useState<StatusData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [lastChecked, setLastChecked] = useState(new Date());
+  const [lastChecked, setLastChecked] = useState<Date | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const checkStatus = async (isInitial = false) => {
     if (!isInitial) {
@@ -216,7 +221,13 @@ export default function StatusPage() {
 
                 <div className="mt-10 pt-6 border-t border-gray-200/80 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
                      <p className="text-xs text-gray-500">
-                        Terakhir diperbarui: <span className="font-semibold">{lastChecked.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                        {isClient && lastChecked ? (
+                            <>
+                                Terakhir diperbarui: <span className="font-semibold">{lastChecked.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                            </>
+                        ) : (
+                            'Memuat waktu...'
+                        )}
                     </p>
                      <button 
                         onClick={() => checkStatus()} 
