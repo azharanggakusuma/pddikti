@@ -102,7 +102,7 @@ export const Footer = () => {
                 {/* Bagian Bawah Footer */}
                 <div className="mt-16 pt-8 border-t border-gray-200 text-center">
                     <p className="text-sm text-gray-500">
-                        &copy; {currentYear} Didesain dan dikembangkan oleh{" "}
+                        &copy; {currentYear} Dikembangkan oleh{" "}
                         <a
                             href="https://azharanggakusuma.xyz"
                             target="_blank"
