@@ -23,14 +23,14 @@ export const StatusPopup = () => {
       icon: <AlertTriangle size={32} strokeWidth={2.5} />,
       iconContainerColor: 'bg-amber-100 text-amber-500',
       title: 'Layanan Terganggu',
-      message: "Kami mendeteksi adanya gangguan pada sistem. Hal ini dapat menyebabkan beberapa fitur pencarian tidak berfungsi untuk sementara waktu.",
+      message: "Terjadi gangguan pada sistem yang dapat memengaruhi beberapa fitur pencarian untuk sementara waktu.",
       buttonColor: 'bg-amber-500 hover:bg-amber-600 focus:ring-amber-400',
     },
     offline: {
       icon: <WifiOff size={32} strokeWidth={2.5} />,
       iconContainerColor: 'bg-rose-100 text-rose-500',
       title: 'Layanan Tidak Tersedia',
-      message: "Layanan tidak dapat dijangkau saat ini. Hal ini bisa disebabkan oleh koneksi internet Anda atau server kami sedang offline. Silakan coba lagi nanti.",
+      message: "Tidak dapat terhubung ke layanan saat ini. Ini mungkin karena koneksi internet Anda atau server kami sedang offline.",
       buttonColor: 'bg-rose-500 hover:bg-rose-600 focus:ring-rose-400',
     },
   };
@@ -59,6 +59,16 @@ export const StatusPopup = () => {
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl shadow-gray-500/20 p-8 text-center"
           >
+            {/* Tombol Close */}
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Tutup"
+            >
+              <X size={24} />
+            </button>
+            
             {/* Ikon Status */}
             <div className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full ${config.iconContainerColor} mb-6`}>
               {config.icon}
@@ -79,7 +89,7 @@ export const StatusPopup = () => {
                 onClick={() => setIsOpen(false)}
                 className={`w-full px-6 h-12 text-base font-semibold text-white ${config.buttonColor} rounded-xl focus:outline-none focus:ring-4 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105`}
               >
-                Mengerti
+                Saya Mengerti
               </button>
             </div>
           </motion.div>
