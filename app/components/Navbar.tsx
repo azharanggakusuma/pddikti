@@ -50,7 +50,7 @@ export const Navbar = () => {
                     <div className="flex items-center">
                         <Link href="/" className="flex-shrink-0 flex items-center" onClick={() => setIsOpen(false)}>
                              {/* --- MODIFICATION START --- */}
-                             <div className="relative w-36 h-9">
+                             <div className="relative w-40 h-10">
                                 <Image
                                     src="/logo.png"
                                     alt="DataDikti Logo"

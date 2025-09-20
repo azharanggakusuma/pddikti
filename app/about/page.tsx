@@ -28,7 +28,7 @@ export default function AboutPage() {
 
                 <header className="text-center my-8 sm:my-12">
                     <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
-                        Tentang <span className="text-blue-600">DataDIKTI</span>
+                        Tentang <span className="text-blue-600">DataDikti</span>
                     </h1>
                     <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
                         Misi kami adalah menyajikan data Pendidikan Tinggi di Indonesia secara cepat, mudah diakses, dan dengan antarmuka yang modern bagi siapa saja.
@@ -36,8 +36,8 @@ export default function AboutPage() {
                 </header>
 
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <FeatureCard icon={<Info size={24} />} title="Apa Itu DataDIKTI?">
-                        DataDIKTI adalah sebuah proyek independen yang bertujuan untuk menjadi pintu gerbang alternatif dalam mengakses data dari Pangkalan Data Pendidikan Tinggi (PDDIKTI). Kami percaya bahwa data publik harus mudah diakses dan disajikan dengan cara yang ramah pengguna.
+                    <FeatureCard icon={<Info size={24} />} title="Apa Itu DataDikti?">
+                        DataDikti adalah sebuah proyek independen yang bertujuan untuk menjadi pintu gerbang alternatif dalam mengakses data dari Pangkalan Data Pendidikan Tinggi (PDDIKTI). Kami percaya bahwa data publik harus mudah diakses dan disajikan dengan cara yang ramah pengguna.
                     </FeatureCard>
                     <FeatureCard icon={<Database size={24} />} title="Sumber Data Kami">
                         Seluruh informasi yang ditampilkan di situs ini bersumber dari data publik yang disediakan oleh PDDIKTI. Kami mengambil data ini melalui API publik pihak ketiga yang dikelola oleh <a href="https://api-pddikti.ridwaanhall.com/" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">Ridwan Hall</a>, yang telah melakukan pekerjaan luar biasa dalam membuat data ini lebih mudah diakses.

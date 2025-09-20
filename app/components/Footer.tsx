@@ -28,11 +28,11 @@ export const Footer = () => {
                     <div className="lg:col-span-5">
                         {/* --- MODIFICATION START --- */}
                         {/* Menambahkan margin kiri negatif untuk menggeser logo */}
-                        <Link href="/" className="inline-flex items-center -ml-1">
+                        <Link href="/" className="inline-flex items-center">
                             <div className="relative w-40 h-10">
                                 <Image
                                     src="/logo.png"
-                                    alt="DataDIKTI Logo"
+                                    alt="DataDikti Logo"
                                     fill
                                     className="object-contain"
                                 />
