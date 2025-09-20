@@ -80,16 +80,19 @@ export const Footer = () => {
                             </ul>
                         </div>
                          <div>
-                            <h3 className="font-semibold text-gray-900 tracking-wider uppercase text-sm">Teknologi</h3>
+                            <h3 className="font-semibold text-gray-900 tracking-wider uppercase text-sm">Sumber Daya</h3>
                             <ul className="mt-4 space-y-3">
                                <li>
-                                    <p className="text-base text-gray-500">Next.js</p>
+                                    {/* Tautan diganti ke halaman 'Tentang' */}
+                                    <Link href="/about" className="text-base text-gray-500 hover:text-blue-600 transition-colors">
+                                        Tentang Situs Ini
+                                    </Link>
                                </li>
                                <li>
-                                    <p className="text-base text-gray-500">Tailwind CSS</p>
-                               </li>
-                                <li>
-                                    <p className="text-base text-gray-500">Vercel</p>
+                                    {/* Tautan ini bisa Anda arahkan ke halaman FAQ atau kontak */}
+                                    <Link href="/faq" className="text-base text-gray-500 hover:text-blue-600 transition-colors">
+                                        Pusat Bantuan
+                                    </Link>
                                </li>
                             </ul>
                         </div>
