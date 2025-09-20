@@ -16,60 +16,57 @@ const navLinks = [
   { href: '/pt', label: 'Perguruan Tinggi' },
 ];
 
+const DesktopNavLink = ({
+  href,
+  children,
+  exact = false,
+}: {
+  href: string;
+  children: React.ReactNode;
+  exact?: boolean;
+}) => {
+  const pathname = usePathname();
+  const isActive = exact ? pathname === href : pathname.startsWith(href) && href !== '/';
+
+  return (
+    <Link
+      href={href}
+      className="relative py-2 text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors duration-200"
+    >
+      <span className={isActive ? 'font-semibold text-blue-600' : ''}>{children}</span>
+      {isActive && (
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"
+          layoutId="underline"
+          initial={false}
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        />
+      )}
+    </Link>
+  );
+};
+
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
-  const NavLink = ({
-    href,
-    children,
-    exact = false,
-  }: {
-    href: string;
-    children: React.ReactNode;
-    exact?: boolean;
-  }) => {
-    const isActive = exact ? pathname === href : pathname.startsWith(href) && href !== '/';
-
-    return (
-      <Link
-        href={href}
-        onClick={() => setIsOpen(false)}
-        className="relative py-2 text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors duration-200"
-      >
-        <span className={isActive ? 'font-semibold text-blue-600' : ''}>{children}</span>
-        {isActive && (
-          <motion.div
-            className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"
-            layoutId="underline"
-            initial={false}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-          />
-        )}
-      </Link>
-    );
-  };
-
   return (
-    <nav className="bg-white sticky top-0 z-50 border-b border-gray-200 shadow-sm">
+    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200/80 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* tarik sedikit ke kiri supaya logo sejajar tepi container */}
-        <div className="flex items-center justify-between h-16 -ml-2 sm:-ml-4 lg:-ml-8">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
             <Link
               href="/"
-              className="flex-shrink-0 flex items-center"
+              className="flex-shrink-0"
               onClick={() => setIsOpen(false)}
             >
-              {/* Pakai ukuran eksplisit + flex align center (bukan fill) */}
               <Image
                 src="/logo.png"
                 alt="DataDikti Logo"
-                width={160}
-                height={40}
-                // tinggi responsif: 32px di mobile, 40px di md+
-                className="h-8 md:h-10 w-auto object-contain"
+                width={150}
+                height={38}
+                className="h-8 md:h-9 w-auto object-contain"
                 priority
               />
             </Link>
@@ -78,9 +75,9 @@ export const Navbar = () => {
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <NavLink key={link.href} href={link.href} exact={link.exact}>
+              <DesktopNavLink key={link.href} href={link.href} exact={link.exact}>
                 {link.label}
-              </NavLink>
+              </DesktopNavLink>
             ))}
           </div>
 
@@ -89,7 +86,7 @@ export const Navbar = () => {
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-800"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
               aria-controls="mobile-menu"
               aria-expanded={isOpen}
             >
@@ -100,11 +97,12 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu (DIperbaiki) */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="md:hidden border-t border-gray-200 overflow-hidden"
+            className="md:hidden border-t border-gray-200"
+            id="mobile-menu"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -112,17 +110,14 @@ export const Navbar = () => {
           >
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {navLinks.map((link) => {
-                const active =
-                  link.href === '/'
-                    ? pathname === link.href
-                    : pathname.startsWith(link.href) && link.href !== '/';
+                const isActive = link.exact ? pathname === link.href : pathname.startsWith(link.href) && link.href !== '/';
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsOpen(false)}
                     className={`block px-3 py-3 rounded-md text-base transition-colors ${
-                      active
+                      isActive
                         ? 'font-semibold text-blue-600 bg-blue-50'
                         : 'font-medium text-gray-600 hover:bg-gray-100'
                     }`}
