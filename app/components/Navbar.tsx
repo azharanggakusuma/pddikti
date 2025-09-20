@@ -81,12 +81,13 @@ export const Navbar = () => {
             ))}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button (Telah diperbaiki) */}
           <div className="flex md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+              // --- PERUBAHAN DI SINI: Kelas focus:ring-* telah dihapus ---
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-800 focus:outline-none"
               aria-controls="mobile-menu"
               aria-expanded={isOpen}
             >
@@ -97,7 +98,7 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu (DIperbaiki) */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
