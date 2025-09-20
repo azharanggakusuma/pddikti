@@ -1,24 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8faff; /* Slightly bluish white */
-  --foreground: #1e293b; /* Slate 800 */
+  --background: #f8faff; /* putih kebiruan, tetap lembut */
+  --foreground: #1e293b; /* slate gelap */
   --card-background: #ffffff;
-  --border-color: #e2e8f0; /* Slate 200 */
-  --subtle-foreground: #64748b; /* Slate 500 */
-  /* Mengganti warna biru utama menjadi lebih soft (Tailwind Blue-500 & 600) */
-  --primary-accent: #3b82f6; /* Blue 500 */
+  --border-color: #e2e8f0; /* slate 200 */
+  --subtle-foreground: #64748b; /* slate 500 */
+
+  /* Warna utama diambil dari logo */
+  --primary-accent: #0077C8; /* biru sedang (ikon/tagline) */
   --primary-accent-foreground: #ffffff;
-  --primary-accent-hover: #2563eb; /* Blue 600 */
-  --kbd-background: #f1f5f9; /* Slate 100 */
-  --kbd-border: #cbd5e1; /* Slate 300 */
+  --primary-accent-hover: #004B87; /* biru tua (teks Data) */
+  
+  /* Warna tambahan untuk gradasi */
+  --secondary-accent: #29ABE2; /* biru muda (teks Dikti) */
+
+  --kbd-background: #f1f5f9; /* slate 100 */
+  --kbd-border: #cbd5e1; /* slate 300 */
+
   --grid-pattern: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23e2e8f0" fill-opacity="0.4"%3E%3Cpath d="M.5 1.5l1-1M2.5 3.5l1-1"/%3E%3C/g%3E%3C/svg%3E');
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  /* font-family diatur oleh next/font dari layout.tsx */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-image: var(--grid-pattern);
@@ -47,12 +52,7 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover { background-color: var(--subtle-foreground); }
 
-/* Tambahan untuk mobile */
 @media (max-width: 640px) {
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-  ::-webkit-scrollbar-thumb {
-    border-width: 2px;
-  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-thumb { border-width: 2px; }
 }

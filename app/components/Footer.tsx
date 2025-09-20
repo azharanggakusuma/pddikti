@@ -104,9 +104,12 @@ export const Footer = () => {
         </div>
 
         {/* Bagian Bawah Footer */}
-        <div className="mt-16 pt-8 border-t border-gray-200 text-center">
+        <div className="-mb-8 mt-16 pt-8 border-t border-gray-200 text-center">
           <p className="text-sm text-gray-500">
-            &copy; {currentYear} Dikembangkan oleh{" "}
+            &copy; {currentYear} DataDikti. All rights reserved.
+          </p>  
+          <p className="text-sm text-gray-500 mt-1">
+            Dikembangkan oleh{" "}
             <a
               href="https://azharanggakusuma.xyz"
               target="_blank"
@@ -115,7 +118,7 @@ export const Footer = () => {
             >
               Azharangga Kusuma
             </a>.
-          </p>
+          </p>  
         </div>
       </div>
     </footer>
