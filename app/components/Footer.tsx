@@ -116,6 +116,9 @@ export const Footer = () => {
               Azharangga Kusuma
             </a>.
           </p>
+          <p className="text-sm text-gray-500">
+            Version 1.0.0
+          </p>
         </div>
       </div>
     </footer>
