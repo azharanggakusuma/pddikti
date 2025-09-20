@@ -1,6 +1,7 @@
 // app/components/Footer.tsx
 import Link from 'next/link';
-import { GraduationCap, Github, Linkedin, Instagram } from 'lucide-react';
+import Image from 'next/image';
+import { Github, Linkedin, Instagram } from 'lucide-react';
 
 export const Footer = () => {
     const navLinks = [
@@ -25,12 +26,19 @@ export const Footer = () => {
                     
                     {/* Kolom Kiri: Branding dan Sosial Media */}
                     <div className="lg:col-span-5">
-                        <Link href="/" className="inline-flex items-center gap-3">
-                            <div className="bg-blue-600 p-2 rounded-lg">
-                                <GraduationCap className="h-7 w-7 text-white" />
-                            </div>
-                            <span className="font-bold text-2xl text-gray-800">DataDIKTI</span>
+                        {/* --- MODIFICATION START --- */}
+                        {/* Menambahkan margin kiri negatif untuk menggeser logo */}
+                        <Link href="/" className="inline-flex items-center -ml-1">
+                            <div className="relative w-40 h-10">
+                                <Image
+                                    src="/logo.png"
+                                    alt="DataDIKTI Logo"
+                                    fill
+                                    className="object-contain"
+                                />
+                             </div>
                         </Link>
+                        {/* --- MODIFICATION END --- */}
                         <p className="mt-5 text-base text-gray-500 leading-relaxed max-w-md">
                             Sebuah platform independen untuk menjelajahi data Pendidikan Tinggi di Indonesia dengan antarmuka yang cepat dan modern.
                         </p>
@@ -83,13 +91,11 @@ export const Footer = () => {
                             <h3 className="font-semibold text-gray-900 tracking-wider uppercase text-sm">Sumber Daya</h3>
                             <ul className="mt-4 space-y-3">
                                <li>
-                                    {/* Tautan diganti ke halaman 'Tentang' */}
                                     <Link href="/about" className="text-base text-gray-500 hover:text-blue-600 transition-colors">
                                         Tentang Situs Ini
                                     </Link>
                                </li>
                                <li>
-                                    {/* Tautan ini bisa Anda arahkan ke halaman FAQ atau kontak */}
                                     <Link href="/faq" className="text-base text-gray-500 hover:text-blue-600 transition-colors">
                                         Pusat Bantuan
                                     </Link>

@@ -1,8 +1,10 @@
+// app/components/Navbar.tsx
 'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, GraduationCap } from 'lucide-react';
+import Image from 'next/image';
+import { Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -31,7 +33,7 @@ export const Navbar = () => {
                 {isActive && (
                     <motion.div
                         className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"
-                        layoutId="underline" // ID unik untuk animasi
+                        layoutId="underline"
                         initial={false}
                         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                     />
@@ -46,9 +48,18 @@ export const Navbar = () => {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <div className="flex items-center">
-                        <Link href="/" className="flex-shrink-0 flex items-center gap-2" onClick={() => setIsOpen(false)}>
-                             <GraduationCap className="h-8 w-8 text-blue-600" />
-                             <span className="font-bold text-lg text-gray-800">DataDIKTI</span>
+                        <Link href="/" className="flex-shrink-0 flex items-center" onClick={() => setIsOpen(false)}>
+                             {/* --- MODIFICATION START --- */}
+                             <div className="relative w-36 h-9">
+                                <Image
+                                    src="/logo.png"
+                                    alt="DataDikti Logo"
+                                    fill
+                                    className="object-contain"
+                                    priority
+                                 />
+                             </div>
+                             {/* --- MODIFICATION END --- */}
                         </Link>
                     </div>
 
