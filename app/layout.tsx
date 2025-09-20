@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Lato } from "next/font/google"; // 1. Ganti import menjadi Lato
+import { Open_Sans } from "next/font/google"; // 1. Ganti import menjadi Open_Sans
 import "./globals.css";
 import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
@@ -7,10 +7,10 @@ import { PageTransitionLoader } from "@/app/components/PageTransitionLoader";
 import { StatusProvider } from "@/app/context/StatusContext";
 import { StatusPopup } from "@/app/components/StatusPopup";
 
-// 2. Konfigurasi Lato
-const lato = Lato({
+// 2. Konfigurasi Open_Sans
+const open_sans = Open_Sans({
   subsets: ["latin"],
-  weight: ["400", "700", "900"], // Pilih ketebalan yang relevan
+  weight: ["400", "700"], // Pilih ketebalan yang relevan
   display: 'swap',
 });
 
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${lato.className} antialiased bg-gray-50 flex flex-col min-h-screen`} // 3. Gunakan className dari Lato
+        className={`${open_sans.className} antialiased bg-gray-50 flex flex-col min-h-screen`} // 3. Gunakan className dari Open Sans
       >
         <StatusProvider>
           <PageTransitionLoader />
