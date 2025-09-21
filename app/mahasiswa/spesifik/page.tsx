@@ -10,7 +10,7 @@ import { PtSearchableSelect } from "@/app/components/PtSearchableSelect";
 import { ProdiByPtSearchableSelect } from "@/app/components/ProdiByPtSearchableSelect";
 import { ProgramStudi, PerguruanTinggi, Mahasiswa } from "@/app/types";
 
-// --- POPUP COMPONENT (UPDATED WITH LOADING BUTTON) ---
+// --- POPUP COMPONENT (FINAL DESIGN) ---
 const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa: Mahasiswa, onConfirm: () => void, onCancel: () => void, isLoading: boolean }) => (
     <motion.div
         initial={{ opacity: 0 }}
@@ -23,8 +23,10 @@ const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa:
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: -20 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden"
+            // --- PERUBAHAN UKURAN DI SINI ---
+            className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
         >
+            {/* --- Header with Aurora Effect --- */}
             <div className="relative p-8 text-white text-center overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-700 z-0"></div>
                 <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-tr from-indigo-500/50 via-cyan-400/50 to-sky-300/50 rounded-full animate-spin-slow z-10"></div>
@@ -53,6 +55,7 @@ const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa:
             </div>
             
             <div className="p-8">
+                {/* --- INFORMASI MAHASISWA --- */}
                 <div className="space-y-5 text-left">
                     <div className="flex items-center gap-5">
                         <User className="w-7 h-7 text-gray-400 flex-shrink-0" />
@@ -89,7 +92,6 @@ const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa:
                     type="button"
                     onClick={onConfirm}
                     disabled={isLoading}
-                    // --- PERUBAHAN HOVER DAN LOADING DI SINI ---
                     className="w-full group px-6 h-14 text-lg font-semibold text-white bg-blue-600 rounded-xl focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-blue-400 transition-all duration-300 shadow-lg flex items-center justify-center gap-3 cursor-pointer transform hover:scale-[1.03] hover:shadow-blue-500/50 disabled:bg-blue-400 disabled:scale-100 disabled:cursor-wait"
                   >
                     {isLoading ? (
@@ -190,10 +192,9 @@ export default function SpesifikPage() {
         {searchResult && (
           <ResultPopup 
             mahasiswa={searchResult}
-            // --- KIRIM FUNGSI DAN STATE LOADING KE POPUP ---
             isLoading={isRedirecting}
             onConfirm={() => {
-                setIsRedirecting(true); // Aktifkan loading
+                setIsRedirecting(true);
                 router.push(`/mahasiswa/detail/${encodeURIComponent(searchResult.id)}`);
             }}
             onCancel={() => setSearchResult(null)}
