@@ -323,6 +323,7 @@ export default function DosenPage() {
                           setFilterPT(value);
                           setCurrentPage(1);
                         }}
+                        iconType="university"   // ← tambahkan iconType
                       />
                     </div>
                   </div>
@@ -338,6 +339,7 @@ export default function DosenPage() {
                           setFilterProdi(value);
                           setCurrentPage(1);
                         }}
+                        iconType="prodi"        // ← tambahkan iconType
                       />
                     </div>
                   </div>
