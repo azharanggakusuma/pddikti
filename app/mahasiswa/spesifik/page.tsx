@@ -55,37 +55,38 @@ const ResultPopup = ({ mahasiswa, onConfirm, onCancel }: { mahasiswa: Mahasiswa,
             </div>
             
             <div className="p-8">
-                {/* --- INFORMASI MAHASISWA --- */}
+                {/* --- INFORMASI MAHASISWA (PERUBAHAN DI SINI) --- */}
                 <div className="space-y-5 text-left">
-                    <div className="flex items-start gap-4">
-                        <User className="w-6 h-6 text-gray-400 mt-1 flex-shrink-0" />
+                    <div className="flex items-center gap-5">
+                        <User className="w-7 h-7 text-gray-400 flex-shrink-0" />
                         <div>
                             <p className="text-sm font-medium text-gray-500">Nama Mahasiswa</p>
                             <p className="font-semibold text-gray-900 text-lg leading-tight">{mahasiswa.nama}</p>
                         </div>
                     </div>
-                     <div className="flex items-start gap-4">
-                        <Hash className="w-6 h-6 text-gray-400 mt-1 flex-shrink-0" />
+                     <div className="flex items-center gap-5">
+                        <Hash className="w-7 h-7 text-gray-400 flex-shrink-0" />
                         <div>
                             <p className="text-sm font-medium text-gray-500">NIM</p>
                             <p className="font-semibold text-gray-900 text-lg leading-tight">{mahasiswa.nim}</p>
                         </div>
                     </div>
-                     <div className="flex items-start gap-4">
-                        <University className="w-6 h-6 text-gray-400 mt-1 flex-shrink-0" />
+                     <div className="flex items-center gap-5">
+                        <University className="w-7 h-7 text-gray-400 flex-shrink-0" />
                         <div>
                             <p className="text-sm font-medium text-gray-500">Perguruan Tinggi</p>
                             <p className="font-semibold text-gray-900 text-lg leading-tight">{mahasiswa.nama_pt}</p>
                         </div>
                     </div>
-                     <div className="flex items-start gap-4">
-                        <BookOpen className="w-6 h-6 text-gray-400 mt-1 flex-shrink-0" />
+                     <div className="flex items-center gap-5">
+                        <BookOpen className="w-7 h-7 text-gray-400 flex-shrink-0" />
                         <div>
                             <p className="text-sm font-medium text-gray-500">Program Studi</p>
                             <p className="font-semibold text-gray-900 text-lg leading-tight">{mahasiswa.nama_prodi}</p>
                         </div>
                     </div>
                 </div>
+                {/* --- BATAS PERUBAHAN --- */}
 
                 <div className="mt-10">
                   <button
