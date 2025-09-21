@@ -124,10 +124,10 @@ export default function SpesifikPage() {
                  <div className="space-y-4">
                      <div className="space-y-2">
                           <label htmlFor="nim" className="text-sm font-semibold text-gray-700">
-                            1. Nomor Induk Mahasiswa (NIM)
+                            Nomor Induk Mahasiswa (NIM)
                           </label>
                           <div className="relative">
-                              <Hash size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                              <Hash size={18} className={`absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${nim.trim() ? 'text-blue-600' : 'text-gray-400'}`} />
                               <input
                                   id="nim"
                                   type="text"
@@ -141,7 +141,7 @@ export default function SpesifikPage() {
                       </div>
                      <div className="space-y-2">
                           <label className="text-sm font-semibold text-gray-700">
-                          2. Perguruan Tinggi
+                          Perguruan Tinggi
                           </label>
                           <PtSearchableSelect
                               value={selectedPt}
@@ -151,7 +151,7 @@ export default function SpesifikPage() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-gray-700">
-                        3. Program Studi
+                        Program Studi
                       </label>
                       <ProdiByPtSearchableSelect
                           value={selectedProdi}
