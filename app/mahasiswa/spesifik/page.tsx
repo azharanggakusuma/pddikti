@@ -10,7 +10,7 @@ import { PtSearchableSelect } from "@/app/components/PtSearchableSelect";
 import { ProdiByPtSearchableSelect } from "@/app/components/ProdiByPtSearchableSelect";
 import { ProgramStudi, PerguruanTinggi, Mahasiswa } from "@/app/types";
 
-// --- POPUP COMPONENT (FINAL DESIGN WITH COMPACT ELEMENTS) ---
+// --- POPUP COMPONENT (COLOR SCHEME FIXED) ---
 const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa: Mahasiswa, onConfirm: () => void, onCancel: () => void, isLoading: boolean }) => (
     <motion.div
         initial={{ opacity: 0 }}
@@ -25,10 +25,11 @@ const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa:
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
         >
-            {/* --- Header with Aurora Effect --- */}
+            {/* --- Header with Themed Gradient --- */}
             <div className="relative p-6 text-white text-center overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-700 z-0"></div>
-                <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-tr from-indigo-500/50 via-cyan-400/50 to-sky-300/50 rounded-full animate-spin-slow z-10"></div>
+                 {/* --- PERUBAHAN WARNA DI SINI --- */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-700 z-0"></div>
+                <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-tr from-blue-500/50 via-cyan-400/50 to-sky-300/50 rounded-full animate-spin-slow z-10"></div>
 
                 <div className="relative z-20">
                      <button
@@ -55,7 +56,7 @@ const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa:
             </div>
             
             <div className="p-6">
-                {/* --- INFORMASI MAHASISWA (COMPACT) --- */}
+                {/* --- INFORMASI MAHASISWA --- */}
                 <div className="space-y-4 text-left">
                     <div className="flex items-center gap-4">
                         <User className="w-6 h-6 text-gray-400 flex-shrink-0" />
@@ -131,7 +132,7 @@ export default function SpesifikPage() {
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [searchResult, setSearchResult] = useState<Mahasiswa | null>(null);
-  const [isRedirecting, setIsRedirecting] = useState(false); // State untuk loading button
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const router = useRouter();
 
   const handleSearch = async (e: FormEvent) => {
