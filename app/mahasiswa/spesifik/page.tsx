@@ -3,11 +3,12 @@
 
 import { useState, FormEvent, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Loader2, AlertCircle, Hash, BookOpen, CheckCircle } from "lucide-react";
+import { Search, Loader2, AlertCircle, Hash, BookOpen, CheckCircle, University } from "lucide-react";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { motion } from "framer-motion";
-import { ProdiSearchableSelect } from "@/app/components/ProdiSearchableSelect";
-import { ProgramStudi } from "@/app/types";
+import { PtSearchableSelect } from "@/app/components/PtSearchableSelect"; // Ganti impor
+import { ProdiByPtSearchableSelect } from "@/app/components/ProdiByPtSearchableSelect"; // Impor komponen baru
+import { ProgramStudi, PerguruanTinggi } from "@/app/types";
 
 // Helper component for the instruction steps
 const InstructionStep = ({ icon, title, description }: { icon: ReactNode, title: string, description: string }) => (
@@ -24,6 +25,7 @@ const InstructionStep = ({ icon, title, description }: { icon: ReactNode, title:
 
 export default function SpesifikPage() {
   const [nim, setNim] = useState("");
+  const [selectedPt, setSelectedPt] = useState<PerguruanTinggi | null>(null); // State untuk PT
   const [selectedProdi, setSelectedProdi] = useState<ProgramStudi | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,8 +37,8 @@ export default function SpesifikPage() {
     setError(null);
     setNotFound(false);
 
-    if (!nim.trim() || !selectedProdi) {
-      setError("NIM dan Program Studi harus diisi.");
+    if (!nim.trim() || !selectedProdi || !selectedPt) {
+      setError("Semua field harus diisi.");
       return;
     }
 
@@ -46,9 +48,9 @@ export default function SpesifikPage() {
       const params = new URLSearchParams({
         nim: nim.trim(),
         nama_prodi: selectedProdi.nama,
-        nama_pt: selectedProdi.pt
+        nama_pt: selectedPt.nama
       });
-      
+
       const response = await fetch(`/api/mahasiswa/spesifik?${params.toString()}`);
 
       if (response.status === 404) {
@@ -60,7 +62,7 @@ export default function SpesifikPage() {
         const data = await response.json();
         throw new Error(data.message || "Gagal terhubung ke server.");
       }
-      
+
       const data = await response.json();
 
       if (data && data.id) {
@@ -75,7 +77,7 @@ export default function SpesifikPage() {
       setLoading(false);
     }
   };
-  
+
   const breadcrumbItems = [
     { label: "Mahasiswa", href: "/mahasiswa" },
     { label: "Pencarian Spesifik" }
@@ -94,7 +96,7 @@ export default function SpesifikPage() {
 
         <div className="mt-4 bg-white rounded-2xl border border-gray-200/60 shadow-xl shadow-gray-200/40 overflow-hidden">
           <div className="grid md:grid-cols-2">
-            
+
             {/* Kolom Kiri - Informasi */}
             <div className="p-8 sm:p-10 bg-gray-50/70 border-b md:border-b-0 md:border-r border-gray-200/80">
                 <div className="flex items-center gap-4">
@@ -111,19 +113,19 @@ export default function SpesifikPage() {
                 </p>
                 <div className="mt-8 pt-6 border-t border-gray-200/80 space-y-6">
                    <InstructionStep 
-                        icon={<Hash size={20} />} 
-                        title="1. Masukkan NIM"
-                        description="Gunakan Nomor Induk Mahasiswa yang valid dan lengkap."
+                        icon={<University size={20} />} 
+                        title="1. Pilih Perguruan Tinggi"
+                        description="Ketik untuk mencari perguruan tinggi yang dituju."
                    />
                     <InstructionStep 
                         icon={<BookOpen size={20} />} 
                         title="2. Pilih Program Studi"
-                        description="Ketik untuk mencari Perguruan Tinggi dan Program Studi."
+                        description="Pilih program studi dari perguruan tinggi yang sudah dipilih."
                    />
-                     <InstructionStep 
-                        icon={<Search size={20} />} 
-                        title="3. Mulai Pencarian"
-                        description="Klik tombol cari untuk melihat hasil spesifik."
+                   <InstructionStep 
+                        icon={<Hash size={20} />} 
+                        title="3. Masukkan NIM"
+                        description="Gunakan Nomor Induk Mahasiswa yang valid dan lengkap."
                    />
                 </div>
             </div>
@@ -133,6 +135,30 @@ export default function SpesifikPage() {
               <form onSubmit={handleSearch} className="flex flex-col h-full">
                 <div className="flex-grow space-y-6">
                    <h2 className="text-lg font-semibold text-gray-800">Masukkan Detail Mahasiswa</h2>
+
+                   <div className="space-y-2">
+                        <label className="text-sm font-semibold text-gray-700">
+                        Perguruan Tinggi
+                        </label>
+                        <PtSearchableSelect
+                            value={selectedPt}
+                            onChange={setSelectedPt}
+                            placeholder="Ketik untuk mencari PT..."
+                        />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-gray-700">
+                      Program Studi
+                    </label>
+                    <ProdiByPtSearchableSelect
+                        value={selectedProdi}
+                        onChange={setSelectedProdi}
+                        selectedPt={selectedPt}
+                        placeholder="Ketik untuk mencari prodi..."
+                    />
+                  </div>
+
                   <div className="space-y-2">
                     <label htmlFor="nim" className="text-sm font-semibold text-gray-700">
                       Nomor Induk Mahasiswa (NIM)
@@ -148,17 +174,6 @@ export default function SpesifikPage() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700">
-                      Perguruan Tinggi & Program Studi
-                    </label>
-                    <ProdiSearchableSelect
-                        value={selectedProdi}
-                        onChange={setSelectedProdi}
-                        placeholder="Ketik nama prodi atau PT..."
-                    />
-                  </div>
-                  
                   <div className="!mt-4 space-y-4">
                       {error && (
                         <motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="flex items-center gap-3 text-red-700 bg-red-50 p-3 rounded-lg border border-red-200">
