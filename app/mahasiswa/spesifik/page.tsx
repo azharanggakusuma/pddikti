@@ -103,7 +103,7 @@ export default function SpesifikPage() {
                     <CheckCircle className="text-blue-600" size={32}/>
                     <div>
                         <h1 className="text-xl font-bold text-gray-900">
-                           Pencarian Paling Akurat
+                           Pencarian Spesifik Mahasiswa
                         </h1>
                         <p className="text-sm text-gray-500">Dapatkan hasil tunggal dan presisi.</p>
                     </div>
