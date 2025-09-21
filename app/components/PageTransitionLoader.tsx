@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, type Transition, easeInOut } from 'framer-motion';
 
 // Variasi animasi untuk setiap titik
 const dotVariants = {
@@ -11,11 +11,12 @@ const dotVariants = {
 };
 
 // Transisi yang akan digunakan oleh setiap titik, menciptakan efek berulang
-const dotTransition = {
+// Penting: gunakan easing function (easeInOut) atau array cubic-bezier, bukan string.
+const dotTransition: Transition = {
   duration: 0.5,
   repeat: Infinity,
-  repeatType: 'reverse' as const,
-  ease: 'easeInOut',
+  repeatType: 'reverse',
+  ease: easeInOut, // ✅ perbaikan utama (bukan 'easeInOut' string)
 };
 
 export const PageTransitionLoader = () => {
@@ -31,17 +32,22 @@ export const PageTransitionLoader = () => {
     const handleAnchorClick = (event: MouseEvent) => {
       const target = event.currentTarget as HTMLAnchorElement;
       const href = target.getAttribute('href');
-      
-      if (href && href.startsWith('/') && !href.startsWith('/#') && href !== window.location.pathname) {
+
+      if (
+        href &&
+        href.startsWith('/') &&
+        !href.startsWith('/#') &&
+        href !== window.location.pathname
+      ) {
         setIsLoading(true);
       }
     };
 
     const anchors = document.querySelectorAll('a');
-    anchors.forEach(a => a.addEventListener('click', handleAnchorClick));
+    anchors.forEach((a) => a.addEventListener('click', handleAnchorClick));
 
     return () => {
-      anchors.forEach(a => a.removeEventListener('click', handleAnchorClick));
+      anchors.forEach((a) => a.removeEventListener('click', handleAnchorClick));
     };
   }, [pathname]); // 'pathname' menjadi pemicu utama
 
