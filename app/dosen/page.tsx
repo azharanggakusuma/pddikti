@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect, useMemo, FormEvent, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
@@ -323,7 +325,7 @@ export default function DosenPage() {
                           setFilterPT(value);
                           setCurrentPage(1);
                         }}
-                        iconType="university"   // ← tambahkan iconType
+                        iconType="university"
                       />
                     </div>
                   </div>
@@ -339,7 +341,7 @@ export default function DosenPage() {
                           setFilterProdi(value);
                           setCurrentPage(1);
                         }}
-                        iconType="prodi"        // ← tambahkan iconType
+                        iconType="prodi"
                       />
                     </div>
                   </div>
