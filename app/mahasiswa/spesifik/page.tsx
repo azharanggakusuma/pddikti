@@ -1,13 +1,26 @@
 // app/mahasiswa/spesifik/page.tsx
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Loader2, AlertCircle, CheckCircle } from "lucide-react";
+import { Search, Loader2, AlertCircle, Hash, BookOpen, CheckCircle } from "lucide-react";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { motion } from "framer-motion";
 import { ProdiSearchableSelect } from "@/app/components/ProdiSearchableSelect";
 import { ProgramStudi } from "@/app/types";
+
+// Helper component for the instruction steps
+const InstructionStep = ({ icon, title, description }: { icon: ReactNode, title: string, description: string }) => (
+    <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-xl bg-white text-blue-600 border border-gray-200 shadow-sm">
+            {icon}
+        </div>
+        <div>
+            <h4 className="font-semibold text-gray-800">{title}</h4>
+            <p className="text-sm text-gray-500 mt-0.5">{description}</p>
+        </div>
+    </div>
+);
 
 export default function SpesifikPage() {
   const [nim, setNim] = useState("");
@@ -19,18 +32,19 @@ export default function SpesifikPage() {
 
   const handleSearch = async (e: FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setNotFound(false);
+
     if (!nim.trim() || !selectedProdi) {
       setError("NIM dan Program Studi harus diisi.");
       return;
     }
 
     setLoading(true);
-    setError(null);
-    setNotFound(false);
 
     try {
       const params = new URLSearchParams({
-        nim: nim,
+        nim: nim.trim(),
         nama_prodi: selectedProdi.nama,
         nama_pt: selectedProdi.pt
       });
@@ -78,26 +92,39 @@ export default function SpesifikPage() {
       <main className="w-full max-w-4xl mx-auto">
         <Breadcrumbs items={breadcrumbItems} />
 
-        <div className="mt-4 bg-white rounded-xl border border-gray-200/60 shadow-lg shadow-gray-200/40 overflow-hidden">
+        <div className="mt-4 bg-white rounded-2xl border border-gray-200/60 shadow-xl shadow-gray-200/40 overflow-hidden">
           <div className="grid md:grid-cols-2">
             
             {/* Kolom Kiri - Informasi */}
-            <div className="p-8 sm:p-10 bg-gray-50/70">
+            <div className="p-8 sm:p-10 bg-gray-50/70 border-b md:border-b-0 md:border-r border-gray-200/80">
                 <div className="flex items-center gap-4">
-                    <CheckCircle className="text-blue-600" size={36}/>
+                    <CheckCircle className="text-blue-600" size={32}/>
                     <div>
                         <h1 className="text-xl font-bold text-gray-900">
-                            Pencarian Spesifik
+                           Pencarian Paling Akurat
                         </h1>
-                        <p className="text-sm text-gray-500">Akurasi dan presisi data.</p>
+                        <p className="text-sm text-gray-500">Dapatkan hasil tunggal dan presisi.</p>
                     </div>
                 </div>
                 <p className="mt-6 text-base text-gray-600">
-                    Gunakan pencarian ini untuk hasil yang paling akurat. Memastikan data yang ditemukan adalah benar milik mahasiswa yang dituju.
+                    Gunakan pencarian ini untuk memastikan data yang ditemukan adalah milik mahasiswa yang dituju.
                 </p>
-                <div className="mt-6 pt-6 border-t border-gray-200/80 space-y-4 text-sm">
-                    <p className="flex items-start gap-2"><strong className="font-semibold text-gray-800 w-16 flex-shrink-0">NIM:</strong> <span className="text-gray-600">Masukkan Nomor Induk Mahasiswa yang valid.</span></p>
-                    <p className="flex items-start gap-2"><strong className="font-semibold text-gray-800 w-16 flex-shrink-0">Prodi:</strong> <span className="text-gray-600">Pilih Perguruan Tinggi dan Program Studi.</span></p>
+                <div className="mt-8 pt-6 border-t border-gray-200/80 space-y-6">
+                   <InstructionStep 
+                        icon={<Hash size={20} />} 
+                        title="1. Masukkan NIM"
+                        description="Gunakan Nomor Induk Mahasiswa yang valid dan lengkap."
+                   />
+                    <InstructionStep 
+                        icon={<BookOpen size={20} />} 
+                        title="2. Pilih Program Studi"
+                        description="Ketik untuk mencari Perguruan Tinggi dan Program Studi."
+                   />
+                     <InstructionStep 
+                        icon={<Search size={20} />} 
+                        title="3. Mulai Pencarian"
+                        description="Klik tombol cari untuk melihat hasil spesifik."
+                   />
                 </div>
             </div>
 
@@ -105,8 +132,8 @@ export default function SpesifikPage() {
             <div className="p-8 sm:p-10">
               <form onSubmit={handleSearch} className="flex flex-col h-full">
                 <div className="flex-grow space-y-6">
-                  {/* --- PERUBAHAN JARAK LABEL & INPUT --- */}
-                  <div className="space-y-2.5">
+                   <h2 className="text-lg font-semibold text-gray-800">Masukkan Detail Mahasiswa</h2>
+                  <div className="space-y-2">
                     <label htmlFor="nim" className="text-sm font-semibold text-gray-700">
                       Nomor Induk Mahasiswa (NIM)
                     </label>
@@ -116,20 +143,19 @@ export default function SpesifikPage() {
                         value={nim}
                         onChange={(e) => setNim(e.target.value)}
                         placeholder="Contoh: 11223344"
-                        className="w-full h-12 px-3 text-base bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-blue-400 transition-all"
+                        className="w-full h-12 px-4 text-base bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
                         required
                     />
                   </div>
 
-                  {/* --- PERUBAHAN JARAK LABEL & INPUT --- */}
-                  <div className="space-y-2.5">
+                  <div className="space-y-2">
                     <label className="text-sm font-semibold text-gray-700">
                       Perguruan Tinggi & Program Studi
                     </label>
                     <ProdiSearchableSelect
                         value={selectedProdi}
                         onChange={setSelectedProdi}
-                        placeholder="Ketik untuk mencari..."
+                        placeholder="Ketik nama prodi atau PT..."
                     />
                   </div>
                   
@@ -167,7 +193,6 @@ export default function SpesifikPage() {
                 </div>
               </form>
             </div>
-
           </div>
         </div>
       </main>

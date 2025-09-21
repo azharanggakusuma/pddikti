@@ -137,7 +137,7 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Ketik un
             {isOpen ? (
                 // --- Input Mode ---
                 <div className="relative">
-                    <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                         ref={inputRef}
                         type="text"
@@ -145,16 +145,14 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Ketik un
                         onChange={(e) => setSearchTerm(e.target.value)}
                         onBlur={handleBlur}
                         placeholder={placeholder}
-                        // --- PENYESUAIAN UKURAN & BORDER ---
-                        className="w-full h-12 pl-10 pr-4 text-base bg-white border border-blue-400 rounded-lg outline-none ring-1 ring-blue-400"
+                        className="w-full h-12 pl-11 pr-4 text-base bg-white border border-blue-400 rounded-lg outline-none ring-2 ring-blue-400 ring-offset-1"
                     />
                 </div>
             ) : (
                 // --- Display Mode ---
                 <div 
                     onClick={openDropdown}
-                    // --- PENYESUAIAN UKURAN & BORDER ---
-                    className="flex items-center w-full h-12 px-3 text-left bg-white border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer hover:border-gray-400"
+                    className="flex items-center w-full h-12 px-4 text-left bg-white border border-gray-300 rounded-lg transition-all duration-200 cursor-pointer hover:border-gray-400"
                 >
                     <div className="flex items-center gap-3 flex-grow min-w-0">
                         {value ? (
@@ -208,8 +206,8 @@ export const ProdiSearchableSelect = ({ value, onChange, placeholder = "Ketik un
                                     ) : (
                                         <div className="flex flex-col items-center justify-center text-center p-8 text-sm text-gray-500">
                                             <Info size={32} className="text-gray-300 mb-4" />
-                                            {!loading && debouncedSearchTerm.length < 3 && <p>Ketik minimal <strong className="text-gray-600">3 huruf</strong> untuk memulai pencarian.</p>}
-                                            {!loading && debouncedSearchTerm.length >= 3 && <p>Tidak ada prodi yang cocok dengan <strong className="text-gray-600">"{debouncedSearchTerm}"</strong>.</p>}
+                                            {!loading && debouncedSearchTerm.length < 3 && <p>Ketik minimal <strong className="text-gray-600">3 huruf</strong> untuk memulai.</p>}
+                                            {!loading && debouncedSearchTerm.length >= 3 && <p>Prodi <strong className="text-gray-600">"{debouncedSearchTerm}"</strong> tidak ditemukan.</p>}
                                             {loading && <div className="flex items-center gap-2"><Loader2 size={16} className="animate-spin" /><p>Mencari...</p></div>}
                                         </div>
                                     )}
