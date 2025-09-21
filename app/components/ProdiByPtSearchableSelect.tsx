@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import { ChevronDown, Search, X, Loader2, BookOpen, University, Info } from 'lucide-react';
 import { ProgramStudi, PerguruanTinggi } from '@/app/types';
 import { useDebounce } from '@/app/hooks/useDebounce';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion'; // Import Variants
 
 // Portal Component for stacking context fix
 interface PortalProps {
@@ -144,7 +144,7 @@ export const ProdiByPtSearchableSelect = ({ value, onChange, selectedPt, placeho
         }, 150);
     };
 
-    const dropdownVariants = {
+    const dropdownVariants: Variants = { // Add the Variants type here
         hidden: { opacity: 0, scale: 0.95, y: -10 },
         visible: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 400, damping: 25 } },
         exit: { opacity: 0, scale: 0.95, y: -10, transition: { duration: 0.1 } }
