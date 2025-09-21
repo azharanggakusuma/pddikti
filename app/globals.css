@@ -8,12 +8,12 @@
   --subtle-foreground: #64748b; /* slate 500 */
 
   /* Warna utama diambil dari logo */
-  --primary-accent: #0077C8; /* biru sedang (ikon/tagline) */
+  --primary-accent: #004790; /* WARNA BARU */
   --primary-accent-foreground: #ffffff;
-  --primary-accent-hover: #004B87; /* biru tua (teks Data) */
+  --primary-accent-hover: #003366; /* variasi lebih gelap untuk hover */
   
   /* Warna tambahan untuk gradasi */
-  --secondary-accent: #29ABE2; /* biru muda (teks Dikti) */
+  --secondary-accent: #0055A4; /* variasi lebih terang */
 
   --kbd-background: #f1f5f9; /* slate 100 */
   --kbd-border: #cbd5e1; /* slate 300 */
