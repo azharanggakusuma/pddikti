@@ -30,7 +30,8 @@ const ResultPopup = ({ mahasiswa, onConfirm, onCancel }: { mahasiswa: Mahasiswa,
                  <button
                   type="button"
                   onClick={onCancel}
-                  className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
+                  // --- PERUBAHAN DI SINI ---
+                  className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors cursor-pointer"
                   aria-label="Tutup"
                 >
                   <X size={24} />
@@ -86,7 +87,8 @@ const ResultPopup = ({ mahasiswa, onConfirm, onCancel }: { mahasiswa: Mahasiswa,
                   <button
                     type="button"
                     onClick={onConfirm}
-                    className="w-full group px-6 h-14 text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-blue-400 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+                    // --- PERUBAHAN DI SINI ---
+                    className="w-full group px-6 h-14 text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-blue-400 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 cursor-pointer"
                   >
                     <span>Lihat Detail Lengkap</span>
                     <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" size={20} />
