@@ -71,6 +71,7 @@ export default function Home() {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchCategory, setSearchCategory] = useState('semua');
     const [showBackToTop, setShowBackToTop] = useState(false);
+    const [isSearching, setIsSearching] = useState(false); // State untuk loading
     const router = useRouter();
 
     useEffect(() => {
@@ -92,6 +93,8 @@ export default function Home() {
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
         if (!searchQuery.trim()) return;
+
+        setIsSearching(true); // Atur loading menjadi true saat pencarian dimulai
 
         let path = '';
         switch (searchCategory) {
@@ -182,11 +185,18 @@ export default function Home() {
                         />
                         <button
                             type="submit"
-                            className="mr-2 ml-1 px-4 sm:px-5 h-11 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                            disabled={isSearching}
+                            className="mr-2 ml-1 px-4 sm:px-5 h-11 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed"
                             aria-label="Cari"
                         >
-                            <Search size={20} className="sm:mr-2 transition-all"/>
-                            <span className="hidden sm:inline font-semibold">Cari</span>
+                            {isSearching ? (
+                                <Loader2 size={20} className="animate-spin" />
+                            ) : (
+                                <>
+                                    <Search size={20} className="sm:mr-2 transition-all"/>
+                                    <span className="hidden sm:inline font-semibold">Cari</span>
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>
