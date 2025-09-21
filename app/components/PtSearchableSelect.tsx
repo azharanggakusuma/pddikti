@@ -6,8 +6,7 @@ import { createPortal } from 'react-dom';
 import { ChevronDown, Search, X, Loader2, University, Info } from 'lucide-react';
 import { PerguruanTinggi } from '@/app/types';
 import { useDebounce } from '@/app/hooks/useDebounce';
-import { motion, AnimatePresence } from 'framer-motion';
-import type { Variants, Transition } from 'framer-motion'; // <- type-only import
+import { motion, AnimatePresence } from 'framer-motion'; // ← tanpa Variants
 
 // Portal Component for stacking context fix
 interface PortalProps {
@@ -128,19 +127,6 @@ export const PtSearchableSelect = ({
     }, 150);
   };
 
-  // --- FIX: ketikkan transition agar "type" terbaca literal, bukan string biasa ---
-  const dropdownSpring: Transition = {
-    type: 'spring',       // <- literal
-    stiffness: 400,
-    damping: 25,
-  };
-
-  const dropdownVariants: Variants = {
-    hidden: { opacity: 0, scale: 0.95, y: -10 },
-    visible: { opacity: 1, scale: 1, y: 0, transition: dropdownSpring },
-    exit: { opacity: 0, scale: 0.95, y: -10, transition: { duration: 0.1 } },
-  };
-
   return (
     <div className="relative w-full" ref={controlRef}>
       {isOpen ? (
@@ -190,10 +176,14 @@ export const PtSearchableSelect = ({
         {isOpen && (
           <Portal>
             <motion.div
-              variants={dropdownVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
+              initial={{ opacity: 0, scale: 0.95, y: -10 }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                transition: { type: 'spring', stiffness: 400, damping: 25 } as const,
+              }}
+              exit={{ opacity: 0, scale: 0.95, y: -10, transition: { duration: 0.1 } }}
               style={{ position: 'absolute', top: `${coords.top + 8}px`, left: `${coords.left}px`, width: `${coords.width}px` }}
               className="pt-select-dropdown-portal bg-white border border-gray-200 rounded-lg shadow-2xl shadow-gray-200/60 z-50 max-h-72 flex flex-col"
             >
@@ -222,8 +212,7 @@ export const PtSearchableSelect = ({
                       )}
                       {!loading && debouncedSearchTerm.length >= 3 && (
                         <p>
-                          Perguruan Tinggi <strong className="text-gray-600">"{debouncedSearchTerm}"</strong> tidak
-                          ditemukan.
+                          Perguruan Tinggi <strong className="text-gray-600">"{debouncedSearchTerm}"</strong> tidak ditemukan.
                         </p>
                       )}
                       {loading && (
