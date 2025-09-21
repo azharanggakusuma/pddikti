@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { ChevronDown, Search, X, BookOpen } from 'lucide-react';
+import { ChevronDown, Search, X, University, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SearchableSelectProps {
@@ -11,9 +11,10 @@ interface SearchableSelectProps {
     onChange: (value: string) => void;
     placeholder?: string;
     disabled?: boolean;
+    iconType: 'university' | 'prodi'; // Prop untuk menentukan jenis ikon
 }
 
-export const SearchableSelect = ({ options, value, onChange, placeholder = "Pilih...", disabled = false }: SearchableSelectProps) => {
+export const SearchableSelect = ({ options, value, onChange, placeholder = "Pilih...", disabled = false, iconType }: SearchableSelectProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -46,6 +47,9 @@ export const SearchableSelect = ({ options, value, onChange, placeholder = "Pili
         exit: { opacity: 0, scale: 0.95, y: -10, transition: { duration: 0.1 } }
     };
 
+    // Tentukan ikon berdasarkan prop iconType
+    const Icon = iconType === 'university' ? University : BookOpen;
+
     return (
         <div className="relative w-full" ref={wrapperRef}>
             <div
@@ -53,7 +57,7 @@ export const SearchableSelect = ({ options, value, onChange, placeholder = "Pili
                 className={`flex items-center w-full h-12 px-3 text-left bg-white border rounded-lg transition-all duration-200 ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400 border-gray-200'}`}
             >
                 <div className="flex items-center gap-3 flex-grow min-w-0">
-                    <BookOpen className={`${value !== 'Semua' ? 'text-blue-600' : 'text-gray-400'} flex-shrink-0`} size={20} />
+                    <Icon className={`${value !== 'Semua' ? 'text-blue-600' : 'text-gray-400'} flex-shrink-0`} size={20} />
                     <div className="flex-grow min-w-0">
                         {value !== 'Semua' ? (
                             <p className="text-sm font-semibold text-gray-800 truncate">{value}</p>
@@ -82,7 +86,7 @@ export const SearchableSelect = ({ options, value, onChange, placeholder = "Pili
                                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                                 <input
                                     type="text"
-                                    placeholder="Cari program studi..."
+                                    placeholder="Cari..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full pl-9 pr-2 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"

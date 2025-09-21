@@ -314,6 +314,7 @@ export default function ProdiPage() {
                     </label>
                     <div className="mt-1">
                       <SearchableSelect
+                        iconType="university"
                         options={uniquePT}
                         value={filterPT}
                         onChange={(value) => {
@@ -329,6 +330,7 @@ export default function ProdiPage() {
                     </label>
                     <div className="mt-1">
                       <SearchableSelect
+                        iconType="prodi"
                         options={uniqueJenjang}
                         value={filterJenjang}
                         onChange={(value) => {

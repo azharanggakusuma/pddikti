@@ -350,6 +350,7 @@ export default function MahasiswaPage() {
                     </label>
                     <div className="mt-1">
                       <SearchableSelect
+                        iconType="university"
                         options={uniquePT}
                         value={filterPT}
                         onChange={(value) => {
@@ -365,6 +366,7 @@ export default function MahasiswaPage() {
                     </label>
                     <div className="mt-1">
                       <SearchableSelect
+                        iconType="prodi"
                         options={uniqueProdi}
                         value={filterProdi}
                         onChange={(value) => {
