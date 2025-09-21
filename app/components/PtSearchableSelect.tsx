@@ -173,7 +173,7 @@ export const PtSearchableSelect = ({ value, onChange, placeholder = "Ketik untuk
                 </div>
             )}
 
-            <AnatePresence>
+            <AnimatePresence>
                 {isOpen && (
                      <Portal>
                         <motion.div
@@ -206,7 +206,7 @@ export const PtSearchableSelect = ({ value, onChange, placeholder = "Ketik untuk
                         </motion.div>
                     </Portal>
                 )}
-            </AnatePresence>
+            </AnimatePresence>
         </div>
     );
 };
