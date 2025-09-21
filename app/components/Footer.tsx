@@ -75,7 +75,7 @@ export const Footer = () => {
               <ul className="mt-4 space-y-3">
                 <li>
                   <a href="https://pddikti.kemdikbud.go.id" target="_blank" rel="noopener noreferrer" className="text-base text-gray-500 hover:text-blue-600 transition-colors">
-                    Situs PDDIKTI
+                    Situs PDDikti
                   </a>
                 </li>
                 <li>

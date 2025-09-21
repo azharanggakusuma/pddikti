@@ -144,7 +144,7 @@ export default function Home() {
           <p className="mt-6 text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
             Cari data mahasiswa, dosen, program studi, dan perguruan tinggi
             di seluruh Indonesia dengan cepat, mudah, dan terintegrasi langsung
-            dari data PDDIKTI.
+            dari data PDDikti.
           </p>
         </header>
 

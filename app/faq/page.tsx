@@ -9,15 +9,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 const faqItems = [
     {
         question: "Apakah data di situs ini akurat dan resmi?",
-        answer: "Data kami bersumber langsung dari API publik yang mengambil informasi dari PDDIKTI. Meskipun kami berusaha menyajikan data seakurat mungkin, situs resmi PDDIKTI tetap menjadi satu-satunya sumber kebenaran. Situs ini bersifat sebagai alat bantu pencarian alternatif."
+        answer: "Data kami bersumber langsung dari API publik yang mengambil informasi dari PDDikti. Meskipun kami berusaha menyajikan data seakurat mungkin, situs resmi PDDikti tetap menjadi satu-satunya sumber kebenaran. Situs ini bersifat sebagai alat bantu pencarian alternatif."
     },
     {
         question: "Seberapa sering data diperbarui?",
-        answer: "Pembaruan data bergantung sepenuhnya pada API publik yang kami gunakan dan sinkronisasinya dengan database PDDIKTI. Kami tidak melakukan pembaruan data secara manual."
+        answer: "Pembaruan data bergantung sepenuhnya pada API publik yang kami gunakan dan sinkronisasinya dengan database PDDikti. Kami tidak melakukan pembaruan data secara manual."
     },
     {
         question: "Mengapa saya tidak bisa menemukan data mahasiswa/dosen yang saya cari?",
-        answer: "Ada beberapa kemungkinan: (1) Kata kunci yang Anda masukkan kurang spesifik. Coba gunakan nama lengkap atau NIDN/NIM. (2) Data tersebut mungkin belum terdaftar atau disinkronkan di PDDIKTI. (3) Terjadi gangguan sementara pada API. Silakan coba beberapa saat lagi."
+        answer: "Ada beberapa kemungkinan: (1) Kata kunci yang Anda masukkan kurang spesifik. Coba gunakan nama lengkap atau NIDN/NIM. (2) Data tersebut mungkin belum terdaftar atau disinkronkan di PDDikti. (3) Terjadi gangguan sementara pada API. Silakan coba beberapa saat lagi."
     },
     {
         question: "Apakah situs ini berafiliasi dengan Kemdikbudristek?",

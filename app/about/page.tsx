@@ -37,10 +37,10 @@ export default function AboutPage() {
 
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
                     <FeatureCard icon={<Info size={24} />} title="Apa Itu DataDikti?">
-                        DataDikti adalah sebuah proyek independen yang bertujuan untuk menjadi pintu gerbang alternatif dalam mengakses data dari Pangkalan Data Pendidikan Tinggi (PDDIKTI). Kami percaya bahwa data publik harus mudah diakses dan disajikan dengan cara yang ramah pengguna.
+                        DataDikti adalah sebuah proyek independen yang bertujuan untuk menjadi pintu gerbang alternatif dalam mengakses data dari Pangkalan Data Pendidikan Tinggi (PDDikti). Kami percaya bahwa data publik harus mudah diakses dan disajikan dengan cara yang ramah pengguna.
                     </FeatureCard>
                     <FeatureCard icon={<Database size={24} />} title="Sumber Data Kami">
-                        Seluruh informasi yang ditampilkan di situs ini bersumber dari data publik yang disediakan oleh PDDIKTI. Kami mengambil data ini melalui API publik pihak ketiga yang dikelola oleh <a href="https://api-pddikti.ridwaanhall.com/" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">Ridwan Hall</a>, yang telah melakukan pekerjaan luar biasa dalam membuat data ini lebih mudah diakses.
+                        Seluruh informasi yang ditampilkan di situs ini bersumber dari data publik yang disediakan oleh PDDikti. Kami mengambil data ini melalui API publik pihak ketiga yang dikelola oleh <a href="https://api-pddikti.ridwaanhall.com/" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">Ridwan Hall</a>, yang telah melakukan pekerjaan luar biasa dalam membuat data ini lebih mudah diakses.
                     </FeatureCard>
                      <FeatureCard icon={<Zap size={24} />} title="Teknologi di Baliknya">
                         Situs ini dibangun menggunakan teknologi web modern seperti Next.js dan Tailwind CSS untuk memberikan pengalaman pengguna yang cepat dan responsif. Kami fokus pada kecepatan, kemudahan penggunaan, dan desain yang bersih.

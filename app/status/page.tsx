@@ -159,7 +159,7 @@ export default function StatusPage() {
                 Status <span className="text-blue-600">Layanan</span>
             </h1>
             <p className="mt-6 text-base sm:text-lg text-gray-600 max-w-xl mx-auto leading-relaxed">
-                Laporan real-time untuk konektivitas dan performa API PDDIKTI.
+                Laporan real-time untuk konektivitas dan performa API PDDikti.
             </p>
         </header>
 
@@ -184,7 +184,7 @@ export default function StatusPage() {
                             <span>Server</span>
                         </dt>
                         <dd className="w-full sm:w-auto text-left sm:text-right">
-                           <span className="text-base font-semibold text-gray-800">PDDIKTI PUBLIC API</span>
+                           <span className="text-base font-semibold text-gray-800">PDDikti Public API</span>
                         </dd>
                     </div>
                     <div className="flex flex-col sm:flex-row items-baseline justify-between gap-2">
