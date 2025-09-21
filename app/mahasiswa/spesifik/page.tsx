@@ -10,7 +10,7 @@ import { PtSearchableSelect } from "@/app/components/PtSearchableSelect";
 import { ProdiByPtSearchableSelect } from "@/app/components/ProdiByPtSearchableSelect";
 import { ProgramStudi, PerguruanTinggi, Mahasiswa } from "@/app/types";
 
-// --- POPUP COMPONENT (FINAL DESIGN) ---
+// --- POPUP COMPONENT (FINAL DESIGN WITH COMPACT ELEMENTS) ---
 const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa: Mahasiswa, onConfirm: () => void, onCancel: () => void, isLoading: boolean }) => (
     <motion.div
         initial={{ opacity: 0 }}
@@ -23,18 +23,18 @@ const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa:
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: -20 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            // --- PERUBAHAN UKURAN DI SINI ---
             className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
         >
             {/* --- Header with Aurora Effect --- */}
-            <div className="relative p-8 text-white text-center overflow-hidden">
+            <div className="relative p-6 text-white text-center overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-700 z-0"></div>
                 <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-tr from-indigo-500/50 via-cyan-400/50 to-sky-300/50 rounded-full animate-spin-slow z-10"></div>
+
                 <div className="relative z-20">
                      <button
                       type="button"
                       onClick={onCancel}
-                      className="absolute -top-4 -right-4 text-white/70 hover:text-white transition-colors cursor-pointer"
+                      className="absolute -top-2 -right-2 text-white/70 hover:text-white transition-colors cursor-pointer"
                       aria-label="Tutup"
                     >
                       <X size={24} />
@@ -43,63 +43,63 @@ const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa:
                         initial={{ scale: 0.5, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ type: 'spring', stiffness: 200, damping: 10, delay: 0.2 }}
-                        className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white/20 border-2 border-white/50 mb-4"
+                        className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white/20 border-2 border-white/50 mb-3"
                     >
-                        <CheckCircle size={40} strokeWidth={2.5} />
+                        <CheckCircle size={32} strokeWidth={2.5} />
                     </motion.div>
-                    <h2 className="text-3xl font-bold text-shadow">
+                    <h2 className="text-2xl font-bold text-shadow">
                       Data Ditemukan
                     </h2>
-                    <p className="mt-1 opacity-90 text-shadow-sm">Informasi mahasiswa yang cocok telah ditemukan.</p>
+                    <p className="mt-1 opacity-90 text-shadow-sm text-sm">Informasi mahasiswa yang cocok telah ditemukan.</p>
                 </div>
             </div>
             
-            <div className="p-8">
-                {/* --- INFORMASI MAHASISWA --- */}
-                <div className="space-y-5 text-left">
-                    <div className="flex items-center gap-5">
-                        <User className="w-7 h-7 text-gray-400 flex-shrink-0" />
+            <div className="p-6">
+                {/* --- INFORMASI MAHASISWA (COMPACT) --- */}
+                <div className="space-y-4 text-left">
+                    <div className="flex items-center gap-4">
+                        <User className="w-6 h-6 text-gray-400 flex-shrink-0" />
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Nama Mahasiswa</p>
-                            <p className="font-semibold text-gray-900 text-lg leading-tight">{mahasiswa.nama}</p>
+                            <p className="text-xs font-medium text-gray-500">Nama Mahasiswa</p>
+                            <p className="font-semibold text-gray-800 text-base leading-tight">{mahasiswa.nama}</p>
                         </div>
                     </div>
-                     <div className="flex items-center gap-5">
-                        <Hash className="w-7 h-7 text-gray-400 flex-shrink-0" />
+                     <div className="flex items-center gap-4">
+                        <Hash className="w-6 h-6 text-gray-400 flex-shrink-0" />
                         <div>
-                            <p className="text-sm font-medium text-gray-500">NIM</p>
-                            <p className="font-semibold text-gray-900 text-lg leading-tight">{mahasiswa.nim}</p>
+                            <p className="text-xs font-medium text-gray-500">NIM</p>
+                            <p className="font-semibold text-gray-800 text-base leading-tight">{mahasiswa.nim}</p>
                         </div>
                     </div>
-                     <div className="flex items-center gap-5">
-                        <University className="w-7 h-7 text-gray-400 flex-shrink-0" />
+                     <div className="flex items-center gap-4">
+                        <University className="w-6 h-6 text-gray-400 flex-shrink-0" />
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Perguruan Tinggi</p>
-                            <p className="font-semibold text-gray-900 text-lg leading-tight">{mahasiswa.nama_pt}</p>
+                            <p className="text-xs font-medium text-gray-500">Perguruan Tinggi</p>
+                            <p className="font-semibold text-gray-800 text-base leading-tight">{mahasiswa.nama_pt}</p>
                         </div>
                     </div>
-                     <div className="flex items-center gap-5">
-                        <BookOpen className="w-7 h-7 text-gray-400 flex-shrink-0" />
+                     <div className="flex items-center gap-4">
+                        <BookOpen className="w-6 h-6 text-gray-400 flex-shrink-0" />
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Program Studi</p>
-                            <p className="font-semibold text-gray-900 text-lg leading-tight">{mahasiswa.nama_prodi}</p>
+                            <p className="text-xs font-medium text-gray-500">Program Studi</p>
+                            <p className="font-semibold text-gray-800 text-base leading-tight">{mahasiswa.nama_prodi}</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-10">
+                <div className="mt-8">
                   <button
                     type="button"
                     onClick={onConfirm}
                     disabled={isLoading}
-                    className="w-full group px-6 h-14 text-lg font-semibold text-white bg-blue-600 rounded-xl focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-blue-400 transition-all duration-300 shadow-lg flex items-center justify-center gap-3 cursor-pointer transform hover:scale-[1.03] hover:shadow-blue-500/50 disabled:bg-blue-400 disabled:scale-100 disabled:cursor-wait"
+                    className="w-full group px-6 h-12 text-base font-semibold text-white bg-blue-600 rounded-xl focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-blue-400 transition-all duration-300 shadow-lg flex items-center justify-center gap-2 cursor-pointer transform hover:scale-[1.03] hover:shadow-blue-500/50 disabled:bg-blue-400 disabled:scale-100 disabled:cursor-wait"
                   >
                     {isLoading ? (
-                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
                         <>
                             <span>Lihat Detail Lengkap</span>
-                            <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1.5" size={20} />
+                            <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" size={18} />
                         </>
                     )}
                   </button>
