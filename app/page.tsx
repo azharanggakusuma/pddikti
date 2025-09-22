@@ -27,6 +27,14 @@ type MenuItemProps = {
   description: string;
 };
 
+// Tipe untuk data statistik
+type StatsData = {
+    mahasiswa: number;
+    dosen: number;
+    prodi: number;
+    pt: number;
+};
+
 // Komponen MenuItem yang telah disempurnakan
 const MenuItem = ({ href, icon, title, description }: MenuItemProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -68,53 +76,80 @@ const MenuItem = ({ href, icon, title, description }: MenuItemProps) => {
   );
 };
 
+// Komponen Skeleton untuk Statistik
+const StatCardSkeleton = () => (
+    <div className="bg-white p-6 rounded-2xl border border-gray-200/80 text-center animate-pulse">
+        <div className="flex justify-center items-center mb-4">
+            <div className="h-8 w-8 bg-gray-200 rounded-lg"></div>
+        </div>
+        <div className="h-8 w-24 bg-gray-200 rounded-md mx-auto"></div>
+        <div className="h-4 w-20 bg-gray-200 rounded-md mx-auto mt-2"></div>
+    </div>
+);
+
+// Komponen Statistik yang Didesain Ulang
+const StatCard = ({ icon, value, label, href }: { icon: React.ReactNode, value: number, label: string, href: string }) => {
+    const formatNumber = (num: number) => new Intl.NumberFormat('id-ID').format(num);
+
+    return (
+        <Link href={href} className="group block">
+            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 text-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1.5 hover:shadow-blue-500/10 h-full flex flex-col justify-center">
+                <div className="flex justify-center items-center mb-4">
+                    <div className="p-2 bg-white rounded-lg border border-gray-200 shadow-sm transition-colors duration-300 group-hover:bg-blue-50 group-hover:border-blue-200">
+                        {icon}
+                    </div>
+                </div>
+                <div>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-800">
+                        {formatNumber(value)}
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">{label}</p>
+                </div>
+            </div>
+        </Link>
+    );
+};
+
+
 export default function Home() {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchCategory, setSearchCategory] = useState('semua');
     const [showBackToTop, setShowBackToTop] = useState(false);
-    const [isSearching, setIsSearching] = useState(false); // State untuk loading
+    const [isSearching, setIsSearching] = useState(false);
+    const [stats, setStats] = useState<StatsData | null>(null);
     const router = useRouter();
 
     useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 400) {
-                setShowBackToTop(true);
-            } else {
-                setShowBackToTop(false);
+        const fetchStats = async () => {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                setStats(data);
+            } catch (error) {
+                console.error("Gagal mengambil data statistik:", error);
             }
         };
 
-        window.addEventListener('scroll', handleScroll);
+        fetchStats();
 
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
+        const handleScroll = () => {
+            setShowBackToTop(window.scrollY > 400);
         };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
         if (!searchQuery.trim()) return;
-
-        setIsSearching(true); // Atur loading menjadi true saat pencarian dimulai
-
+        setIsSearching(true);
         let path = '';
         switch (searchCategory) {
-            case 'mahasiswa':
-                path = '/mahasiswa';
-                break;
-            case 'dosen':
-                path = '/dosen';
-                break;
-            case 'prodi':
-                path = '/prodi';
-                break;
-            case 'pt':
-                path = '/pt';
-                break;
-            case 'semua':
-            default:
-                path = '/search';
-                break;
+            case 'mahasiswa': path = '/mahasiswa'; break;
+            case 'dosen': path = '/dosen'; break;
+            case 'prodi': path = '/prodi'; break;
+            case 'pt': path = '/pt'; break;
+            default: path = '/search'; break;
         }
         router.push(`${path}?q=${encodeURIComponent(searchQuery)}`);
     };
@@ -130,10 +165,7 @@ export default function Home() {
       <NewFeaturePopup />
       <div
         className="absolute top-0 left-0 w-full h-full bg-repeat -z-10 opacity-50"
-        style={{
-          backgroundImage:
-            'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23e2e8f0" fill-opacity="0.4"%3E%3Cpath d="M.5 1.5l1-1M2.5 3.5l1-1"/%3E%3C/g%3E%3C/svg%3E\')',
-        }}
+        style={{ backgroundImage: 'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23e2e8f0" fill-opacity="0.4"%3E%3Cpath d="M.5 1.5l1-1M2.5 3.5l1-1"/%3E%3C/g%3E%3C/svg%3E\')' }}
       ></div>
 
       <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-24 flex-grow">
@@ -152,11 +184,10 @@ export default function Home() {
             dari data PDDikti.
           </p>
         </header>
-
+        
         <div className="mt-12 w-full max-w-2xl mx-auto">
             <form onSubmit={handleSearch} className="w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 overflow-hidden">
                 <div className="flex flex-col sm:flex-row sm:items-center w-full">
-                    {/* Select Kategori */}
                     <div className="relative flex items-center w-full sm:w-auto border-b sm:border-b-0 border-gray-200/80">
                         <select
                             value={searchCategory}
@@ -170,13 +201,9 @@ export default function Home() {
                             <option value="prodi">Prodi</option>
                             <option value="pt">Perguruan Tinggi</option>
                         </select>
-                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                        <ChevronDown size={16} className="absolute right-4 top-1-2 -translate-y-1-2 text-gray-400 pointer-events-none" />
                     </div>
-
-                    {/* Garis Pemisah (Hanya Desktop) */}
                     <div className="hidden sm:block w-px bg-gray-200 h-8"></div>
-                    
-                    {/* Input & Tombol Cari */}
                     <div className="flex items-center w-full">
                         <input
                             type="text"
@@ -191,14 +218,7 @@ export default function Home() {
                             className="mr-2 ml-1 px-4 sm:px-5 h-11 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed"
                             aria-label="Cari"
                         >
-                            {isSearching ? (
-                                <Loader2 size={20} className="animate-spin" />
-                            ) : (
-                                <>
-                                    <Search size={20} className="sm:mr-2 transition-all"/>
-                                    <span className="hidden sm:inline font-semibold">Cari</span>
-                                </>
-                            )}
+                            {isSearching ? <Loader2 size={20} className="animate-spin" /> : <><Search size={20} className="sm:mr-2 transition-all"/><span className="hidden sm:inline font-semibold">Cari</span></>}
                         </button>
                     </div>
                 </div>
@@ -208,49 +228,59 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-16">
           <MenuItem
             href="/mahasiswa"
-            icon={
-              <GraduationCap
-                size={24}
-                className="text-gray-500 group-hover:text-blue-600 transition-colors"
-              />
-            }
+            icon={<GraduationCap size={24} className="text-gray-500 group-hover:text-blue-600 transition-colors"/>}
             title="Pencarian Mahasiswa"
             description="Cari data mahasiswa di seluruh Indonesia berdasarkan nama atau NIM."
           />
           <MenuItem
             href="/dosen"
-            icon={
-              <User
-                size={24}
-                className="text-gray-500 group-hover:text-blue-600 transition-colors"
-              />
-            }
+            icon={<User size={24} className="text-gray-500 group-hover:text-blue-600 transition-colors"/>}
             title="Pencarian Dosen"
             description="Telusuri data dosen, NIDN, beserta riwayat aktivitas mengajarnya."
           />
           <MenuItem
             href="/prodi"
-            icon={
-              <BookOpen
-                size={24}
-                className="text-gray-500 group-hover:text-blue-600 transition-colors"
-              />
-            }
+            icon={<BookOpen size={24} className="text-gray-500 group-hover:text-blue-600 transition-colors"/>}
             title="Pencarian Program Studi"
             description="Dapatkan informasi lengkap mengenai program studi dan akreditasinya."
           />
           <MenuItem
             href="/pt"
-            icon={
-              <School
-                size={24}
-                className="text-gray-500 group-hover:text-blue-600 transition-colors"
-              />
-            }
+            icon={<School size={24} className="text-gray-500 group-hover:text-blue-600 transition-colors"/>}
             title="Pencarian Perguruan Tinggi"
             description="Temukan profil, alamat, dan detail lain dari perguruan tinggi."
           />
         </div>
+
+        {/* Statistics Section */}
+        <section className="mt-16">
+            <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-800">
+                    Statistik Nasional
+                </h2>
+                <p className="text-xs text-gray-500 mt-1 mb-8">
+                    (Data bersumber dari situs resmi PDDikti)
+                </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                {stats ? (
+                    <>
+                        <StatCard href="/mahasiswa" icon={<GraduationCap size={24} className="text-gray-700"/>} value={stats.mahasiswa} label="Mahasiswa Aktif" />
+                        <StatCard href="/dosen" icon={<User size={24} className="text-gray-700"/>} value={stats.dosen} label="Dosen Aktif" />
+                        <StatCard href="/prodi" icon={<BookOpen size={24} className="text-gray-700"/>} value={stats.prodi} label="Program Studi" />
+                        <StatCard href="/pt" icon={<School size={24} className="text-gray-700"/>} value={stats.pt} label="Perguruan Tinggi" />
+                    </>
+                ) : (
+                    <>
+                        <StatCardSkeleton />
+                        <StatCardSkeleton />
+                        <StatCardSkeleton />
+                        <StatCardSkeleton />
+                    </>
+                )}
+            </div>
+        </section>
+
       </main>
       {showBackToTop && (
             <button
