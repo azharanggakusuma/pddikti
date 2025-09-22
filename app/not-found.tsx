@@ -18,7 +18,7 @@ export default function NotFound() {
           <FileX size={32} strokeWidth={2.5} />
         </div>
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
-          404 - Halaman Tidak Ditemukan
+          404 - Not Found
         </h1>
         <p className="mt-4 text-lg text-gray-600 max-w-lg mx-auto">
           Maaf, kami tidak dapat menemukan halaman yang Anda cari. Mungkin URL-nya salah ketik atau halaman tersebut telah dipindahkan.
