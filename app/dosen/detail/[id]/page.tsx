@@ -14,7 +14,9 @@ import {
   GraduationCap,
   Users,
   ArrowLeft,
-  Loader2
+  Loader2,
+  Hash, // Mengimpor ikon baru
+  Fingerprint // Mengimpor ikon baru
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -54,7 +56,7 @@ const DetailSkeleton = () => (
             </div>
             <div className="border-t-2 border-dashed border-gray-200" />
             <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
-              {Array.from({ length: 6 }).map((_, i) => (
+              {Array.from({ length: 8 }).map((_, i) => ( // Diubah menjadi 8 item
                 <div key={i} className="flex items-start space-x-4 p-4 rounded-lg bg-gray-50">
                   <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full" />
                   <div className="flex-grow space-y-2">
@@ -124,6 +126,8 @@ export default function DosenDetailPage() {
           <div className="border-t-2 border-dashed border-gray-200" />
 
           <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+            <InfoItem label="NIDN" value={dosen.nidn || '-'} icon={<Hash size={20} />} />
+            <InfoItem label="NUPTK" value={dosen.nuptk || '-'} icon={<Fingerprint size={20} />} />
             <InfoItem label="Perguruan Tinggi" value={dosen.nama_pt} icon={<University size={20} />} />
             <InfoItem label="Program Studi" value={dosen.nama_prodi} icon={<BookOpen size={20} />} />
             <InfoItem label="Jenis Kelamin" value={dosen.jenis_kelamin} icon={<Users size={20} />} />

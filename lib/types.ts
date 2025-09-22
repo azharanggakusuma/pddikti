@@ -36,6 +36,8 @@ export interface Dosen {
 export interface DosenDetail {
   id_sdm: string;
   nama_dosen: string;
+  nidn: string;
+  nuptk: string;
   nama_pt: string;
   nama_prodi: string;
   jenis_kelamin: string;
