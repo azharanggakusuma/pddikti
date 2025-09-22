@@ -1,14 +1,15 @@
+// app/pt/page.tsx
 "use client";
 export const dynamic = "force-dynamic";
 
 import { useState, useEffect, useMemo, FormEvent, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { FileX, ArrowUp, ChevronLeft, ChevronRight, Search, History, Loader2, X, School } from 'lucide-react';
-import { PerguruanTinggi } from '@/app/types';
-import { PtCard } from '@/app/components/PtCard';
-import { SkeletonCard } from '@/app/components/SkeletonCard';
+import { PerguruanTinggi } from '@/lib/types';
+import { PtCard } from '@/components/PtCard';
+import { SkeletonCard } from '@/components/SkeletonCard';
 import Link from 'next/link';
-import { Breadcrumbs } from '@/app/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { motion } from 'framer-motion';
 
 const RESULTS_PER_PAGE = 10;

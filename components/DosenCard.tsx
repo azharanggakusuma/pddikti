@@ -1,10 +1,10 @@
-// app/components/DosenCard.tsx
+// components/DosenCard.tsx
 'use client';
 
 import Link from 'next/link';
 import { useState } from 'react';
 import { University, BookText, Loader2, ArrowRight } from 'lucide-react';
-import { Dosen } from '@/app/types';
+import { Dosen } from '@/lib/types';
 
 interface DosenCardProps {
     dosen: Dosen;

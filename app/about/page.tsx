@@ -1,6 +1,6 @@
 // app/about/page.tsx
 import { Info, Database, Zap, Code } from 'lucide-react';
-import { Breadcrumbs } from '@/app/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import Link from 'next/link';
 
 const FeatureCard = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => (

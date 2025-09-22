@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { ChevronDown, HelpCircle } from 'lucide-react';
-import { Breadcrumbs } from '@/app/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const faqItems = [

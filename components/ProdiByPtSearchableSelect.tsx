@@ -1,12 +1,12 @@
-// app/components/ProdiByPtSearchableSelect.tsx
+// components/ProdiByPtSearchableSelect.tsx
 'use client';
 
 import { useState, useRef, useEffect, useCallback, useLayoutEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDown, Search, X, Loader2, BookOpen, University, Info } from 'lucide-react';
-import { ProgramStudi, PerguruanTinggi } from '@/app/types';
-import { useDebounce } from '@/app/hooks/useDebounce';
-import { motion, AnimatePresence, Variants } from 'framer-motion'; // Import Variants
+import { ProgramStudi, PerguruanTinggi } from '@/lib/types';
+import { useDebounce } from '@/lib/hooks/useDebounce';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 
 // Portal Component for stacking context fix
 interface PortalProps {

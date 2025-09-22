@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { University, BookOpen, User, Calendar, GraduationCap, Users, UserPlus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import type { MahasiswaDetail } from '@/app/types';
-import { Breadcrumbs } from '@/app/components/Breadcrumbs';
+import type { MahasiswaDetail } from '@/lib/types';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { motion } from 'framer-motion';
 
 const InfoItem = ({

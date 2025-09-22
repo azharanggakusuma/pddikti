@@ -1,9 +1,9 @@
-// app/components/StatusPopup.tsx
+// components/StatusPopup.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { AlertTriangle, WifiOff, X } from 'lucide-react';
-import { useApiStatus } from '@/app/context/StatusContext';
+import { useApiStatus } from '@/lib/context/StatusContext';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export const StatusPopup = () => {

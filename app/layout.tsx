@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
-import { Open_Sans } from "next/font/google"; // 1. Ganti import menjadi Open_Sans
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/app/components/Navbar";
-import { Footer } from "@/app/components/Footer";
-import { PageTransitionLoader } from "@/app/components/PageTransitionLoader";
-import { StatusProvider } from "@/app/context/StatusContext";
-import { StatusPopup } from "@/app/components/StatusPopup";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
+import { PageTransitionLoader } from "@/components/PageTransitionLoader";
+import { StatusProvider } from "@/lib/context/StatusContext";
+import { StatusPopup } from "@/components/StatusPopup";
 
-// 2. Konfigurasi Open_Sans
 const open_sans = Open_Sans({
   subsets: ["latin"],
-  weight: ["400", "700"], // Pilih ketebalan yang relevan
+  weight: ["400", "700"],
   display: 'swap',
 });
 
@@ -27,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${open_sans.className} antialiased bg-gray-50 flex flex-col min-h-screen`} // 3. Gunakan className dari Open Sans
+        className={`${open_sans.className} antialiased bg-gray-50 flex flex-col min-h-screen`}
       >
         <StatusProvider>
           <PageTransitionLoader />

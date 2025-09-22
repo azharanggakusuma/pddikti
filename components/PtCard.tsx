@@ -1,22 +1,22 @@
-// app/components/ProdiCard.tsx
+// app/components/PtCard.tsx
 'use client';
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { University, Loader2, ArrowRight } from 'lucide-react';
-import { ProgramStudi } from '@/app/types';
+import { Loader2, ArrowRight } from 'lucide-react';
+import { PerguruanTinggi } from '@/lib/types';
 
-interface ProdiCardProps {
-    prodi: ProgramStudi;
+interface PtCardProps {
+    pt: PerguruanTinggi;
     index: number;
 }
 
-export const ProdiCard = ({ prodi, index }: ProdiCardProps) => {
+export const PtCard = ({ pt, index }: PtCardProps) => {
     const [isLoading, setIsLoading] = useState(false);
 
     return (
         <Link
-            href={`/prodi/detail/${encodeURIComponent(prodi.id)}`}
+            href={`/pt/detail/${encodeURIComponent(pt.id)}`}
             onClick={() => setIsLoading(true)}
             className="group block"
         >
@@ -26,7 +26,8 @@ export const ProdiCard = ({ prodi, index }: ProdiCardProps) => {
             >
                 <div className="flex justify-between items-start">
                     <div className="flex-1 min-w-0">
-                        <h2 className="font-bold text-lg text-gray-800 truncate" title={`${prodi.jenjang} - ${prodi.nama}`}>{prodi.jenjang} - {prodi.nama}</h2>
+                        <h2 className="font-bold text-lg text-gray-800 truncate" title={pt.nama}>{pt.nama}</h2>
+                        <p className="text-gray-500 font-mono text-sm">Kode: {pt.kode}</p>
                     </div>
                     <div
                         className="flex-shrink-0 flex items-center justify-center h-10 w-10 ml-4 rounded-full bg-gray-100 border border-gray-200 text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all"
@@ -34,9 +35,6 @@ export const ProdiCard = ({ prodi, index }: ProdiCardProps) => {
                     >
                         {isLoading ? <Loader2 size={18} className="animate-spin text-blue-600" /> : <ArrowRight size={18} />}
                     </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-dashed border-gray-200 text-sm text-gray-600 space-y-2">
-                    <p className="flex items-center truncate" title={prodi.pt}><University size={16} className="mr-3 text-gray-400 flex-shrink-0"/> {prodi.pt}</p>
                 </div>
             </div>
         </Link>

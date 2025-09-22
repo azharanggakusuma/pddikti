@@ -4,11 +4,11 @@
 import { useState, FormEvent, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Loader2, AlertCircle, Hash, BookOpen, CheckCircle, University, X, User, ArrowRight } from "lucide-react";
-import { Breadcrumbs } from "@/app/components/Breadcrumbs";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { motion, AnimatePresence } from "framer-motion";
-import { PtSearchableSelect } from "@/app/components/PtSearchableSelect";
-import { ProdiByPtSearchableSelect } from "@/app/components/ProdiByPtSearchableSelect";
-import { ProgramStudi, PerguruanTinggi, Mahasiswa } from "@/app/types";
+import { PtSearchableSelect } from "@/components/PtSearchableSelect";
+import { ProdiByPtSearchableSelect } from "@/components/ProdiByPtSearchableSelect";
+import { ProgramStudi, PerguruanTinggi, Mahasiswa } from "@/lib/types";
 
 // --- POPUP COMPONENT (COLOR SCHEME FIXED) ---
 const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa: Mahasiswa, onConfirm: () => void, onCancel: () => void, isLoading: boolean }) => (

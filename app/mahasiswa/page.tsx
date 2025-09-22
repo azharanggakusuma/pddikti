@@ -1,3 +1,4 @@
+// app/mahasiswa/page.tsx
 "use client";
 export const dynamic = "force-dynamic";
 
@@ -13,14 +14,14 @@ import {
   Loader2,
   X,
   SlidersHorizontal,
-  UserCheck, // <-- Tambahkan import ikon ini
+  UserCheck,
 } from "lucide-react";
-import { Mahasiswa } from "@/app/types";
-import { MahasiswaCard } from "@/app/components/MahasiswaCard";
-import { SkeletonCard } from "@/app/components/SkeletonCard";
+import { Mahasiswa } from "@/lib/types";
+import { MahasiswaCard } from "@/components/MahasiswaCard";
+import { SkeletonCard } from "@/components/SkeletonCard";
 import Link from "next/link";
-import { SearchableSelect } from "@/app/components/SearchableSelect";
-import { Breadcrumbs } from "@/app/components/Breadcrumbs";
+import { SearchableSelect } from "@/components/SearchableSelect";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { motion } from "framer-motion";
 
 const RESULTS_PER_PAGE = 10;

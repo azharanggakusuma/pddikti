@@ -8,13 +8,13 @@ import {
   Loader2, FileX, Search, ChevronLeft, ChevronRight,
   GraduationCap, User, School, BookOpen, History, X
 } from 'lucide-react';
-import { Mahasiswa, Dosen, PerguruanTinggi, ProgramStudi } from '@/app/types';
-import { MahasiswaCard } from '@/app/components/MahasiswaCard';
-import { DosenCard } from '@/app/components/DosenCard';
-import { PtCard } from '@/app/components/PtCard';
-import { ProdiCard } from '@/app/components/ProdiCard';
-import { Breadcrumbs } from '@/app/components/Breadcrumbs';
-import { SkeletonCard } from '@/app/components/SkeletonCard';
+import { Mahasiswa, Dosen, PerguruanTinggi, ProgramStudi } from '@/lib/types';
+import { MahasiswaCard } from '@/components/MahasiswaCard';
+import { DosenCard } from '@/components/DosenCard';
+import { PtCard } from '@/components/PtCard';
+import { ProdiCard } from '@/components/ProdiCard';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { SkeletonCard } from '@/components/SkeletonCard';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 

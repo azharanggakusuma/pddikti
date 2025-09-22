@@ -1,3 +1,4 @@
+// app/prodi/page.tsx
 "use client";
 export const dynamic = "force-dynamic";
 
@@ -15,12 +16,12 @@ import {
   SlidersHorizontal,
   BookOpen,
 } from "lucide-react";
-import { ProgramStudi } from "@/app/types";
-import { ProdiCard } from "@/app/components/ProdiCard";
-import { SkeletonCard } from "@/app/components/SkeletonCard";
+import { ProgramStudi } from "@/lib/types";
+import { ProdiCard } from "@/components/ProdiCard";
+import { SkeletonCard } from "@/components/SkeletonCard";
 import Link from "next/link";
-import { SearchableSelect } from "@/app/components/SearchableSelect";
-import { Breadcrumbs } from "@/app/components/Breadcrumbs";
+import { SearchableSelect } from "@/components/SearchableSelect";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { motion } from "framer-motion";
 
 const RESULTS_PER_PAGE = 10;

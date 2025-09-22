@@ -4,8 +4,8 @@
 import { useEffect, useState } from 'react';
 import { University, MapPin, Globe, Mail, Phone, Calendar, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import type { PerguruanTinggiDetail } from '@/app/types';
-import { Breadcrumbs } from '@/app/components/Breadcrumbs';
+import type { PerguruanTinggiDetail } from '@/lib/types';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { motion } from 'framer-motion';
 
 const InfoItem = ({ label, value, icon }: { label: string, value: string | React.ReactNode, icon: React.ReactNode }) => (

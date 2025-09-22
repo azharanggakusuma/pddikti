@@ -1,12 +1,12 @@
-// app/components/PtSearchableSelect.tsx
+// components/PtSearchableSelect.tsx
 'use client';
 
 import { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDown, Search, X, Loader2, University, Info } from 'lucide-react';
-import { PerguruanTinggi } from '@/app/types';
-import { useDebounce } from '@/app/hooks/useDebounce';
-import { motion, AnimatePresence } from 'framer-motion'; // ← tanpa Variants
+import { PerguruanTinggi } from '@/lib/types';
+import { useDebounce } from '@/lib/hooks/useDebounce';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Portal Component for stacking context fix
 interface PortalProps {

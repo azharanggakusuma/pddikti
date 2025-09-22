@@ -1,7 +1,7 @@
 // app/api/mahasiswa/spesifik/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import type { Mahasiswa } from '@/app/types';
+import type { Mahasiswa } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
