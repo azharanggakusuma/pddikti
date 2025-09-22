@@ -1,11 +1,11 @@
 // app/prodi/detail/[id]/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
-import { University, BookOpen, Calendar, MapPin, Globe, Mail, Phone, CheckCircle, BarChart2, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import type { ProgramStudiDetail } from '@/lib/types';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { useDetailPage } from '@/lib/hooks/useDetailPage';
+import { University, BookOpen, Calendar, MapPin, Globe, Mail, Phone, CheckCircle, BarChart2, ArrowLeft, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const InfoItem = ({ label, value, icon }: { label: string, value: string | React.ReactNode, icon: React.ReactNode }) => (
@@ -19,25 +19,7 @@ const InfoItem = ({ label, value, icon }: { label: string, value: string | React
 );
 
 export default function ProdiDetailPage({ params }: { params: { id: string } }) {
-    const [prodi, setProdi] = useState<ProgramStudiDetail | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchDetail = async () => {
-            try {
-                const response = await fetch(`/api/prodi/detail?id=${params.id}`);
-                if (!response.ok) throw new Error('Gagal memuat data prodi.');
-                const data = await response.json();
-                setProdi(data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchDetail();
-    }, [params.id]);
+    const { data: prodi, loading, error } = useDetailPage<ProgramStudiDetail>('prodi');
     
     const breadcrumbItems = [
       { label: "Program Studi", href: "/prodi" },

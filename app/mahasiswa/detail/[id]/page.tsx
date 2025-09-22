@@ -1,11 +1,11 @@
+// app/mahasiswa/detail/[id]/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { University, BookOpen, User, Calendar, GraduationCap, Users, UserPlus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import type { MahasiswaDetail } from '@/lib/types';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { useDetailPage } from '@/lib/hooks/useDetailPage';
+import { University, BookOpen, User, Calendar, GraduationCap, Users, UserPlus, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const InfoItem = ({
@@ -28,58 +28,10 @@ const InfoItem = ({
   </div>
 );
 
-export default function MahasiswaDetailPage() {
-  const [mahasiswa, setMahasiswa] = useState<MahasiswaDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Ambil param [id] dari URL di client component
-  const params = useParams<{ id: string }>();
-  const encodedId = Array.isArray(params?.id) ? params.id[0] : params?.id;
-
-  useEffect(() => {
-    if (!encodedId) {
-      setLoading(false);
-      setError('ID tidak ditemukan.');
-      return;
-    }
-
-    const fetchDetail = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // amankan decode; kalau gagal, pakai encodedId apa adanya
-        let decodedId = encodedId;
-        try {
-          decodedId = decodeURIComponent(encodedId);
-        } catch {
-          // no-op
-        }
-
-        const response = await fetch(`/api/mahasiswa/detail?id=${decodedId}`);
-        if (!response.ok) throw new Error('Gagal memuat data mahasiswa.');
-        const data: MahasiswaDetail = await response.json();
-        setMahasiswa(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Terjadi kesalahan tidak diketahui.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDetail();
-  }, [encodedId]);
-
-  const breadcrumbItems = [
-    { label: 'Mahasiswa', href: '/mahasiswa' },
-    { label: mahasiswa ? mahasiswa.nama : 'Detail' },
-  ];
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-4 sm:p-8 antialiased">
+const DetailSkeleton = () => (
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 antialiased">
         <main className="max-w-3xl mx-auto">
-          <Breadcrumbs items={breadcrumbItems} />
+          <Breadcrumbs items={[{ label: 'Mahasiswa', href: '/mahasiswa' }, {label: 'Detail'}]} />
           <div className="mt-8 animate-pulse bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-200">
             <div className="p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
@@ -104,8 +56,20 @@ export default function MahasiswaDetailPage() {
             </div>
           </div>
         </main>
-      </div>
-    );
+    </div>
+);
+
+
+export default function MahasiswaDetailPage() {
+  const { data: mahasiswa, loading, error } = useDetailPage<MahasiswaDetail>('mahasiswa');
+
+  const breadcrumbItems = [
+    { label: 'Mahasiswa', href: '/mahasiswa' },
+    { label: mahasiswa ? mahasiswa.nama : 'Detail' },
+  ];
+
+  if (loading) {
+    return <DetailSkeleton />;
   }
 
   if (error || !mahasiswa) {
@@ -114,7 +78,7 @@ export default function MahasiswaDetailPage() {
         <h1 className="text-2xl font-bold text-red-600">Gagal Memuat Data</h1>
         <p className="text-gray-600 mt-2">{error || 'Data mahasiswa tidak dapat ditemukan.'}</p>
         <Link
-          href="/"
+          href="/mahasiswa"
           className="mt-6 inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <ArrowLeft size={16} />

@@ -1,11 +1,11 @@
 // app/pt/detail/[id]/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
-import { University, MapPin, Globe, Mail, Phone, Calendar, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import type { PerguruanTinggiDetail } from '@/lib/types';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { useDetailPage } from '@/lib/hooks/useDetailPage';
+import { University, MapPin, Globe, Mail, Phone, Calendar, ArrowLeft, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const InfoItem = ({ label, value, icon }: { label: string, value: string | React.ReactNode, icon: React.ReactNode }) => (
@@ -19,25 +19,7 @@ const InfoItem = ({ label, value, icon }: { label: string, value: string | React
 );
 
 export default function PtDetailPage({ params }: { params: { id: string } }) {
-    const [pt, setPt] = useState<PerguruanTinggiDetail | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchDetail = async () => {
-            try {
-                const response = await fetch(`/api/pt/detail?id=${params.id}`);
-                if (!response.ok) throw new Error('Gagal memuat data perguruan tinggi.');
-                const data = await response.json();
-                setPt(data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchDetail();
-    }, [params.id]);
+    const { data: pt, loading, error } = useDetailPage<PerguruanTinggiDetail>('pt');
 
     const breadcrumbItems = [
       { label: "Perguruan Tinggi", href: "/pt" },
