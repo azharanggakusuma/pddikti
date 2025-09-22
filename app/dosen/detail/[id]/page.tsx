@@ -15,8 +15,8 @@ import {
   Users,
   ArrowLeft,
   Loader2,
-  Hash, // Mengimpor ikon baru
-  Fingerprint // Mengimpor ikon baru
+  Hash,
+  TrendingUp
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -56,7 +56,7 @@ const DetailSkeleton = () => (
             </div>
             <div className="border-t-2 border-dashed border-gray-200" />
             <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
-              {Array.from({ length: 8 }).map((_, i) => ( // Diubah menjadi 8 item
+              {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="flex items-start space-x-4 p-4 rounded-lg bg-gray-50">
                   <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full" />
                   <div className="flex-grow space-y-2">
@@ -118,7 +118,7 @@ export default function DosenDetailPage() {
               </div>
               <div className="text-center sm:text-left">
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{dosen.nama_dosen}</h1>
-                <p className="text-gray-500 text-base sm:text-lg mt-1">{dosen.jabatan_akademik || 'Jabatan tidak tersedia'}</p>
+                <p className="text-gray-500 font-mono text-base sm:text-lg mt-1">NIDN: {dosen.nidn || '-'}</p>
               </div>
             </div>
           </div>
@@ -126,8 +126,8 @@ export default function DosenDetailPage() {
           <div className="border-t-2 border-dashed border-gray-200" />
 
           <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
-            <InfoItem label="NIDN" value={dosen.nidn || '-'} icon={<Hash size={20} />} />
-            <InfoItem label="NUPTK" value={dosen.nuptk || '-'} icon={<Fingerprint size={20} />} />
+            <InfoItem label="NUPTK" value={dosen.nuptk || '-'} icon={<Hash size={20} />} />
+            <InfoItem label="Jabatan Akademik" value={dosen.jabatan_akademik || '-'} icon={<TrendingUp size={20} />} />
             <InfoItem label="Perguruan Tinggi" value={dosen.nama_pt} icon={<University size={20} />} />
             <InfoItem label="Program Studi" value={dosen.nama_prodi} icon={<BookOpen size={20} />} />
             <InfoItem label="Jenis Kelamin" value={dosen.jenis_kelamin} icon={<Users size={20} />} />
@@ -136,10 +136,6 @@ export default function DosenDetailPage() {
             <InfoItem label="Status Aktivitas" value={dosen.status_aktivitas} icon={<Award size={20} />} />
           </div>
         </div>
-         <Link href="/dosen" className="mt-8 inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 group transition-colors">
-            <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" />
-            Kembali ke Pencarian Dosen
-        </Link>
       </main>
     </motion.div>
   );
