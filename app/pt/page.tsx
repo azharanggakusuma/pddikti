@@ -2,136 +2,38 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import { useState, useEffect, useMemo, FormEvent, useRef } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { FileX, ArrowUp, ChevronLeft, ChevronRight, Search, History, Loader2, X, School } from 'lucide-react';
-import { PerguruanTinggi } from '@/lib/types';
-import { PtCard } from '@/components/PtCard';
-import { SkeletonCard } from '@/components/SkeletonCard';
-import Link from 'next/link';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { motion } from 'framer-motion';
+import { useMemo } from "react";
+import Link from "next/link";
+import { PerguruanTinggi } from "@/lib/types";
+import { PtCard } from "@/components/PtCard";
+import { SkeletonCard } from "@/components/SkeletonCard";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { useSearchPage } from "@/lib/hooks/useSearchPage";
+import {
+    FileX, ArrowUp, ChevronLeft, ChevronRight, Search, History,
+    Loader2, X, School
+} from "lucide-react";
+import { motion } from "framer-motion";
 
-const RESULTS_PER_PAGE = 10;
+const sortingFn = (a: PerguruanTinggi, b: PerguruanTinggi, sortBy: string) => {
+    if (sortBy === 'nama-asc') return a.nama.localeCompare(b.nama);
+    if (sortBy === 'nama-desc') return b.nama.localeCompare(a.nama);
+    if (sortBy === 'kode-asc') return a.kode.localeCompare(b.kode);
+    if (sortBy === 'kode-desc') return b.kode.localeCompare(a.kode);
+    return 0;
+};
 
 export default function PtPage() {
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const query = searchParams.get('q') || '';
+    const {
+        query, loading, error, paginatedResults, totalPages, currentPage, setCurrentPage,
+        sortBy, setSortBy, searchQuery, setSearchQuery, handleNewSearch, searchHistory, 
+        isSearchFocused, setIsSearchFocused, searchInputRef, searchWrapperRef, handleDeleteHistory,
+        showBackToTop, allResults, processedResults
+    } = useSearchPage<PerguruanTinggi>({
+        historyKey: "pddikti_pt_history",
+        sortingFn,
+    });
 
-    // State hooks
-    const [allResults, setAllResults] = useState<PerguruanTinggi[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [showBackToTop, setShowBackToTop] = useState(false);
-    
-    const [sortBy, setSortBy] = useState('nama-asc');
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const [searchQuery, setSearchQuery] = useState(query);
-    const [searchHistory, setSearchHistory] = useState<string[]>([]);
-    const [isSearchFocused, setIsSearchFocused] = useState(false);
-    const searchInputRef = useRef<HTMLInputElement>(null);
-    const searchWrapperRef = useRef<HTMLDivElement>(null);
-
-    // Effect hooks
-    useEffect(() => {
-        setSearchQuery(query);
-    }, [query]);
-
-    useEffect(() => {
-        const history = localStorage.getItem('pddikti_pt_history');
-        if (history) setSearchHistory(JSON.parse(history));
-    }, []);
-
-    useEffect(() => {
-        const handleScroll = () => setShowBackToTop(window.scrollY > 500);
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target as Node)) {
-                setIsSearchFocused(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-    
-    // Search functions
-    const updateSearchHistory = (newQuery: string) => {
-        const updatedHistory = [newQuery, ...searchHistory.filter(q => q !== newQuery)].slice(0, 5);
-        setSearchHistory(updatedHistory);
-        localStorage.setItem('pddikti_pt_history', JSON.stringify(updatedHistory));
-    };
-
-    const handleNewSearch = (e?: FormEvent, historyQuery?: string) => {
-        if (e) e.preventDefault();
-        const finalQuery = historyQuery || searchQuery;
-        if (!finalQuery.trim() || finalQuery === query) return;
-
-        updateSearchHistory(finalQuery);
-        setIsSearchFocused(false);
-        router.push(`/pt?q=${encodeURIComponent(finalQuery)}`);
-    };
-
-    const handleDeleteHistory = (itemToDelete: string, e: React.MouseEvent) => {
-        e.stopPropagation();
-        const updatedHistory = searchHistory.filter(item => item !== itemToDelete);
-        setSearchHistory(updatedHistory);
-        localStorage.setItem('pddikti_pt_history', JSON.stringify(updatedHistory));
-    };
-
-    // Data fetching
-    useEffect(() => {
-        const fetchResults = async () => {
-            if (!query.trim()) {
-                setLoading(false);
-                setAllResults([]);
-                return;
-            };
-
-            setLoading(true);
-            setError(null);
-            setCurrentPage(1);
-
-            try {
-                const response = await fetch(`/api/pt?q=${encodeURIComponent(query)}`);
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.message || 'Gagal terhubung ke server');
-                
-                setAllResults(Array.isArray(data) ? data : []);
-
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Terjadi kesalahan tidak diketahui');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchResults();
-    }, [query]);
-    
-    // Memoized processing
-    const processedResults = useMemo(() => {
-        return [...allResults].sort((a, b) => {
-            if (sortBy === 'nama-asc') return a.nama.localeCompare(b.nama);
-            if (sortBy === 'nama-desc') return b.nama.localeCompare(a.nama);
-            if (sortBy === 'kode-asc') return a.kode.localeCompare(b.kode);
-            if (sortBy === 'kode-desc') return b.kode.localeCompare(a.kode);
-            return 0;
-        });
-    }, [allResults, sortBy]);
-
-    const paginatedResults = useMemo(() => {
-        const startIndex = (currentPage - 1) * RESULTS_PER_PAGE;
-        return processedResults.slice(startIndex, startIndex + RESULTS_PER_PAGE);
-    }, [processedResults, currentPage]);
-    
-    const totalPages = Math.ceil(processedResults.length / RESULTS_PER_PAGE);
-    
     const breadcrumbItems = [{ label: "Perguruan Tinggi" }];
 
     return (
@@ -155,7 +57,6 @@ export default function PtPage() {
                     </p>
                 </header>
                 
-                {/* Search Bar */}
                 <div ref={searchWrapperRef} className="w-full mb-8 sticky top-4 sm:top-6 z-20">
                     <form onSubmit={handleNewSearch} className="w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 overflow-hidden">
                         <div className="flex items-center w-full">
@@ -185,7 +86,6 @@ export default function PtPage() {
                             </button>
                         </div>
                     </form>
-                    {/* Search History */}
                     {isSearchFocused && searchHistory.length > 0 && (
                         <div className="absolute top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-20" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
                             <p className="p-4 text-sm font-semibold text-gray-500 border-b border-gray-100">Riwayat Pencarian</p>
@@ -201,7 +101,6 @@ export default function PtPage() {
                     )}
                 </div>
 
-                {/* Sort and Info Section */}
                 {!loading && allResults.length > 0 && (
                      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
                         <div className="text-sm text-gray-600 text-center sm:text-left">
@@ -218,7 +117,6 @@ export default function PtPage() {
                     </div>
                 )}
 
-                {/* Search Results */}
                 <div className="grid grid-cols-1 gap-5">
                     {loading && Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
                     {error && <p className="text-center text-red-500 p-4">{error}</p>}
@@ -233,10 +131,9 @@ export default function PtPage() {
                             <FileX size={56} className="text-gray-300"/><h3 className="mt-6 font-bold text-lg sm:text-xl text-gray-700">Tidak Ada Hasil Ditemukan</h3><p className="text-sm sm:text-base mt-1">Coba sesuaikan kata kunci pencarian Anda.</p>
                         </div>
                     )}
-                    {!loading && paginatedResults.map((pt, index) => <PtCard key={pt.id} pt={pt} index={index} />)}
+                    {!loading && paginatedResults.map((pt, index) => <PtCard key={(pt as any).id} pt={pt} index={index} />)}
                 </div>
 
-                {/* Pagination */}
                 {!loading && totalPages > 1 && (
                     <div className="mt-8 flex justify-between items-center">
                         <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 hover:border-gray-400 transition-colors"><ChevronLeft size={20} /></button>
