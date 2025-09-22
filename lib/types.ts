@@ -23,7 +23,6 @@ export interface MahasiswaDetail {
     tanggal_masuk: string;
 }
 
-// --- TIPE DATA BARU DITAMBAHKAN DI SINI ---
 export interface Dosen {
   id: string;
   nama: string;
@@ -32,6 +31,18 @@ export interface Dosen {
   nama_pt: string;
   sinkatan_pt: string;
   nama_prodi: string;
+}
+
+export interface DosenDetail {
+  id_sdm: string;
+  nama_dosen: string;
+  nama_pt: string;
+  nama_prodi: string;
+  jenis_kelamin: string;
+  jabatan_akademik: string;
+  pendidikan_tertinggi: string;
+  status_ikatan_kerja: string;
+  status_aktivitas: string;
 }
 
 export interface PerguruanTinggi {
