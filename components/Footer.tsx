@@ -13,7 +13,7 @@ export const Footer = () => {
 
   const socialLinks = [
     { href: "https://github.com/azharanggakusuma", icon: <Github size={20} />, label: "GitHub" },
-    { href: "https://www.instagram.com/azharanggakusuma/", icon: <Instagram size={20} />, label: "Instagram" },
+    { href: "https://www.instagram.com/azharangga_kusuma/", icon: <Instagram size={20} />, label: "Instagram" },
     { href: "https://www.linkedin.com/in/azharanggakusuma/", icon: <Linkedin size={20} />, label: "LinkedIn" },
   ];
 

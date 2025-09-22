@@ -59,14 +59,14 @@ export const NewFeaturePopup = () => {
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h3 className="font-semibold text-gray-800 flex items-center gap-2.5 mb-2 text-base">
                     <CheckCircle size={16} className="text-green-500" />
-                    <span>Fitur yang Tersedia</span>
+                    <span>Fitur Saat Ini</span>
                   </h3>
                   <ul className="space-y-1.5 pl-4 text-sm text-gray-600">
                     <li className="relative before:content-['•'] before:absolute before:left-[-1em] before:text-blue-500">
-                      <strong>Pencarian Mahasiswa:</strong> Termasuk detail dan fitur baru <strong>Pencarian Spesifik</strong>.
+                      <strong>Pencarian Mahasiswa, Prodi & PT:</strong> Semua fitur pencarian beserta halaman detailnya sudah berfungsi penuh.
                     </li>
                     <li className="relative before:content-['•'] before:absolute before:left-[-1em] before:text-blue-500">
-                      <strong>Pencarian Prodi & PT:</strong> Jelajahi data lengkap dengan halaman detail informatif.
+                      <strong>Pencarian Spesifik:</strong> Gunakan fitur baru ini untuk mencari data mahasiswa dengan lebih akurat.
                     </li>
                   </ul>
                 </div>
@@ -78,7 +78,7 @@ export const NewFeaturePopup = () => {
                     <span>Dalam Pengembangan</span>
                   </h3>
                   <p className="text-sm text-amber-800">
-                    Fitur <strong>Pencarian Dosen</strong> sudah dapat digunakan, namun halaman <strong>detailnya masih dalam tahap pengembangan</strong>.
+                    <strong>Pencarian Dosen</strong> sudah bisa digunakan untuk melihat daftar dosen. Namun, halaman <strong>detail untuk setiap dosen</strong> masih dalam tahap pengembangan.
                   </p>
                 </div>
             </div>
