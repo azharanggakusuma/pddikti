@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Construction, CheckCircle } from 'lucide-react';
+import { X, Sparkles, Layers, Search } from 'lucide-react';
 
 export const NewFeaturePopup = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,16 +34,15 @@ export const NewFeaturePopup = () => {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: -20 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden"
           >
-            {/* Header dengan Gradient */}
+            {/* Header */}
             <div className="relative p-5 text-white text-center bg-gradient-to-br from-blue-500 to-indigo-600">
                 <div className="relative z-10">
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/20 mb-2 border-2 border-white/50">
                         <Sparkles size={24} />
                     </div>
-                    <h2 className="text-xl font-bold text-shadow">Informasi Fitur</h2>
-                    <p className="mt-1 text-xs opacity-90 text-shadow-sm">Pembaruan dan fitur yang perlu Anda ketahui.</p>
+                    <h2 className="text-xl font-bold text-shadow">Informasi Pembaruan</h2>
                 </div>
                  <button
                     onClick={handleClose}
@@ -55,36 +54,28 @@ export const NewFeaturePopup = () => {
             </div>
 
             <div className="p-6 space-y-4">
-                {/* Bagian Fitur Tersedia */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <h3 className="font-semibold text-gray-800 flex items-center gap-2.5 mb-2 text-base">
-                    <CheckCircle size={16} className="text-green-500" />
-                    <span>Fitur Saat Ini</span>
-                  </h3>
-                  <ul className="space-y-1.5 pl-4 text-sm text-gray-600">
-                    <li className="relative before:content-['•'] before:absolute before:left-[-1em] before:text-blue-500">
-                      <strong>Pencarian Mahasiswa, Prodi & PT:</strong> Semua fitur pencarian beserta halaman detailnya sudah berfungsi penuh.
-                    </li>
-                    <li className="relative before:content-['•'] before:absolute before:left-[-1em] before:text-blue-500">
-                      <strong>Pencarian Spesifik:</strong> Gunakan fitur baru ini untuk mencari data mahasiswa dengan lebih akurat.
-                    </li>
-                  </ul>
+                <div className="flex items-start gap-4">
+                    <Layers size={20} className="flex-shrink-0 text-blue-500 mt-0.5" />
+                    <div>
+                        <h3 className="font-semibold text-gray-800">Fitur Utama</h3>
+                        <p className="text-sm text-gray-600">
+                            Pencarian dan detail untuk <strong>Mahasiswa, Dosen, Prodi, & PT</strong> sudah berfungsi sepenuhnya.
+                        </p>
+                    </div>
                 </div>
-
-                {/* Bagian Dalam Pengembangan */}
-                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                  <h3 className="font-semibold text-amber-900 flex items-center gap-2.5 mb-2 text-base">
-                    <Construction size={16} className="text-amber-500" />
-                    <span>Dalam Pengembangan</span>
-                  </h3>
-                  <p className="text-sm text-amber-800">
-                    <strong>Pencarian Dosen</strong> sudah bisa digunakan untuk melihat daftar dosen. Namun, halaman <strong>detail untuk setiap dosen</strong> masih dalam tahap pengembangan.
-                  </p>
+                <div className="flex items-start gap-4">
+                    <Search size={20} className="flex-shrink-0 text-blue-500 mt-0.5" />
+                    <div>
+                        <h3 className="font-semibold text-gray-800">Fitur Baru: Pencarian Spesifik</h3>
+                        <p className="text-sm text-gray-600">
+                            Temukan mahasiswa dengan hasil lebih akurat. Fitur ini tersedia di halaman <strong>Pencarian Mahasiswa</strong>.
+                        </p>
+                    </div>
                 </div>
             </div>
 
             {/* Tombol Aksi */}
-            <div className="px-6 pb-6">
+            <div className="px-6 pb-6 pt-1">
               <button
                 onClick={handleClose}
                 className="w-full px-6 h-11 text-base font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-blue-400 shadow-lg hover:shadow-blue-500/50 transform hover:scale-[1.02]"
@@ -92,7 +83,6 @@ export const NewFeaturePopup = () => {
                 Saya Mengerti
               </button>
             </div>
-
           </motion.div>
         </motion.div>
       )}
