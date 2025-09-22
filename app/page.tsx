@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useState, FormEvent, useEffect } from "react";
 import { motion } from "framer-motion";
+import { NewFeaturePopup } from "@/components/NewFeaturePopup";
 
 // Tipe props untuk MenuItem
 type MenuItemProps = {
@@ -126,6 +127,7 @@ export default function Home() {
         transition={{ duration: 0.5 }}
         className="min-h-screen w-full antialiased bg-gray-50 text-gray-800 flex flex-col"
     >
+      <NewFeaturePopup />
       <div
         className="absolute top-0 left-0 w-full h-full bg-repeat -z-10 opacity-50"
         style={{
