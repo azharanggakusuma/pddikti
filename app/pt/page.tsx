@@ -2,16 +2,17 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import { useMemo } from "react";
 import Link from "next/link";
 import { PerguruanTinggi } from "@/lib/types";
 import { PtCard } from "@/components/PtCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { useSearchPage } from "@/lib/hooks/useSearchPage";
+import { SearchBar } from "@/components/search/SearchBar";
+import { Pagination } from "@/components/search/Pagination";
+import { NoResults } from "@/components/search/NoResults";
 import {
-    FileX, ArrowUp, ChevronLeft, ChevronRight, Search, History,
-    Loader2, X, School
+    ArrowUp, School
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -24,15 +25,15 @@ const sortingFn = (a: PerguruanTinggi, b: PerguruanTinggi, sortBy: string) => {
 };
 
 export default function PtPage() {
-    const {
-        query, loading, error, paginatedResults, totalPages, currentPage, setCurrentPage,
-        sortBy, setSortBy, searchQuery, setSearchQuery, handleNewSearch, searchHistory, 
-        isSearchFocused, setIsSearchFocused, searchInputRef, searchWrapperRef, handleDeleteHistory,
-        showBackToTop, allResults, processedResults
-    } = useSearchPage<PerguruanTinggi>({
+    const hookProps = useSearchPage<PerguruanTinggi>({
         historyKey: "pddikti_pt_history",
         sortingFn,
     });
+
+    const {
+        query, loading, error, paginatedResults, totalPages, currentPage, setCurrentPage,
+        sortBy, setSortBy, showBackToTop, allResults, processedResults
+    } = hookProps;
 
     const breadcrumbItems = [{ label: "Perguruan Tinggi" }];
 
@@ -57,49 +58,10 @@ export default function PtPage() {
                     </p>
                 </header>
                 
-                <div ref={searchWrapperRef} className="w-full mb-8 sticky top-4 sm:top-6 z-20">
-                    <form onSubmit={handleNewSearch} className="w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 overflow-hidden">
-                        <div className="flex items-center w-full">
-                            <input
-                                ref={searchInputRef}
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onFocus={() => setIsSearchFocused(true)}
-                                placeholder="Ketik nama atau kode PT..."
-                                className="w-full pl-5 pr-2 py-4 bg-transparent focus:outline-none text-base text-gray-800 placeholder-gray-500 truncate"
-                            />
-                            <button 
-                                type="submit"
-                                disabled={loading || !searchQuery.trim() || searchQuery === query}
-                                className="mr-2 ml-1 px-4 sm:px-5 h-11 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed"
-                                aria-label="Cari"
-                            >
-                                {loading ? (
-                                    <Loader2 size={20} className="animate-spin" />
-                                ) : (
-                                    <>
-                                        <Search size={20} className="sm:mr-2"/>
-                                        <span className="hidden sm:inline font-semibold">Cari</span>
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </form>
-                    {isSearchFocused && searchHistory.length > 0 && (
-                        <div className="absolute top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-20" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
-                            <p className="p-4 text-sm font-semibold text-gray-500 border-b border-gray-100">Riwayat Pencarian</p>
-                            <ul className="max-h-80 overflow-y-auto">
-                                {searchHistory.map(item => (
-                                    <li key={item} onClick={() => handleNewSearch(undefined, item)} className="group flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors text-sm text-gray-600">
-                                        <div className="flex items-center truncate"><History size={16} className="mr-3 text-gray-400 flex-shrink-0"/><span className="text-gray-800 truncate">{item}</span></div>
-                                        <button onClick={(e) => handleDeleteHistory(item, e)} className="ml-4 p-1 rounded-full opacity-0 group-hover:opacity-100 hover:bg-gray-200 transition-opacity flex-shrink-0" aria-label={`Hapus "${item}" dari riwayat`}><X size={16} className="text-gray-500"/></button>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                </div>
+                <SearchBar 
+                    {...hookProps}
+                    placeholder="Ketik nama atau kode PT..."
+                />
 
                 {!loading && allResults.length > 0 && (
                      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
@@ -120,26 +82,18 @@ export default function PtPage() {
                 <div className="grid grid-cols-1 gap-5">
                     {loading && Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
                     {error && <p className="text-center text-red-500 p-4">{error}</p>}
-
-                    {!loading && !error && !query && (
-                        <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-10 sm:p-16 rounded-xl flex flex-col items-center justify-center">
-                            <School size={56} className="text-gray-300"/><h3 className="mt-6 font-bold text-lg sm:text-xl text-gray-700">Mulai Pencarian PT</h3><p className="text-sm sm:text-base mt-1">Gunakan kotak pencarian di atas.</p>
-                        </div>
-                    )}
-                    {!loading && !error && query && processedResults.length === 0 && (
-                        <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-10 sm:p-16 rounded-xl flex flex-col items-center justify-center">
-                            <FileX size={56} className="text-gray-300"/><h3 className="mt-6 font-bold text-lg sm:text-xl text-gray-700">Tidak Ada Hasil Ditemukan</h3><p className="text-sm sm:text-base mt-1">Coba sesuaikan kata kunci pencarian Anda.</p>
-                        </div>
+                    {!loading && !error && processedResults.length === 0 && (
+                        <NoResults query={query} />
                     )}
                     {!loading && paginatedResults.map((pt, index) => <PtCard key={(pt as any).id} pt={pt} index={index} />)}
                 </div>
 
                 {!loading && totalPages > 1 && (
-                    <div className="mt-8 flex justify-between items-center">
-                        <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 hover:border-gray-400 transition-colors"><ChevronLeft size={20} /></button>
-                        <span className="text-gray-600 text-sm">Halaman <strong>{currentPage}</strong> dari <strong>{totalPages}</strong></span>
-                        <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 hover:border-gray-400 transition-colors"><ChevronRight size={20} /></button>
-                    </div>
+                    <Pagination 
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
                 )}
             </main>
 
