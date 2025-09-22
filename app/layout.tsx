@@ -14,8 +14,8 @@ const open_sans = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "DataDIKTI",
-  description: "Search for university data in the PDDIKTI database",
+  title: "DataDikti",
+  description: "Search for university data in the PDDikti database",
 };
 
 export default function RootLayout({
