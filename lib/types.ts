@@ -34,9 +34,6 @@ export interface Dosen {
   nama_prodi: string;
 }
 
-// Catatan: API detail untuk dosen tidak disediakan, jadi kita asumsikan strukturnya mirip dengan hasil pencarian.
-export type DosenDetail = Dosen;
-
 export interface PerguruanTinggi {
   id: string;
   kode: string;
