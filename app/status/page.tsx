@@ -118,10 +118,12 @@ export default function StatusPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
         >
-            <div className={`p-8 sm:p-10 border-b border-gray-200/80 transition-colors duration-500 ${headerBgConfig[currentStatusKey]}`}>
+            <div className={`p-8 sm:p-10 transition-colors duration-500 ${headerBgConfig[currentStatusKey]}`}>
                 <StatusHeader status={status?.status || null} loading={loading} />
             </div>
             
+            <div className="border-t-2 border-dashed border-gray-200"></div>
+
             <div className="p-6 sm:p-8">
                 {loading ? (
                     <StatusSkeleton />
@@ -158,7 +160,7 @@ export default function StatusPage() {
                      <p className="text-xs text-gray-500">
                         {lastChecked ? (
                             <>
-                                Terakhir diperbarui: <span className="font-semibold">{lastChecked.toLocaleTimeString('en-GB')}</span>
+                                Terakhir diperbarui: <span className="font-semibold">{lastChecked.toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' })}</span>
                             </>
                         ) : (
                             'Memuat...'
