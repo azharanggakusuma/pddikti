@@ -15,8 +15,8 @@ import {
   ChevronDown,
   ArrowUp,
 } from "lucide-react";
-import { useState, FormEvent, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, FormEvent, useEffect, useRef } from "react";
+import { motion, useInView, useSpring } from "framer-motion";
 import { NewFeaturePopup } from "@/components/NewFeaturePopup";
 
 // Tipe props untuk MenuItem
@@ -35,7 +35,7 @@ type StatsData = {
     pt: number;
 };
 
-// Komponen MenuItem yang telah disempurnakan
+// Komponen MenuItem (tidak berubah)
 const MenuItem = ({ href, icon, title, description }: MenuItemProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,32 +76,59 @@ const MenuItem = ({ href, icon, title, description }: MenuItemProps) => {
   );
 };
 
-// Komponen Skeleton untuk Statistik
+// Komponen untuk animasi angka (tidak berubah)
+const AnimatedCounter = ({ value }: { value: number }) => {
+    const ref = useRef<HTMLSpanElement>(null);
+    const isInView = useInView(ref, { once: true });
+    const spring = useSpring(0, {
+        damping: 20,
+        stiffness: 100,
+        mass: 1
+    });
+
+    useEffect(() => {
+        if (isInView) {
+            spring.set(value);
+        }
+    }, [isInView, value, spring]);
+
+    useEffect(() => {
+        const unsubscribe = spring.on("change", (latest) => {
+            if (ref.current) {
+                ref.current.textContent = new Intl.NumberFormat('id-ID').format(
+                    Math.round(latest)
+                );
+            }
+        });
+        return () => unsubscribe();
+    }, [spring]);
+
+
+    return <span ref={ref}>0</span>;
+};
+
+// --- SKELETON STATISTIK (GAYA MINIMALIS) ---
 const StatCardSkeleton = () => (
     <div className="bg-white p-6 rounded-2xl border border-gray-200/80 text-center animate-pulse">
-        <div className="flex justify-center items-center mb-4">
-            <div className="h-8 w-8 bg-gray-200 rounded-lg"></div>
-        </div>
+        <div className="h-10 w-10 bg-gray-200 rounded-lg mx-auto mb-4"></div>
         <div className="h-8 w-24 bg-gray-200 rounded-md mx-auto"></div>
         <div className="h-4 w-20 bg-gray-200 rounded-md mx-auto mt-2"></div>
     </div>
 );
 
-// Komponen Statistik yang Didesain Ulang
+// --- KARTU STATISTIK (GAYA MINIMALIS) ---
 const StatCard = ({ icon, value, label, href }: { icon: React.ReactNode, value: number, label: string, href: string }) => {
-    const formatNumber = (num: number) => new Intl.NumberFormat('id-ID').format(num);
-
     return (
         <Link href={href} className="group block">
-            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 text-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1.5 hover:shadow-blue-500/10 h-full flex flex-col justify-center">
+            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 text-center transition-all duration-300 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/10 h-full flex flex-col justify-center">
                 <div className="flex justify-center items-center mb-4">
-                    <div className="p-2 bg-white rounded-lg border border-gray-200 shadow-sm transition-colors duration-300 group-hover:bg-blue-50 group-hover:border-blue-200">
+                     <div className="p-2 bg-gray-50 rounded-lg border border-gray-200 text-gray-500 transition-colors duration-300 group-hover:text-blue-600 group-hover:bg-blue-50 group-hover:border-blue-200">
                         {icon}
                     </div>
                 </div>
                 <div>
-                    <p className="text-2xl sm:text-3xl font-bold text-gray-800">
-                        {formatNumber(value)}
+                    <p className="text-3xl font-bold text-gray-800">
+                        <AnimatedCounter value={value} />
                     </p>
                     <p className="text-sm text-gray-500 mt-1">{label}</p>
                 </div>
@@ -155,7 +182,7 @@ export default function Home() {
     };
 
   return (
-    <motion.div 
+    <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
@@ -184,7 +211,7 @@ export default function Home() {
             dari data PDDikti.
           </p>
         </header>
-        
+
         <div className="mt-12 w-full max-w-2xl mx-auto">
             <form onSubmit={handleSearch} className="w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 overflow-hidden">
                 <div className="flex flex-col sm:flex-row sm:items-center w-full">
@@ -252,23 +279,23 @@ export default function Home() {
           />
         </div>
 
-        {/* Statistics Section */}
-        <section className="mt-16">
-            <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-800">
+        {/* --- SEKSI STATISTIK GAYA MINIMALIS --- */}
+        <section className="mt-24">
+            <div className="text-center mb-10">
+                <h2 className="text-3xl font-bold tracking-tight text-gray-900">
                     Statistik Nasional
                 </h2>
-                <p className="text-xs text-gray-500 mt-1 mb-8">
-                    (Data bersumber dari situs resmi PDDikti)
+                <p className="mt-3 text-base text-gray-600 max-w-2xl mx-auto">
+                    Data agregat dari PDDikti yang diperbarui secara berkala.
                 </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                 {stats ? (
                     <>
-                        <StatCard href="/mahasiswa" icon={<GraduationCap size={24} className="text-gray-700"/>} value={stats.mahasiswa} label="Mahasiswa Aktif" />
-                        <StatCard href="/dosen" icon={<User size={24} className="text-gray-700"/>} value={stats.dosen} label="Dosen Aktif" />
-                        <StatCard href="/prodi" icon={<BookOpen size={24} className="text-gray-700"/>} value={stats.prodi} label="Program Studi" />
-                        <StatCard href="/pt" icon={<School size={24} className="text-gray-700"/>} value={stats.pt} label="Perguruan Tinggi" />
+                        <StatCard href="/mahasiswa" icon={<GraduationCap size={24}/>} value={stats.mahasiswa} label="Mahasiswa Aktif" />
+                        <StatCard href="/dosen" icon={<User size={24}/>} value={stats.dosen} label="Dosen Aktif" />
+                        <StatCard href="/prodi" icon={<BookOpen size={24}/>} value={stats.prodi} label="Program Studi" />
+                        <StatCard href="/pt" icon={<School size={24}/>} value={stats.pt} label="Perguruan Tinggi" />
                     </>
                 ) : (
                     <>
