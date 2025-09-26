@@ -1,6 +1,7 @@
+// app/(pages)/layout.tsx
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
-import "./globals.css";
+import "../globals.css"; // --- FIX: Changed path from './globals.css' to '../globals.css'
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { PageTransitionLoader } from "@/components/PageTransitionLoader";
