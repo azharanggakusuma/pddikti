@@ -3,7 +3,7 @@
 
 import { useState, FormEvent, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Loader2, AlertCircle, Hash, BookOpen, CheckCircle, University, X, User, ArrowRight } from "lucide-react";
+import { Search, Loader2, AlertCircle, Hash, BookOpen, CheckCircle, University, X, User, ArrowRight, HelpCircle } from "lucide-react";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { motion, AnimatePresence } from "framer-motion";
 import { PtSearchableSelect } from "@/components/PtSearchableSelect";
@@ -113,7 +113,7 @@ const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa:
 
 // Helper component for the instruction steps
 const InstructionStep = ({ icon, title, description }: { icon: ReactNode, title: string, description: string }) => (
-    <div className="flex items-start gap-4 p-4 bg-white/60 rounded-xl border border-gray-200/80">
+    <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200/80">
         <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 shadow-sm">
             {icon}
         </div>
@@ -122,6 +122,43 @@ const InstructionStep = ({ icon, title, description }: { icon: ReactNode, title:
             <p className="text-sm text-gray-500 mt-0.5">{description}</p>
         </div>
     </div>
+);
+
+// --- MODAL INSTRUCTION COMPONENT ---
+const InstructionModal = ({ onClose }: { onClose: () => void }) => (
+    <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[998] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4"
+        onClick={onClose}
+    >
+        <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: -20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: -20 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+        >
+            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 className="text-lg font-bold text-gray-800">Cara Penggunaan</h3>
+                <button
+                    type="button"
+                    onClick={onClose}
+                    className="p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                    aria-label="Tutup"
+                >
+                    <X size={20} />
+                </button>
+            </div>
+            <div className="p-6 space-y-4">
+                <InstructionStep icon={<Hash size={20} />} title="1. Masukkan NIM" description="Isi Nomor Induk Mahasiswa yang akan dicari." />
+                <InstructionStep icon={<University size={20} />} title="2. Pilih Perguruan Tinggi" description="Ketik nama perguruan tinggi untuk memfilter pilihan." />
+                <InstructionStep icon={<BookOpen size={20} />} title="3. Pilih Program Studi" description="Setelah memilih PT, program studi yang tersedia akan muncul." />
+            </div>
+        </motion.div>
+    </motion.div>
 );
 
 export default function SpesifikPage() {
@@ -133,6 +170,7 @@ export default function SpesifikPage() {
   const [notFound, setNotFound] = useState(false);
   const [searchResult, setSearchResult] = useState<Mahasiswa | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isInstructionModalOpen, setIsInstructionModalOpen] = useState(false); // State for modal
   const router = useRouter();
 
   const handleSearch = async (e: FormEvent) => {
@@ -201,6 +239,9 @@ export default function SpesifikPage() {
             onCancel={() => setSearchResult(null)}
           />
         )}
+        {isInstructionModalOpen && (
+            <InstructionModal onClose={() => setIsInstructionModalOpen(false)} />
+        )}
       </AnimatePresence>
 
       <motion.div
@@ -226,12 +267,15 @@ export default function SpesifikPage() {
             </p>
           </header>
 
-          <div className="mb-8 space-y-4">
-              <h3 className="text-lg font-semibold text-gray-700 text-center">Cara Penggunaan</h3>
-              <InstructionStep icon={<Hash size={20} />} title="1. Masukkan NIM" description="Isi Nomor Induk Mahasiswa yang akan dicari." />
-              <InstructionStep icon={<University size={20} />} title="2. Pilih Perguruan Tinggi" description="Ketik nama perguruan tinggi untuk memfilter pilihan." />
-              <InstructionStep icon={<BookOpen size={20} />} title="3. Pilih Program Studi" description="Setelah memilih PT, program studi yang tersedia akan muncul." />
-            </div>
+          <div className="text-center mb-8">
+            <button 
+                onClick={() => setIsInstructionModalOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 text-sm font-semibold rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
+            >
+                <HelpCircle size={16} />
+                Lihat Cara Penggunaan
+            </button>
+          </div>
 
           <motion.div 
               className="bg-white/70 backdrop-blur-xl rounded-2xl border border-gray-200/80 shadow-2xl shadow-gray-300/30 overflow-hidden"
