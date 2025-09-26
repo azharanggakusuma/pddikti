@@ -1,9 +1,9 @@
-// app/faq/page.tsx
+// app/(pages)/faq/page.tsx
 'use client';
 
 import { useState } from 'react';
 import { ChevronDown, HelpCircle } from 'lucide-react';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const faqItems = [

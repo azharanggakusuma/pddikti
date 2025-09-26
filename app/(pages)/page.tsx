@@ -1,4 +1,4 @@
-// app/page.tsx
+// app/(pages)/page.tsx
 "use client";
 
 import Link from "next/link";
@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useState, FormEvent, useEffect, useRef } from "react";
 import { motion, useInView, useSpring } from "framer-motion";
-import { NewFeaturePopup } from "@/components/NewFeaturePopup";
+import { NewFeaturePopup } from "@/components/popups/NewFeaturePopup"; // Perubahan di sini
 
 // Tipe props untuk MenuItem
 type MenuItemProps = {

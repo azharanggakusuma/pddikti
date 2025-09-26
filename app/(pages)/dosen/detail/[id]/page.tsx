@@ -1,9 +1,9 @@
-// app/dosen/detail/[id]/page.tsx
+// app/(pages)/dosen/detail/[id]/page.tsx
 'use client';
 
 import Link from 'next/link';
 import type { DosenDetail } from '@/lib/types';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { useDetailPage } from '@/lib/hooks/useDetailPage';
 import {
   University,

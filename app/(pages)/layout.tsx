@@ -1,12 +1,12 @@
 // app/(pages)/layout.tsx
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
-import "../globals.css"; // --- FIX: Changed path from './globals.css' to '../globals.css'
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { PageTransitionLoader } from "@/components/PageTransitionLoader";
+import "../globals.css"; // Perubahan di sini
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
+import { PageTransitionLoader } from "@/components/layout/PageTransitionLoader";
 import { StatusProvider } from "@/lib/context/StatusContext";
-import { StatusPopup } from "@/components/StatusPopup";
+import { StatusPopup } from "@/components/popups/StatusPopup";
 
 const open_sans = Open_Sans({
   subsets: ["latin"],

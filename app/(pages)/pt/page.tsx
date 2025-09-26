@@ -1,8 +1,8 @@
-// app/pt/page.tsx
+// app/(pages)/pt/page.tsx
 import { Suspense } from 'react';
 import PtPageClient from './PtPageClient';
-import { SkeletonCard } from '@/components/SkeletonCard';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { SkeletonCard } from '@/components/ui/SkeletonCard';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 
 const PageSkeleton = () => {
     const breadcrumbItems = [{ label: "Perguruan Tinggi" }];

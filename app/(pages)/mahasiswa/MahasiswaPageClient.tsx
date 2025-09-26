@@ -1,13 +1,13 @@
-// app/mahasiswa/MahasiswaPageClient.tsx
+// app/(pages)/mahasiswa/MahasiswaPageClient.tsx
 'use client';
 
 import { useMemo } from "react";
 import Link from "next/link";
 import { Mahasiswa } from "@/lib/types";
-import { MahasiswaCard } from "@/components/MahasiswaCard";
-import { SkeletonCard } from "@/components/SkeletonCard";
-import { SearchableSelect } from "@/components/SearchableSelect";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { MahasiswaCard } from "@/components/cards/MahasiswaCard";
+import { SkeletonCard } from "@/components/ui/SkeletonCard";
+import { SearchableSelect } from "@/components/search/SearchableSelect";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { useSearchPage } from "@/lib/hooks/useSearchPage";
 import { SearchBar } from "@/components/search/SearchBar";
 import { Pagination } from "@/components/search/Pagination";
@@ -33,7 +33,7 @@ export default function MahasiswaPageClient() {
 
     const {
         query, loading, error, paginatedResults, totalPages, currentPage, setCurrentPage, showFilters, setShowFilters,
-        sortBy, setSortBy, filterPT, setFilterPT, filterProdi, setFilterProdi, 
+        sortBy, setSortBy, filterPT, setFilterPT, filterProdi, setFilterProdi,
         handleNewSearch, showBackToTop, allResults, processedResults, suggestion
     } = hookProps;
 
@@ -42,7 +42,7 @@ export default function MahasiswaPageClient() {
     const breadcrumbItems = [{ label: "Mahasiswa" }];
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -62,11 +62,11 @@ export default function MahasiswaPageClient() {
                   </p>
                 </header>
 
-                <SearchBar 
+                <SearchBar
                     {...hookProps}
                     placeholder="Ketik Nama, NIM, atau Perguruan Tinggi..."
                 />
-                
+
                 <div className="text-center mb-8">
                     <Link href="/mahasiswa/spesifik" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 group transition-colors">
                         <UserCheck size={16} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
@@ -154,8 +154,8 @@ export default function MahasiswaPageClient() {
                   {loading && Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
                   {error && <p className="text-center text-red-500 p-4">{error}</p>}
                   {!loading && !error && processedResults.length === 0 && (
-                    <NoResults 
-                        query={query} 
+                    <NoResults
+                        query={query}
                         suggestion={suggestion}
                         onSuggestionClick={(s) => handleNewSearch(undefined, s)}
                     />
@@ -167,7 +167,7 @@ export default function MahasiswaPageClient() {
                 </div>
 
                 {!loading && totalPages > 1 && (
-                    <Pagination 
+                    <Pagination
                         currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={setCurrentPage}

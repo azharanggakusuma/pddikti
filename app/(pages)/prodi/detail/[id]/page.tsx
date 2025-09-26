@@ -1,13 +1,13 @@
-// app/prodi/detail/[id]/page.tsx
+// app/(pages)/prodi/detail/[id]/page.tsx
 'use client';
 
 import Link from 'next/link';
 import type { ProgramStudiDetail } from '@/lib/types';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { useDetailPage } from '@/lib/hooks/useDetailPage';
-import { 
-    University, BookOpen, Calendar, MapPin, Globe, Mail, Phone, CheckCircle, 
-    BarChart2, ArrowLeft, Loader2, FileText, Hash, Building, Shield, Tag 
+import {
+    University, BookOpen, Calendar, MapPin, Globe, Mail, Phone, CheckCircle,
+    BarChart2, ArrowLeft, Loader2, FileText, Hash, Building, Shield, Tag
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -53,14 +53,14 @@ const DetailSkeleton = () => (
 
 export default function ProdiDetailPage() {
     const { data: prodi, loading, error } = useDetailPage<ProgramStudiDetail>('prodi');
-    
+
     const breadcrumbItems = [
       { label: "Program Studi", href: "/prodi" },
       { label: prodi ? prodi.nama_prodi : "Detail" }
     ];
 
     if (loading) return <DetailSkeleton />;
-    
+
     if (error || !prodi) {
         return (
           <div className="min-h-screen flex flex-col items-center justify-center text-center p-4 bg-gray-50">

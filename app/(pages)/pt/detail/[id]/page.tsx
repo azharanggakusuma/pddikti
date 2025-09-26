@@ -1,9 +1,9 @@
-// app/pt/detail/[id]/page.tsx
+// app/(pages)/pt/detail/[id]/page.tsx
 'use client';
 
 import Link from 'next/link';
 import type { PerguruanTinggiDetail } from '@/lib/types';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { useDetailPage } from '@/lib/hooks/useDetailPage';
 import {
     University, MapPin, Globe, Mail, Phone, Calendar, ArrowLeft, Loader2,

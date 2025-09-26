@@ -1,13 +1,13 @@
-// app/mahasiswa/spesifik/page.tsx
+// app/(pages)/mahasiswa/spesifik/page.tsx
 "use client";
 
 import { useState, FormEvent, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Loader2, AlertCircle, Hash, BookOpen, CheckCircle, University, X, User, ArrowRight, HelpCircle } from "lucide-react";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { motion, AnimatePresence } from "framer-motion";
-import { PtSearchableSelect } from "@/components/PtSearchableSelect";
-import { ProdiByPtSearchableSelect } from "@/components/ProdiByPtSearchableSelect";
+import { PtSearchableSelect } from "@/components/search/PtSearchableSelect";
+import { ProdiByPtSearchableSelect } from "@/components/search/ProdiByPtSearchableSelect";
 import { ProgramStudi, PerguruanTinggi, Mahasiswa } from "@/lib/types";
 
 // --- POPUP COMPONENT (COLOR SCHEME FIXED) ---
@@ -54,7 +54,7 @@ const ResultPopup = ({ mahasiswa, onConfirm, onCancel, isLoading }: { mahasiswa:
                     <p className="mt-1 opacity-90 text-shadow-sm text-sm">Informasi mahasiswa yang cocok telah ditemukan.</p>
                 </div>
             </div>
-            
+
             <div className="p-6">
                 {/* --- INFORMASI MAHASISWA --- */}
                 <div className="space-y-4 text-left">
@@ -192,7 +192,7 @@ export default function SpesifikPage() {
         nama_prodi: selectedProdi.nama,
         nama_pt: selectedPt.nama
       });
-      
+
       const response = await fetch(`/api/mahasiswa/spesifik?${params.toString()}`);
 
       if (response.status === 404) {
@@ -204,7 +204,7 @@ export default function SpesifikPage() {
         const data = await response.json();
         throw new Error(data.message || "Gagal terhubung ke server.");
       }
-      
+
       const data = await response.json();
 
       if (data && data.id) {
@@ -219,7 +219,7 @@ export default function SpesifikPage() {
       setLoading(false);
     }
   };
-  
+
   const breadcrumbItems = [
     { label: "Mahasiswa", href: "/mahasiswa" },
     { label: "Pencarian Spesifik" }
@@ -229,7 +229,7 @@ export default function SpesifikPage() {
     <>
       <AnimatePresence>
         {searchResult && (
-          <ResultPopup 
+          <ResultPopup
             mahasiswa={searchResult}
             isLoading={isRedirecting}
             onConfirm={() => {
@@ -257,18 +257,18 @@ export default function SpesifikPage() {
 
         <main className="w-full max-w-2xl mx-auto z-10">
           <Breadcrumbs items={breadcrumbItems} />
-          
+
           <header className="text-center my-8 sm:my-12">
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
               Pencarian <span className="text-blue-600">Spesifik</span>
             </h1>
-            <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Gunakan pencarian ini untuk memastikan data yang ditemukan adalah milik mahasiswa yang dituju demi hasil yang akurat.
             </p>
           </header>
 
           <div className="text-center mb-8">
-            <button 
+            <button
                 onClick={() => setIsInstructionModalOpen(true)}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 text-sm font-semibold rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
             >
@@ -277,7 +277,7 @@ export default function SpesifikPage() {
             </button>
           </div>
 
-          <motion.div 
+          <motion.div
               className="bg-white/70 backdrop-blur-xl rounded-2xl border border-gray-200/80 shadow-2xl shadow-gray-300/30 overflow-hidden"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -326,7 +326,7 @@ export default function SpesifikPage() {
                           />
                         </div>
                      </div>
-                    
+
                     <div className="!mt-6 space-y-4">
                         {error && (
                           <motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="flex items-center gap-3 text-red-700 bg-red-50 p-3 rounded-lg border border-red-200">

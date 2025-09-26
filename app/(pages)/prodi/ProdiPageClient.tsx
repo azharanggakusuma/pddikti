@@ -1,13 +1,13 @@
-// app/prodi/ProdiPageClient.tsx
+// app/(pages)/prodi/ProdiPageClient.tsx
 'use client';
 
 import { useMemo } from "react";
 import Link from "next/link";
 import { ProgramStudi } from "@/lib/types";
-import { ProdiCard } from "@/components/ProdiCard";
-import { SkeletonCard } from "@/components/SkeletonCard";
-import { SearchableSelect } from "@/components/SearchableSelect";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ProdiCard } from "@/components/cards/ProdiCard";
+import { SkeletonCard } from "@/components/ui/SkeletonCard";
+import { SearchableSelect } from "@/components/search/SearchableSelect";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { useSearchPage } from "@/lib/hooks/useSearchPage";
 import { SearchBar } from "@/components/search/SearchBar";
 import { Pagination } from "@/components/search/Pagination";
@@ -31,16 +31,16 @@ export default function ProdiPageClient() {
 
     const {
         query, loading, error, paginatedResults, totalPages, currentPage, setCurrentPage, showFilters, setShowFilters,
-        sortBy, setSortBy, filterPT, setFilterPT, filterJenjang, setFilterJenjang, 
+        sortBy, setSortBy, filterPT, setFilterPT, filterJenjang, setFilterJenjang,
         handleNewSearch, showBackToTop, allResults, processedResults
     } = hookProps;
 
     const uniquePT = useMemo(() => ["Semua", ...new Set(allResults.map((prodi) => prodi.pt))], [allResults]);
     const uniqueJenjang = useMemo(() => ["Semua", ...new Set(allResults.map((prodi) => prodi.jenjang))], [allResults]);
     const breadcrumbItems = [{ label: "Program Studi" }];
-    
+
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -60,7 +60,7 @@ export default function ProdiPageClient() {
                     </p>
                 </header>
 
-                <SearchBar 
+                <SearchBar
                     {...hookProps}
                     placeholder="Ketik nama prodi atau PT..."
                 />
@@ -150,9 +150,9 @@ export default function ProdiPageClient() {
                             <ProdiCard key={(prodi as any).id} prodi={prodi} index={index} />
                         ))}
                 </div>
-                
+
                 {!loading && totalPages > 1 && (
-                    <Pagination 
+                    <Pagination
                         currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={setCurrentPage}

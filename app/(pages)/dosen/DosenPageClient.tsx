@@ -1,13 +1,13 @@
-// app/dosen/DosenPageClient.tsx
+// app/(pages)/dosen/DosenPageClient.tsx
 'use client';
 
 import { useMemo } from "react";
 import Link from "next/link";
 import { Dosen } from "@/lib/types";
-import { DosenCard } from "@/components/DosenCard";
-import { SkeletonCard } from "@/components/SkeletonCard";
-import { SearchableSelect } from "@/components/SearchableSelect";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { DosenCard } from "@/components/cards/DosenCard";
+import { SkeletonCard } from "@/components/ui/SkeletonCard";
+import { SearchableSelect } from "@/components/search/SearchableSelect";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { useSearchPage } from "@/lib/hooks/useSearchPage";
 import { SearchBar } from "@/components/search/SearchBar";
 import { Pagination } from "@/components/search/Pagination";
@@ -33,7 +33,7 @@ export default function DosenPageClient() {
 
     const {
         query, loading, error, paginatedResults, totalPages, currentPage, setCurrentPage, showFilters, setShowFilters,
-        sortBy, setSortBy, filterPT, setFilterPT, filterProdi, setFilterProdi, 
+        sortBy, setSortBy, filterPT, setFilterPT, filterProdi, setFilterProdi,
         handleNewSearch, showBackToTop, allResults, processedResults
     } = hookProps;
 
@@ -42,7 +42,7 @@ export default function DosenPageClient() {
     const breadcrumbItems = [{ label: "Dosen" }];
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -62,7 +62,7 @@ export default function DosenPageClient() {
                     </p>
                 </header>
 
-                <SearchBar 
+                <SearchBar
                     {...hookProps}
                     placeholder="Ketik nama dosen, NIDN..."
                 />
@@ -156,7 +156,7 @@ export default function DosenPageClient() {
                 </div>
 
                 {!loading && totalPages > 1 && (
-                    <Pagination 
+                    <Pagination
                         currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={setCurrentPage}

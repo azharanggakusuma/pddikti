@@ -1,4 +1,4 @@
-// app/search/SearchPageClient.tsx
+// app/(pages)/search/SearchPageClient.tsx
 'use client';
 
 import { useState, useEffect, useMemo, FormEvent, useRef } from 'react';
@@ -8,12 +8,12 @@ import {
   GraduationCap, User, School, BookOpen, History, X
 } from 'lucide-react';
 import { Mahasiswa, Dosen, PerguruanTinggi, ProgramStudi } from '@/lib/types';
-import { MahasiswaCard } from '@/components/MahasiswaCard';
-import { DosenCard } from '@/components/DosenCard';
-import { PtCard } from '@/components/PtCard';
-import { ProdiCard } from '@/components/ProdiCard';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { SkeletonCard } from '@/components/SkeletonCard';
+import { MahasiswaCard } from '@/components/cards/MahasiswaCard';
+import { DosenCard } from '@/components/cards/DosenCard';
+import { PtCard } from '@/components/cards/PtCard';
+import { ProdiCard } from '@/components/cards/ProdiCard';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
+import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
@@ -151,7 +151,7 @@ export default function SearchPageClient() {
             prodi: paginate(results?.prodi, pageState.prodi),
         };
     }, [results, pageState]);
-    
+
     const totalResultsCount = useMemo(() => {
         if (!results) return 0;
         const filterKey = activeFilter.toLowerCase().replace(' ', '_');
@@ -166,9 +166,9 @@ export default function SearchPageClient() {
 
     const hasAnyResults = results && Object.values(results).some(val => Array.isArray(val) && val.length > 0);
     const breadcrumbItems = [{ label: "Pencarian Umum" }];
-    
+
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -187,7 +187,7 @@ export default function SearchPageClient() {
                         Hasil pencarian untuk semua kategori berdasarkan kata kunci yang Anda masukkan.
                     </p>
                 </header>
-                
+
                 <div ref={searchWrapperRef} className="w-full mb-8 sticky top-4 sm:top-6 z-20">
                     <form onSubmit={handleNewSearch} className="w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 overflow-hidden">
                        <div className="flex items-center w-full">
@@ -251,7 +251,7 @@ export default function SearchPageClient() {
                         </div>
                     </div>
                 )}
-                
+
                 <div className="space-y-16">
                     {loading && <div className="grid grid-cols-1 gap-5">{Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}</div>}
                     {error && <p className="text-center text-red-500 p-4">{error}</p>}
@@ -265,7 +265,7 @@ export default function SearchPageClient() {
                             <p className="text-sm sm:text-base mt-1">Gunakan kotak pencarian di atas untuk mencari di semua kategori.</p>
                         </div>
                     )}
-                    
+
                     {!loading && !error && query && !hasAnyResults && (
                         <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-10 sm:p-16 rounded-xl flex flex-col items-center justify-center">
                             <FileX size={56} className="text-gray-300" />
@@ -273,7 +273,7 @@ export default function SearchPageClient() {
                             <p className="text-sm sm:text-base mt-1">Coba sesuaikan kata kunci pencarian Anda.</p>
                         </div>
                     )}
-                    
+
                     {!loading && hasAnyResults && (
                         <>
                             {(activeFilter === 'Semua' || activeFilter === 'Mahasiswa') && paginatedData.mahasiswa.data.length > 0 && (

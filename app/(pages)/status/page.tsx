@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Server, Zap, Clock, AlertTriangle, CheckCircle, Loader2, RefreshCw, Globe } from 'lucide-react';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 
 interface StatusData {
   status: 'online' | 'offline' | 'error';

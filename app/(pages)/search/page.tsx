@@ -1,8 +1,8 @@
-// app/search/page.tsx
+// app/(pages)/search/page.tsx
 import { Suspense } from 'react';
 import SearchPageClient from './SearchPageClient';
-import { SkeletonCard } from '@/components/SkeletonCard';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { SkeletonCard } from '@/components/ui/SkeletonCard';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 
 const PageSkeleton = () => {
     const breadcrumbItems = [{ label: "Pencarian Umum" }];

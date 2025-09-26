@@ -1,9 +1,9 @@
-// app/mahasiswa/detail/[id]/page.tsx
+// app/(pages)/mahasiswa/detail/[id]/page.tsx
 'use client';
 
 import Link from 'next/link';
 import type { MahasiswaDetail } from '@/lib/types';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { useDetailPage } from '@/lib/hooks/useDetailPage';
 import { University, BookOpen, User, Calendar, GraduationCap, Users, UserPlus, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';

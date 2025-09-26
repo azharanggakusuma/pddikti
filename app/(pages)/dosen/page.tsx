@@ -1,8 +1,8 @@
-// app/dosen/page.tsx
+// app/(pages)/dosen/page.tsx
 import { Suspense } from 'react';
 import DosenPageClient from './DosenPageClient';
-import { SkeletonCard } from '@/components/SkeletonCard';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { SkeletonCard } from '@/components/ui/SkeletonCard';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 
 const DosenPageSkeleton = () => {
     const breadcrumbItems = [{ label: "Dosen" }];

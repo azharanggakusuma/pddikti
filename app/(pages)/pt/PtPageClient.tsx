@@ -1,11 +1,11 @@
-// app/pt/PtPageClient.tsx
+// app/(pages)/pt/PtPageClient.tsx
 'use client';
 
 import Link from "next/link";
 import { PerguruanTinggi } from "@/lib/types";
-import { PtCard } from "@/components/PtCard";
-import { SkeletonCard } from "@/components/SkeletonCard";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { PtCard } from "@/components/cards/PtCard";
+import { SkeletonCard } from "@/components/ui/SkeletonCard";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { useSearchPage } from "@/lib/hooks/useSearchPage";
 import { SearchBar } from "@/components/search/SearchBar";
 import { Pagination } from "@/components/search/Pagination";
@@ -37,7 +37,7 @@ export default function PtPageClient() {
     const breadcrumbItems = [{ label: "Perguruan Tinggi" }];
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -56,8 +56,8 @@ export default function PtPageClient() {
                         Cari informasi perguruan tinggi di Indonesia menggunakan nama atau kodenya.
                     </p>
                 </header>
-                
-                <SearchBar 
+
+                <SearchBar
                     {...hookProps}
                     placeholder="Ketik nama atau kode PT..."
                 />
@@ -88,7 +88,7 @@ export default function PtPageClient() {
                 </div>
 
                 {!loading && totalPages > 1 && (
-                    <Pagination 
+                    <Pagination
                         currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={setCurrentPage}
