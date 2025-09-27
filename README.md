@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DataDikti Explorer
 
-## Getting Started
+DataDikti Explorer adalah sebuah platform web modern dan independen yang dirancang untuk menjelajahi data dari Pangkalan Data Pendidikan Tinggi (PDDikti) Indonesia. Proyek ini bertujuan untuk menyajikan data publik dengan antarmuka yang cepat, responsif, dan ramah pengguna.
 
-First, run the development server:
+## ✨ Fitur Utama
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+-   **Pencarian Komprehensif**: Cari data untuk **Mahasiswa**, **Dosen**, **Program Studi**, dan **Perguruan Tinggi**.
+-   **Pencarian Spesifik**: Temukan mahasiswa dengan hasil yang lebih akurat menggunakan NIM, Perguruan Tinggi, dan Program Studi.
+-   **Halaman Detail**: Lihat informasi terperinci untuk setiap entitas data.
+-   **Antarmuka Modern**: Dibangun dengan Next.js dan Tailwind CSS untuk pengalaman pengguna yang mulus.
+-   **Desain Responsif**: Dapat diakses dengan nyaman di berbagai perangkat, baik desktop maupun mobile.
+-   **Status Layanan**: Memantau status API PDDikti secara *real-time*.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Teknologi yang Digunakan
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+-   **Framework**: [Next.js](https://nextjs.org/)
+-   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+-   **Animasi**: [Framer Motion](https://www.framer.com/motion/)
+-   **Ikon**: [Lucide React](https://lucide.dev/)
+-   **Bahasa**: [TypeScript](https://www.typescriptlang.org/)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📊 Sumber Data
 
-## Learn More
+Seluruh data yang ditampilkan di situs ini bersumber dari API publik pihak ketiga yang dikelola oleh [Ridwan Hall](https://api-pddikti.ridwaanhall.com/), yang mengambil data langsung dari PDDikti.
 
-To learn more about Next.js, take a look at the following resources:
+## 🏁 Memulai
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1.  **Clone repositori ini:**
+    ```bash
+    git clone [https://github.com/azharanggakusuma/pddikti.git](https://github.com/azharanggakusuma/pddikti.git)
+    cd pddikti
+    ```
 
-## Deploy on Vercel
+2.  **Install dependensi:**
+    ```bash
+    npm install
+    # atau
+    yarn install
+    # atau
+    pnpm install
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3.  **Jalankan server pengembangan:**
+    ```bash
+    npm run dev
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4.  Buka [http://localhost:3000](http://localhost:3000) di browser Anda untuk melihat hasilnya.
+
+## 🤝 Berkontribusi
+
+Kontribusi, isu, dan permintaan fitur sangat kami hargai! Jangan ragu untuk memeriksa halaman [isu](https://github.com/azharanggakusuma/pddikti/issues) jika Anda ingin berkontribusi.
+
+## 📄 Lisensi
+
+Proyek ini dilisensikan di bawah Lisensi MIT. Lihat file `LICENSE` untuk detail lebih lanjut.
