@@ -13,7 +13,7 @@ import { SearchBar } from "@/components/search/SearchBar";
 import { Pagination } from "@/components/search/Pagination";
 import { NoResults } from "@/components/search/NoResults";
 import {
-    ArrowUp, SlidersHorizontal, BookOpen
+    ArrowUp, SlidersHorizontal, BookOpen, UserCheck
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -64,6 +64,13 @@ export default function ProdiPageClient() {
                     {...hookProps}
                     placeholder="Ketik nama prodi atau PT..."
                 />
+                
+                <div className="text-center mb-8">
+                    <Link href="/prodi/spesifik" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 group transition-colors">
+                        <UserCheck size={16} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                        <span>Butuh hasil lebih akurat? Coba <strong>Pencarian Spesifik</strong></span>
+                    </Link>
+                </div>
 
                 {!loading && allResults.length > 0 && (
                   <div className="mb-6">
