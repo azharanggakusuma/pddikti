@@ -3,149 +3,96 @@
 
 import { useState, FormEvent, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Loader2, AlertCircle, Hash, BookOpen, CheckCircle, University, X, ArrowRight, HelpCircle } from "lucide-react";
+import {
+  Search,
+  Loader2,
+  AlertCircle,
+  University,
+  X,
+  HelpCircle,
+  BookOpen,
+} from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { motion, AnimatePresence } from "framer-motion";
 import { PtSearchableSelect } from "@/components/search/PtSearchableSelect";
 import { ProdiByPtSearchableSelect } from "@/components/search/ProdiByPtSearchableSelect";
 import { PerguruanTinggi, ProgramStudi } from "@/lib/types";
 
-// --- POPUP COMPONENT ---
-const ResultPopup = ({ prodi, onConfirm, onCancel, isLoading }: { prodi: ProgramStudi, onConfirm: () => void, onCancel: () => void, isLoading: boolean }) => (
-    <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[999] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4"
-    >
-        <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: -20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: -20 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
-        >
-            <div className="relative p-6 text-white text-center overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-700 z-0"></div>
-                <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-tr from-blue-500/50 via-cyan-400/50 to-sky-300/50 rounded-full animate-spin-slow z-10"></div>
-
-                <div className="relative z-20">
-                     <button
-                      type="button"
-                      onClick={onCancel}
-                      className="absolute -top-2 -right-2 text-white/70 hover:text-white transition-colors cursor-pointer"
-                      aria-label="Tutup"
-                    >
-                      <X size={24} />
-                    </button>
-                    <motion.div
-                        initial={{ scale: 0.5, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ type: 'spring', stiffness: 200, damping: 10, delay: 0.2 }}
-                        className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white/20 border-2 border-white/50 mb-3"
-                    >
-                        <CheckCircle size={32} strokeWidth={2.5} />
-                    </motion.div>
-                    <h2 className="text-2xl font-bold text-shadow">
-                      Data Ditemukan
-                    </h2>
-                    <p className="mt-1 opacity-90 text-shadow-sm text-sm">Informasi program studi yang cocok telah ditemukan.</p>
-                </div>
-            </div>
-
-            <div className="p-6">
-                <div className="space-y-4 text-left">
-                     <div className="flex items-center gap-4">
-                        <BookOpen className="w-6 h-6 text-gray-400 flex-shrink-0" />
-                        <div>
-                            <p className="text-xs font-medium text-gray-500">Program Studi</p>
-                            <p className="font-semibold text-gray-800 text-base leading-tight">{prodi.jenjang} - {prodi.nama}</p>
-                        </div>
-                    </div>
-                     <div className="flex items-center gap-4">
-                        <University className="w-6 h-6 text-gray-400 flex-shrink-0" />
-                        <div>
-                            <p className="text-xs font-medium text-gray-500">Perguruan Tinggi</p>
-                            <p className="font-semibold text-gray-800 text-base leading-tight">{prodi.pt}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mt-8">
-                  <button
-                    type="button"
-                    onClick={onConfirm}
-                    disabled={isLoading}
-                    className="w-full group px-6 h-12 text-base font-semibold text-white bg-blue-600 rounded-xl focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-blue-400 transition-all duration-300 shadow-lg flex items-center justify-center gap-2 cursor-pointer transform hover:scale-[1.03] hover:shadow-blue-500/50 disabled:bg-blue-400 disabled:scale-100 disabled:cursor-wait"
-                  >
-                    {isLoading ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                        <>
-                            <span>Lihat Detail Lengkap</span>
-                            <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" size={18} />
-                        </>
-                    )}
-                  </button>
-                </div>
-            </div>
-        </motion.div>
-    </motion.div>
-);
-
-const InstructionStep = ({ icon, title, description }: { icon: ReactNode, title: string, description: string }) => (
-    <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200/80">
-        <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 shadow-sm">
-            {icon}
-        </div>
-        <div>
-            <h4 className="font-semibold text-gray-800">{title}</h4>
-            <p className="text-sm text-gray-500 mt-0.5">{description}</p>
-        </div>
+/* ===========================
+   Instruction Modal (rapi)
+   =========================== */
+const InstructionStep = ({
+  icon,
+  title,
+  description,
+}: {
+  icon: ReactNode;
+  title: string;
+  description: string;
+}) => (
+  <li className="flex items-start gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3">
+    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-blue-200 bg-blue-50 text-blue-600">
+      {icon}
     </div>
+    <div>
+      <h4 className="font-semibold text-gray-800">{title}</h4>
+      <p className="mt-0.5 text-sm text-gray-600">{description}</p>
+    </div>
+  </li>
 );
 
 const InstructionModal = ({ onClose }: { onClose: () => void }) => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 z-[50] flex items-center justify-center bg-gray-900/50 p-4"
+    onClick={onClose}
+    aria-modal="true"
+    role="dialog"
+  >
     <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[998] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4"
-        onClick={onClose}
+      initial={{ scale: 0.98, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.98, opacity: 0 }}
+      transition={{ type: "spring", stiffness: 280, damping: 22 }}
+      className="relative w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-xl"
+      onClick={(e) => e.stopPropagation()}
     >
-        <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: -20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: -20 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
+      <div className="flex items-center justify-between border-b border-gray-200 p-4">
+        <h3 className="text-base font-bold text-gray-900">Cara Penggunaan</h3>
+        <button
+          type="button"
+          onClick={onClose}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+          aria-label="Tutup"
         >
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-                <h3 className="text-lg font-bold text-gray-800">Cara Penggunaan</h3>
-                <button
-                    type="button"
-                    onClick={onClose}
-                    className="p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
-                    aria-label="Tutup"
-                >
-                    <X size={20} />
-                </button>
-            </div>
-            <div className="p-6 space-y-4">
-                <InstructionStep icon={<University size={20} />} title="1. Pilih Perguruan Tinggi" description="Ketik nama perguruan tinggi untuk memfilter pilihan." />
-                <InstructionStep icon={<BookOpen size={20} />} title="2. Pilih Program Studi" description="Setelah memilih PT, program studi yang tersedia akan muncul." />
-            </div>
-        </motion.div>
+          <X size={18} />
+        </button>
+      </div>
+      <div className="p-5">
+        <ul className="grid gap-3">
+          <InstructionStep
+            icon={<University size={18} />}
+            title="1. Pilih Perguruan Tinggi"
+            description="Ketik nama perguruan tinggi untuk memfilter pilihan."
+          />
+          <InstructionStep
+            icon={<BookOpen size={18} />}
+            title="2. Pilih Program Studi"
+            description="Setelah memilih PT, pilih program studi yang tersedia."
+          />
+        </ul>
+      </div>
     </motion.div>
+  </motion.div>
 );
 
 export default function SpesifikPage() {
   const [selectedPt, setSelectedPt] = useState<PerguruanTinggi | null>(null);
   const [selectedProdi, setSelectedProdi] = useState<ProgramStudi | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isRedirecting, setIsRedirecting] = useState(false);
   const [isInstructionModalOpen, setIsInstructionModalOpen] = useState(false);
   const router = useRouter();
 
@@ -153,127 +100,134 @@ export default function SpesifikPage() {
     e.preventDefault();
     setError(null);
 
-    if (!selectedProdi || !selectedPt) {
+    if (!selectedPt || !selectedProdi) {
       setError("Semua field harus diisi.");
       return;
     }
 
-    setLoading(true);
-
-    if (selectedProdi) {
-      router.push(`/prodi/detail/${encodeURIComponent(selectedProdi.id)}`);
-    }
-
+    // Tidak perlu async/await; langsung navigasi lalu reset state submit
+    setSubmitting(true);
+    router.push(`/prodi/detail/${encodeURIComponent(selectedProdi.id)}`);
+    // opsional: jika ingin menjaga UX saat transisi lambat:
+    setTimeout(() => setSubmitting(false), 1200);
   };
 
   const breadcrumbItems = [
     { label: "Program Studi", href: "/prodi" },
-    { label: "Pencarian Spesifik" }
+    { label: "Pencarian Spesifik" },
   ];
 
   return (
     <>
       <AnimatePresence>
         {isInstructionModalOpen && (
-            <InstructionModal onClose={() => setIsInstructionModalOpen(false)} />
+          <InstructionModal onClose={() => setIsInstructionModalOpen(false)} />
         )}
       </AnimatePresence>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.5 }}
-        className="relative min-h-screen p-4 sm:p-8 flex flex-col items-center antialiased bg-gray-50 text-gray-800 overflow-hidden"
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.35 }}
+        className="relative min-h-screen bg-gray-50 p-4 text-gray-900 sm:p-8"
       >
-        <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] h-[600px] bg-gradient-to-tr from-blue-200/40 via-cyan-100/40 to-sky-200/40 rounded-full blur-3xl -z-10"
-        ></div>
+        {/* Subtle top gradient */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-gradient-to-b from-blue-100/50 to-transparent" />
 
-        <main className="w-full max-w-2xl mx-auto z-10">
+        <main className="mx-auto w-full max-w-2xl">
           <Breadcrumbs items={breadcrumbItems} />
 
+          {/* Header: dibiarkan apa adanya (style tidak diubah) */}
           <header className="text-center my-8 sm:my-12">
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
               Pencarian <span className="text-blue-600">Spesifik</span>
             </h1>
             <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Gunakan pencarian ini untuk memastikan data yang ditemukan adalah milik program studi yang dituju demi hasil yang akurat.
+              Gunakan pencarian ini untuk memastikan data yang ditemukan adalah
+              milik program studi yang dituju demi hasil yang akurat.
             </p>
           </header>
 
-          <div className="text-center mb-8">
+          <div className="mb-6 text-center">
             <button
-                onClick={() => setIsInstructionModalOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 text-sm font-semibold rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
+              type="button"
+              onClick={() => setIsInstructionModalOpen(true)}
+              className="inline-flex items-center gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 transition hover:bg-blue-100 sm:px-4 sm:text-sm"
             >
-                <HelpCircle size={16} />
-                Lihat Cara Penggunaan
+              <HelpCircle size={16} />
+              Lihat Cara Penggunaan
             </button>
           </div>
 
-          <motion.div
-              className="bg-white/70 backdrop-blur-xl rounded-2xl border border-gray-200/80 shadow-2xl shadow-gray-300/30 overflow-hidden"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          <motion.section
+            initial={{ opacity: 0, scale: 0.99 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.35 }}
+            className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
           >
-            <div className="p-8 sm:p-10">
-                <form onSubmit={handleSearch} className="flex flex-col h-full">
-                  <div className="flex-grow space-y-6">
-                     <h2 className="text-xl font-bold text-gray-800">Masukkan Detail Program Studi</h2>
-                     <div className="space-y-4">
-                         <div className="space-y-2">
-                              <label className="text-sm font-semibold text-gray-700">
-                              Perguruan Tinggi
-                              </label>
-                              <PtSearchableSelect
-                                  value={selectedPt}
-                                  onChange={setSelectedPt}
-                                  placeholder="Ketik untuk mencari PT..."
-                              />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-700">
-                            Program Studi
-                          </label>
-                          <ProdiByPtSearchableSelect
-                              value={selectedProdi}
-                              onChange={setSelectedProdi}
-                              selectedPt={selectedPt}
-                          />
-                        </div>
-                     </div>
+            <div className="p-5 sm:p-7">
+              <form onSubmit={handleSearch} className="grid gap-5">
+                <div>
+                  <h2 className="text-base font-bold text-gray-900">
+                    Masukkan Detail Program Studi
+                  </h2>
+                </div>
 
-                    <div className="!mt-6 space-y-4">
-                        {error && (
-                          <motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="flex items-center gap-3 text-red-700 bg-red-50 p-3 rounded-lg border border-red-200">
-                              <AlertCircle className="flex-shrink-0" size={20} />
-                              <span className="text-sm font-medium">{error}</span>
-                          </motion.div>
-                        )}
+                {/* PT */}
+                <div className="grid gap-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Perguruan Tinggi
+                  </label>
+                  <PtSearchableSelect
+                    value={selectedPt}
+                    onChange={setSelectedPt}
+                    placeholder="Ketik untuk mencari PT..."
+                  />
+                </div>
+
+                {/* Prodi */}
+                <div className="grid gap-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Program Studi
+                  </label>
+                  <ProdiByPtSearchableSelect
+                    value={selectedProdi}
+                    onChange={setSelectedProdi}
+                    selectedPt={selectedPt}
+                  />
+                </div>
+
+                {/* Alerts */}
+                <div className="grid gap-3">
+                  {error && (
+                    <div className="flex items-center gap-2 rounded-md border border-red-200 bg-red-50 p-3 text-red-700">
+                      <AlertCircle className="h-4 w-4 shrink-0" />
+                      <span className="text-sm font-medium">{error}</span>
                     </div>
-                  </div>
+                  )}
+                </div>
 
-                  <div className="mt-8">
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full px-5 h-12 text-base bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed group shadow-sm hover:shadow-md"
-                    >
-                        {loading ? (
-                            <Loader2 size={20} className="animate-spin" />
-                        ) : (
-                            <div className="flex items-center gap-2">
-                               <Search size={18} />
-                               <span>Cari Program Studi</span>
-                            </div>
-                        )}
-                    </button>
-                  </div>
-                </form>
-              </div>
-          </motion.div>
+                {/* Submit */}
+                <div className="pt-1">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="group inline-flex w-full items-center justify-center gap-2 rounded-md bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:cursor-not-allowed disabled:bg-blue-400"
+                  >
+                    {submitting ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <>
+                        <Search size={18} />
+                        <span>Cari Program Studi</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </motion.section>
         </main>
       </motion.div>
     </>
