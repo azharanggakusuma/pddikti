@@ -1,6 +1,6 @@
-# DataDikti Explorer
+# DataDikti
 
-DataDikti Explorer adalah sebuah platform web modern dan independen yang dirancang untuk menjelajahi data dari Pangkalan Data Pendidikan Tinggi (PDDikti) Indonesia. Proyek ini bertujuan untuk menyajikan data publik dengan antarmuka yang cepat, responsif, dan ramah pengguna.
+DataDikti adalah sebuah platform web modern dan independen yang dirancang untuk menjelajahi data dari Pangkalan Data Pendidikan Tinggi (PDDikti) Indonesia. Proyek ini bertujuan untuk menyajikan data publik dengan antarmuka yang cepat, responsif, dan ramah pengguna.
 
 ## ✨ Fitur Utama
 

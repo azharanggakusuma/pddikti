@@ -375,7 +375,7 @@ export const ProdiByPtSearchableSelect: React.FC<ProdiByPtSearchableSelectProps>
                             </p>
                             {opt.pt && (
                               <p className="text-[11px] text-gray-500 mt-0.5">
-                                PT: <span className="truncate inline-block max-w-[16rem] align-bottom">{opt.pt}</span>
+                                <span className="truncate inline-block max-w-[16rem] align-bottom">{opt.pt}</span>
                               </p>
                             )}
                           </div>
