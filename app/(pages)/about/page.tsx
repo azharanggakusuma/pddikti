@@ -1,66 +1,115 @@
 // app/about/page.tsx
-import { Info, Database, Zap, Code } from 'lucide-react';
-import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
-import Link from 'next/link';
+"use client";
 
-const FeatureCard = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => (
-    <div className="bg-white p-6 rounded-xl border border-gray-200">
-        <div className="flex items-center gap-4">
-            <div className="flex-shrink-0 h-12 w-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
-                {icon}
-            </div>
-            <h3 className="text-lg font-bold text-gray-800">{title}</h3>
-        </div>
-        <p className="mt-4 text-gray-600">
-            {children}
-        </p>
+import Link from "next/link";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+import { Info, Database, Zap, Code, ArrowRight } from "lucide-react";
+import { ReactNode } from "react";
+
+const FeatureCard = ({
+  icon,
+  title,
+  children,
+}: {
+  icon: ReactNode;
+  title: string;
+  children: ReactNode;
+}) => (
+  <article
+    className="group rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+    role="article"
+  >
+    <div className="flex items-center gap-4">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-600">
+        {icon}
+      </div>
+      <h3 className="text-lg font-bold text-gray-900">{title}</h3>
     </div>
+    <p className="mt-4 text-gray-600 leading-relaxed">{children}</p>
+  </article>
 );
 
-
 export default function AboutPage() {
-    const breadcrumbItems = [{ label: "Tentang Situs Ini" }];
+  const breadcrumbItems = [{ label: "Tentang Situs Ini" }];
 
-    return (
-        <div className="min-h-screen bg-gray-50 p-4 sm:p-8 antialiased">
-            <main className="max-w-4xl mx-auto">
-                <Breadcrumbs items={breadcrumbItems} />
+  return (
+    <div className="relative min-h-screen bg-gray-50 p-4 antialiased sm:p-8">
+      {/* Subtle top gradient */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-gradient-to-b from-blue-100/50 to-transparent" />
 
-                <header className="text-center my-8 sm:my-12">
-                    <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
-                        Tentang <span className="text-blue-600">DataDikti</span>
-                    </h1>
-                    <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
-                        Misi kami adalah menyajikan data Pendidikan Tinggi di Indonesia secara cepat, mudah diakses, dan dengan antarmuka yang modern bagi siapa saja.
-                    </p>
-                </header>
+      <main className="mx-auto max-w-4xl">
+        <Breadcrumbs items={breadcrumbItems} />
 
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <FeatureCard icon={<Info size={24} />} title="Apa Itu DataDikti?">
-                        DataDikti adalah sebuah proyek independen yang bertujuan untuk menjadi pintu gerbang alternatif dalam mengakses data dari Pangkalan Data Pendidikan Tinggi (PDDikti). Kami percaya bahwa data publik harus mudah diakses dan disajikan dengan cara yang ramah pengguna.
-                    </FeatureCard>
-                    <FeatureCard icon={<Database size={24} />} title="Sumber Data Kami">
-                        Seluruh informasi yang ditampilkan di situs ini bersumber dari data publik yang disediakan oleh PDDikti. Kami mengambil data ini melalui API publik pihak ketiga yang dikelola oleh <a href="https://api-pddikti.ridwaanhall.com/" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">Ridwan Hall</a>, yang telah melakukan pekerjaan luar biasa dalam membuat data ini lebih mudah diakses.
-                    </FeatureCard>
-                     <FeatureCard icon={<Zap size={24} />} title="Teknologi di Baliknya">
-                        Situs ini dibangun menggunakan teknologi web modern seperti Next.js dan Tailwind CSS untuk memberikan pengalaman pengguna yang cepat dan responsif. Kami fokus pada kecepatan, kemudahan penggunaan, dan desain yang bersih.
-                    </FeatureCard>
-                    <FeatureCard icon={<Code size={24} />} title="Pengembang">
-                        Proyek ini didesain dan dikembangkan oleh <a href="https://azharanggakusuma.xyz" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">Azharangga Kusuma</a>. Jika Anda memiliki pertanyaan atau masukan, jangan ragu untuk menghubunginya melalui media sosial yang tertera di footer.
-                    </FeatureCard>
-                </div>
+        {/* Header */}
+        <header className="my-8 text-center sm:my-12">
+          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+            Tentang <span className="text-blue-600">DataDikti</span>
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-gray-600">
+            Misi kami adalah menyajikan data Pendidikan Tinggi di Indonesia secara cepat,
+            mudah diakses, dan dengan antarmuka yang modern bagi siapa saja.
+          </p>
+        </header>
 
-                 <div className="mt-20 text-center">
-                    <h2 className="text-2xl font-bold text-gray-800">Punya Pertanyaan Lain?</h2>
-                    <p className="mt-3 text-gray-600">
-                        Kunjungi Pusat Bantuan kami untuk menemukan jawaban atas pertanyaan umum.
-                    </p>
-                    <Link href="/faq" className="mt-6 inline-block bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                        Kunjungi Pusat Bantuan
-                    </Link>
-                </div>
+        {/* Feature grid */}
+        <section
+          aria-label="Fitur dan informasi"
+          className="mt-12 grid grid-cols-1 gap-6 sm:mt-16 md:grid-cols-2"
+        >
+          <FeatureCard icon={<Info size={24} />} title="Apa Itu DataDikti?">
+            DataDikti adalah proyek independen yang menjadi pintu gerbang alternatif
+            untuk mengakses data dari Pangkalan Data Pendidikan Tinggi (PDDikti). Kami
+            percaya data publik harus mudah diakses dan disajikan secara ramah pengguna.
+          </FeatureCard>
 
-            </main>
-        </div>
-    );
+          <FeatureCard icon={<Database size={24} />} title="Sumber Data Kami">
+            Seluruh informasi bersumber dari data publik PDDikti. Kami mengaksesnya lewat
+            API publik pihak ketiga yang dikelola oleh{" "}
+            <a
+              href="https://api-pddikti.ridwaanhall.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-blue-600 underline decoration-blue-200 underline-offset-2 hover:text-blue-700"
+            >
+              Ridwan Hall
+            </a>
+            , yang berkontribusi besar mempermudah akses data.
+          </FeatureCard>
+
+          <FeatureCard icon={<Zap size={24} />} title="Teknologi di Baliknya">
+            Situs dibangun dengan Next.js dan Tailwind CSS untuk pengalaman cepat dan
+            responsif. Fokus kami: performa, kemudahan penggunaan, dan desain yang bersih.
+          </FeatureCard>
+
+          <FeatureCard icon={<Code size={24} />} title="Pengembang">
+            Proyek didesain & dikembangkan oleh{" "}
+            <a
+              href="https://azharanggakusuma.xyz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-blue-600 underline decoration-blue-200 underline-offset-2 hover:text-blue-700"
+            >
+              Azharangga Kusuma
+            </a>
+            . Saran/pertanyaan? Silakan hubungi lewat tautan media sosial di footer.
+          </FeatureCard>
+        </section>
+
+        {/* CTA */}
+        <section className="mt-16 rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm sm:mt-20">
+          <h2 className="text-2xl font-bold text-gray-900">Punya Pertanyaan Lain?</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-gray-600">
+            Kunjungi Pusat Bantuan untuk menemukan jawaban atas pertanyaan umum.
+          </p>
+          <Link
+            href="/faq"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
+          >
+            Kunjungi Pusat Bantuan
+            <ArrowRight size={18} className="translate-x-0 transition group-hover:translate-x-0.5" />
+          </Link>
+        </section>
+      </main>
+    </div>
+  );
 }
