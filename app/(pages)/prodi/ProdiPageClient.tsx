@@ -12,8 +12,9 @@ import { useSearchPage } from "@/lib/hooks/useSearchPage";
 import { SearchBar } from "@/components/search/SearchBar";
 import { Pagination } from "@/components/search/Pagination";
 import { NoResults } from "@/components/search/NoResults";
+import { ErrorDisplay } from "@/components/search/ErrorDisplay"; // <-- Impor komponen baru
 import {
-    ArrowUp, SlidersHorizontal, BookOpen, UserCheck
+    ArrowUp, SlidersHorizontal, UserCheck
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -148,11 +149,14 @@ export default function ProdiPageClient() {
 
                 <div className="grid grid-cols-1 gap-5">
                     {loading && Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
-                    {error && <p className="text-center text-red-500 p-4">{error}</p>}
+                    
+                    {/* --- PERUBAHAN DI SINI --- */}
+                    {!loading && error && <ErrorDisplay message={error} />}
+
                     {!loading && !error && processedResults.length === 0 && (
                         <NoResults query={query} />
                     )}
-                    {!loading &&
+                    {!loading && !error &&
                         paginatedResults.map((prodi, index) => (
                             <ProdiCard key={(prodi as any).id} prodi={prodi} index={index} />
                         ))}

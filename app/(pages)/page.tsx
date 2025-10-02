@@ -146,26 +146,51 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const handleSearch = (e: FormEvent) => {
+  const handleSearch = async (e: FormEvent) => {
     e.preventDefault();
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim() || isSearching) return;
+    
     setIsSearching(true);
-    let path = "/search";
-    switch (searchCategory) {
-      case "mahasiswa":
-        path = "/mahasiswa";
-        break;
-      case "dosen":
-        path = "/dosen";
-        break;
-      case "prodi":
-        path = "/prodi";
-        break;
-      case "pt":
-        path = "/pt";
-        break;
+
+    try {
+      // 1. Panggil API untuk mendapatkan kunci unik
+      const response = await fetch('/api/search/initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: searchQuery }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Gagal memulai sesi pencarian.');
+      }
+      
+      const { key } = await response.json();
+
+      // 2. Tentukan path berdasarkan kategori
+      let path = "/search";
+      switch (searchCategory) {
+        case "mahasiswa":
+          path = "/mahasiswa";
+          break;
+        case "dosen":
+          path = "/dosen";
+          break;
+        case "prodi":
+          path = "/prodi";
+          break;
+        case "pt":
+          path = "/pt";
+          break;
+      }
+
+      // 3. Navigasi ke URL dengan parameter 'key'
+      router.push(`${path}?key=${key}`);
+
+    } catch (error) {
+      console.error("Search initiation failed:", error);
+      // Anda bisa menambahkan state untuk menampilkan pesan error ke pengguna di sini
+      setIsSearching(false);
     }
-    router.push(`${path}?q=${encodeURIComponent(searchQuery)}`);
   };
 
   return (

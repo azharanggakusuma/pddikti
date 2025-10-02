@@ -1,5 +1,6 @@
 // lib/utils/apiHandler.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { getQueryFromCache } from '@/app/api/search/initiate/route';
 
 // Opsi untuk kustomisasi, jika diperlukan di masa depan
 interface FetchOptions {
@@ -20,10 +21,23 @@ export async function handleApiRequest(
   options: FetchOptions = {}
 ) {
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get('q');
+  let query = searchParams.get('q');
+  const searchKey = searchParams.get('key'); // Parameter baru
+
+  if (searchKey) {
+    const cachedQuery = getQueryFromCache(searchKey);
+    if (cachedQuery) {
+      query = cachedQuery;
+    } else if (searchParams.has('fallback_q')) {
+      query = searchParams.get('fallback_q');
+    } else {
+      // PERUBAHAN DI SINI: Pesan error yang lebih informatif
+      return NextResponse.json({ message: 'URL pencarian ini tidak valid atau telah kedaluwarsa. Silakan lakukan pencarian baru.' }, { status: 404 });
+    }
+  }
 
   if (!query) {
-    return NextResponse.json({ message: 'Query parameter "q" is required' }, { status: 400 });
+    return NextResponse.json({ message: 'Parameter "q" atau "key" dibutuhkan' }, { status: 400 });
   }
 
   const {
@@ -46,12 +60,13 @@ export async function handleApiRequest(
 
     const responseText = await response.text();
     if (!responseText.trim()) {
-      return NextResponse.json(emptyResponseValue);
+      return NextResponse.json({ data: emptyResponseValue, query });
     }
 
     try {
       const data = JSON.parse(responseText);
-      return NextResponse.json(data);
+      // Sertakan query asli dalam response agar bisa ditampilkan di UI
+      return NextResponse.json({ data, query });
     } catch (e) {
       return NextResponse.json({ message: errorMessage, details: responseText }, { status: 500 });
     }

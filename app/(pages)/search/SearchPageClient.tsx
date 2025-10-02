@@ -5,7 +5,8 @@ import { useState, useEffect, useMemo, FormEvent, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   Loader2, FileX, Search, ChevronLeft, ChevronRight,
-  GraduationCap, User, School, BookOpen, History, X
+  GraduationCap, User, School, BookOpen, History, X,
+  AlertTriangle // <-- Ikon yang dibutuhkan untuk ErrorDisplay
 } from 'lucide-react';
 import { Mahasiswa, Dosen, PerguruanTinggi, ProgramStudi } from '@/lib/types';
 import { MahasiswaCard } from '@/components/cards/MahasiswaCard';
@@ -16,6 +17,7 @@ import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ErrorDisplay } from '@/components/search/ErrorDisplay'; // <-- Impor komponen error
 
 interface SearchResult {
     mahasiswa: Mahasiswa[];
@@ -56,10 +58,10 @@ const RESULTS_PER_PAGE = 5;
 export default function SearchPageClient() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const query = searchParams.get('q') || '';
+    const searchKey = searchParams.get('key');
 
     const [results, setResults] = useState<SearchResult | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(!!searchKey);
     const [error, setError] = useState<string | null>(null);
     const [activeFilter, setActiveFilter] = useState('Semua');
     const [pageState, setPageState] = useState({
@@ -68,17 +70,24 @@ export default function SearchPageClient() {
         pt: 1,
         prodi: 1,
     });
-    const [searchQuery, setSearchQuery] = useState(query);
+    
+    const [searchInputValue, setSearchInputValue] = useState("");
+    const [originalQuery, setOriginalQuery] = useState("");
+
     const [searchHistory, setSearchHistory] = useState<string[]>([]);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const searchWrapperRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => { setSearchQuery(query); }, [query]);
+    useEffect(() => {
+        setSearchInputValue(originalQuery);
+    }, [originalQuery]);
+    
     useEffect(() => {
         const history = localStorage.getItem("pddikti_search_history");
         if (history) setSearchHistory(JSON.parse(history));
     }, []);
+    
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target as Node)) setIsSearchFocused(false);
@@ -92,14 +101,35 @@ export default function SearchPageClient() {
         setSearchHistory(updatedHistory);
         localStorage.setItem("pddikti_search_history", JSON.stringify(updatedHistory));
     };
-    const handleNewSearch = (e?: FormEvent, historyQuery?: string) => {
+
+    const handleNewSearch = async (e?: FormEvent, historyQuery?: string) => {
         if (e) e.preventDefault();
-        const finalQuery = historyQuery || searchQuery;
-        if (!finalQuery.trim() || finalQuery === query) return;
+        const finalQuery = historyQuery || searchInputValue;
+        if (!finalQuery.trim()) return;
+
         updateSearchHistory(finalQuery);
         setIsSearchFocused(false);
-        router.push(`/search?q=${encodeURIComponent(finalQuery)}`);
+        setLoading(true);
+
+        try {
+            const response = await fetch('/api/search/initiate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: finalQuery }),
+            });
+            const { key, query: returnedQuery } = await response.json();
+            if (response.ok) {
+                sessionStorage.setItem(`search_query_${key}`, returnedQuery);
+                router.push(`/search?key=${key}`);
+            } else {
+                throw new Error(returnedQuery.message || 'Gagal memulai pencarian.');
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Terjadi kesalahan koneksi.');
+            setLoading(false);
+        }
     };
+
     const handleDeleteHistory = (itemToDelete: string, e: React.MouseEvent) => {
         e.stopPropagation();
         const updatedHistory = searchHistory.filter((item) => item !== itemToDelete);
@@ -109,7 +139,7 @@ export default function SearchPageClient() {
 
     useEffect(() => {
         const fetchResults = async () => {
-            if (!query.trim()) {
+            if (!searchKey) {
                 setLoading(false);
                 setResults(null);
                 return;
@@ -118,10 +148,17 @@ export default function SearchPageClient() {
             setError(null);
             setPageState({ mahasiswa: 1, dosen: 1, pt: 1, prodi: 1 });
             try {
-                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.message || 'Gagal terhubung ke server');
-                setResults(data);
+                const fallbackQuery = sessionStorage.getItem(`search_query_${searchKey}`);
+                const url = `/api/search?key=${searchKey}${fallbackQuery ? `&fallback_q=${encodeURIComponent(fallbackQuery)}` : ''}`;
+
+                const response = await fetch(url);
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Gagal terhubung ke server');
+                
+                setResults(result.data);
+                setOriginalQuery(result.query);
+                if(fallbackQuery) sessionStorage.removeItem(`search_query_${searchKey}`);
+
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Terjadi kesalahan tidak diketahui');
             } finally {
@@ -129,7 +166,7 @@ export default function SearchPageClient() {
             }
         };
         fetchResults();
-    }, [query]);
+    }, [searchKey]);
 
     const handlePageChange = (category: keyof typeof pageState, newPage: number) => {
         setPageState(prev => ({ ...prev, [category]: newPage }));
@@ -192,13 +229,13 @@ export default function SearchPageClient() {
                     <form onSubmit={handleNewSearch} className="w-full bg-white rounded-xl shadow-sm border border-gray-200/80 transition-all duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 overflow-hidden">
                        <div className="flex items-center w-full">
                             <input
-                                ref={searchInputRef} type="text" value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)} onFocus={() => setIsSearchFocused(true)}
+                                ref={searchInputRef} type="text" value={searchInputValue}
+                                onChange={(e) => setSearchInputValue(e.target.value)} onFocus={() => setIsSearchFocused(true)}
                                 placeholder="Ketik Nama, NIM, NIDN, Prodi, atau PT..."
                                 className="w-full pl-5 pr-2 py-4 bg-transparent focus:outline-none text-base text-gray-800 placeholder-gray-500 truncate"
                             />
                             <button
-                                type="submit" disabled={loading || !searchQuery.trim() || searchQuery === query}
+                                type="submit" disabled={loading || !searchInputValue.trim()}
                                 className="mr-2 ml-1 px-4 sm:px-5 h-11 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed"
                                 aria-label="Cari"
                             >
@@ -232,7 +269,7 @@ export default function SearchPageClient() {
                     <div className="mb-8 bg-white p-4 rounded-xl border border-gray-200">
                         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                             <div className="text-sm text-gray-600 text-center sm:text-left">
-                                Ditemukan <strong>{totalResultsCount} hasil</strong> untuk <span className="font-semibold text-gray-800">"{query}"</span>
+                                Ditemukan <strong>{totalResultsCount} hasil</strong> untuk <span className="font-semibold text-gray-800">"{originalQuery}"</span>
                             </div>
                             <div className="flex items-center gap-4 w-full sm:w-auto">
                                 <label className="text-sm font-semibold text-gray-600 hidden sm:block">Kategori:</label>
@@ -254,9 +291,10 @@ export default function SearchPageClient() {
 
                 <div className="space-y-16">
                     {loading && <div className="grid grid-cols-1 gap-5">{Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}</div>}
-                    {error && <p className="text-center text-red-500 p-4">{error}</p>}
+                    
+                    {!loading && error && <ErrorDisplay message={error} />}
 
-                    {!loading && !error && !query && (
+                    {!loading && !error && !searchKey && (
                         <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-10 sm:p-16 rounded-xl flex flex-col items-center justify-center">
                             <Search size={56} className="text-gray-300" />
                             <h3 className="mt-6 font-bold text-lg sm:text-xl text-gray-700">
@@ -266,7 +304,7 @@ export default function SearchPageClient() {
                         </div>
                     )}
 
-                    {!loading && !error && query && !hasAnyResults && (
+                    {!loading && !error && searchKey && !hasAnyResults && (
                         <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 p-10 sm:p-16 rounded-xl flex flex-col items-center justify-center">
                             <FileX size={56} className="text-gray-300" />
                             <h3 className="mt-6 font-bold text-lg sm:text-xl text-gray-700">Tidak Ada Hasil Ditemukan</h3>
@@ -274,7 +312,7 @@ export default function SearchPageClient() {
                         </div>
                     )}
 
-                    {!loading && hasAnyResults && (
+                    {!loading && !error && hasAnyResults && (
                         <>
                             {(activeFilter === 'Semua' || activeFilter === 'Mahasiswa') && paginatedData.mahasiswa.data.length > 0 && (
                                 <section>
