@@ -126,6 +126,13 @@ export default function Home() {
   const [searchCategory, setSearchCategory] = useState("semua");
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+
+  // --- Select open/close control (reliable) ---
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const categoryWrapRef = useRef<HTMLDivElement>(null);
+  const selectRef = useRef<HTMLSelectElement>(null);
+  const ignoreNextFocusRef = useRef(false); // prevent reopen after closing via click
+
   const [stats, setStats] = useState<StatsData | null>(null);
   const router = useRouter();
 
@@ -149,24 +156,18 @@ export default function Home() {
   const handleSearch = async (e: FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim() || isSearching) return;
-    
     setIsSearching(true);
 
     try {
-      // 1. Panggil API untuk mendapatkan kunci unik
-      const response = await fetch('/api/search/initiate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/search/initiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: searchQuery }),
       });
 
-      if (!response.ok) {
-        throw new Error('Gagal memulai sesi pencarian.');
-      }
-      
+      if (!response.ok) throw new Error("Gagal memulai sesi pencarian.");
       const { key } = await response.json();
 
-      // 2. Tentukan path berdasarkan kategori
       let path = "/search";
       switch (searchCategory) {
         case "mahasiswa":
@@ -182,15 +183,18 @@ export default function Home() {
           path = "/pt";
           break;
       }
-
-      // 3. Navigasi ke URL dengan parameter 'key'
       router.push(`${path}?key=${key}`);
-
     } catch (error) {
       console.error("Search initiation failed:", error);
-      // Anda bisa menambahkan state untuk menampilkan pesan error ke pengguna di sini
       setIsSearching(false);
     }
+  };
+
+  // Close select BEFORE other elements process the click → ensures arrow animation
+  const handleFormPointerDownCapture = (e: React.PointerEvent<HTMLFormElement>) => {
+    if (!categoryWrapRef.current) return;
+    const clickedInside = categoryWrapRef.current.contains(e.target as Node);
+    if (!clickedInside) setIsSelectOpen(false);
   };
 
   return (
@@ -202,14 +206,12 @@ export default function Home() {
       className="relative flex min-h-screen w-full flex-col bg-gray-50 text-gray-900 antialiased"
     >
       {/* subtle pattern */}
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-gradient-to-b from-blue-100/50 to-transparent"
-      />
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-gradient-to-b from-blue-100/50 to-transparent" />
       <div
         className="absolute left-0 top-0 -z-20 h-full w-full bg-repeat opacity-40"
         style={{
           backgroundImage:
-            'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23e2e8f0\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M.5 1.5l1-1M2.5 3.5l1-1\'/%3E%3C/g%3E%3C/svg%3E")',
+            "url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'%23e2e8f0\\' fill-opacity=\\'0.4\\'%3E%3Cpath d=\\'M.5 1.5l1-1M2.5 3.5l1-1\\'/%3E%3C/g%3E%3C/svg%3E')",
         }}
         aria-hidden="true"
       />
@@ -228,8 +230,7 @@ export default function Home() {
             <span className="mt-2 block text-blue-600">Pendidikan Tinggi</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base text-gray-600 sm:text-lg">
-            Cari data mahasiswa, dosen, program studi, dan perguruan tinggi di seluruh
-            Indonesia dengan cepat, mudah, dan terintegrasi langsung dari data PDDikti.
+            Temukan informasi mahasiswa, dosen, program studi, dan perguruan tinggi di Indonesia secara cepat dan terintegrasi dengan data PDDikti.
           </p>
         </header>
 
@@ -237,19 +238,46 @@ export default function Home() {
         <div className="mx-auto mt-12 w-full max-w-2xl">
           <form
             onSubmit={handleSearch}
+            onPointerDownCapture={handleFormPointerDownCapture}
             className="w-full overflow-hidden rounded-xl border border-gray-200/80 bg-white shadow-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
             role="search"
             aria-label="Pencarian DataDikti"
           >
             <div className="flex w-full flex-col sm:flex-row sm:items-center">
               {/* Category */}
-              <div className="relative w-full border-b border-gray-200/80 sm:w-auto sm:border-b-0">
+              <div
+                ref={categoryWrapRef}
+                className="relative w-full border-b border-gray-200/80 sm:w-auto sm:border-b-0 group"
+              >
                 <select
+                  ref={selectRef}
                   name="kategori"
                   value={searchCategory}
-                  onChange={(e) => setSearchCategory(e.target.value)}
+                  onChange={(e) => {
+                    setSearchCategory(e.target.value);
+                    setIsSelectOpen(false); // close on option select
+                  }}
+                  onFocus={() => {
+                    if (ignoreNextFocusRef.current) {
+                      ignoreNextFocusRef.current = false;
+                      return; // prevent reopen after click-to-close
+                    }
+                    setIsSelectOpen(true);
+                  }}
+                  onBlur={() => setIsSelectOpen(false)}
+                  onMouseDown={() => {
+                    if (isSelectOpen) {
+                      // click on select to close while focused (desktop): no blur fires
+                      ignoreNextFocusRef.current = true;
+                      setIsSelectOpen(false); // trigger arrow close animation
+                    } else {
+                      // opening
+                      setIsSelectOpen(true);
+                    }
+                  }}
                   className="w-full appearance-none bg-transparent px-5 py-4 text-sm font-semibold text-gray-700 outline-none"
                   aria-label="Pilih kategori pencarian"
+                  aria-expanded={isSelectOpen}
                 >
                   <option value="semua">Semua</option>
                   <option value="mahasiswa">Mahasiswa</option>
@@ -257,11 +285,16 @@ export default function Home() {
                   <option value="prodi">Prodi</option>
                   <option value="pt">Perguruan Tinggi</option>
                 </select>
-                {/* FIX: posisi ikon chevron */}
-                <ChevronDown
-                  size={16}
-                  className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-                />
+
+                <motion.span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2"
+                  animate={{ rotate: isSelectOpen ? 180 : 0, scale: isSelectOpen ? 1.05 : 1 }}
+                  whileHover={{ scale: 1.06 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                >
+                  <ChevronDown size={16} className="text-gray-400" />
+                </motion.span>
               </div>
 
               {/* Divider */}
@@ -273,6 +306,7 @@ export default function Home() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSelectOpen(false)} // ensure close when focusing input
                   placeholder="Ketikkan kata kunci..."
                   className="w-full bg-transparent px-4 py-4 text-base text-gray-900 placeholder-gray-500 outline-none"
                   aria-label="Kata kunci"
@@ -282,6 +316,7 @@ export default function Home() {
                   disabled={isSearching}
                   className="ml-1 mr-2 flex h-11 items-center justify-center rounded-lg bg-blue-600 px-4 text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-blue-400 sm:px-5"
                   aria-label="Cari"
+                  onFocus={() => setIsSelectOpen(false)} // ensure close when focusing button
                 >
                   {isSearching ? (
                     <Loader2 size={20} className="animate-spin" />
@@ -365,4 +400,4 @@ export default function Home() {
       )}
     </motion.div>
   );
-}
+} 
