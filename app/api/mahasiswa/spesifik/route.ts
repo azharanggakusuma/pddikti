@@ -13,8 +13,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: 'Parameter "nim", "nama_prodi", dan "nama_pt" dibutuhkan' }, { status: 400 });
   }
   
-  // API PDDIKTI lebih efektif mencari berdasarkan nama, jadi kita cari semua mahasiswa dengan NIM tersebut
-  // lalu filter di backend.
   const encodedQuery = encodeURIComponent(nim);
   const apiUrl = `https://api-pddikti.ridwaanhall.com/search/mhs/${encodedQuery}`;
 
@@ -25,7 +23,8 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      return NextResponse.json({ message: `Error dari API PDDIKTI: ${response.statusText}`, details: errorText }, { status: response.status });
+      // Pesan error yang lebih informatif
+      return NextResponse.json({ message: `API eksternal sedang tidak dapat diakses (Status: ${response.status}). Coba beberapa saat lagi.`, details: errorText }, { status: response.status });
     }
 
     const responseText = await response.text();
@@ -33,9 +32,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(null, { status: 404 });
     }
 
-    const data: Mahasiswa[] = JSON.parse(responseText);
+    let data: Mahasiswa[] = JSON.parse(responseText);
 
-    // Cari kecocokan eksak berdasarkan NIM, Nama Prodi, dan Nama PT
+    // --- PERBAIKAN DI SINI ---
+    // Pastikan 'data' selalu berupa array
+    if (!Array.isArray(data)) {
+      data = [data];
+    }
+    // --- AKHIR PERBAIKAN ---
+
     const specificMahasiswa = data.find(
       (mhs) =>
         mhs.nim.trim().toLowerCase() === nim.trim().toLowerCase() &&
@@ -51,8 +56,8 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     if (error instanceof Error) {
-        return NextResponse.json({ message: error.message }, { status: 500 });
+        return NextResponse.json({ message: `Terjadi kesalahan pada server: ${error.message}` }, { status: 500 });
     }
-    return NextResponse.json({ message: "Terjadi kesalahan tidak diketahui"}, {status:500})
+    return NextResponse.json({ message: "Terjadi kesalahan tidak diketahui saat memproses data."}, {status:500})
   }
 }

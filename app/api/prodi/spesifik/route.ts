@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      return NextResponse.json({ message: `Error dari API PDDIKTI: ${response.statusText}`, details: errorText }, { status: response.status });
+      return NextResponse.json({ message: `API eksternal sedang tidak dapat diakses (Status: ${response.status}). Coba beberapa saat lagi.`, details: errorText }, { status: response.status });
     }
 
     const responseText = await response.text();
@@ -30,7 +30,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(null, { status: 404 });
     }
 
-    const data: ProgramStudi[] = JSON.parse(responseText);
+    let data: ProgramStudi[] = JSON.parse(responseText);
+
+    // --- PERBAIKAN DI SINI ---
+    if (!Array.isArray(data)) {
+      data = [data];
+    }
+    // --- AKHIR PERBAIKAN ---
 
     const specificProdi = data.find(
       (prodi) =>
@@ -45,8 +51,8 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     if (error instanceof Error) {
-        return NextResponse.json({ message: error.message }, { status: 500 });
+        return NextResponse.json({ message: `Terjadi kesalahan pada server: ${error.message}` }, { status: 500 });
     }
-    return NextResponse.json({ message: "Terjadi kesalahan tidak diketahui"}, {status:500})
+    return NextResponse.json({ message: "Terjadi kesalahan tidak diketahui saat memproses data."}, {status:500})
   }
 }
