@@ -33,18 +33,18 @@ interface StatusData {
   details?: EndpointDetail[];
 }
 
+// ** PERBAIKAN ERROR 1: Mengubah tipe `icon` menjadi lebih fleksibel **
 interface SummaryCardProps {
   title: string;
   value: string;
   trend?: string;
   status: 'positive' | 'warning' | 'negative' | 'neutral';
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: React.ElementType; 
   description?: string;
 }
 
 // --- Komponen-Komponen UI yang Disesuaikan ---
 
-// ** PERUBAHAN DI SINI: Skeleton disesuaikan dengan layout grid **
 const StatusSkeleton = () => (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 animate-pulse">
     {[...Array(6)].map((_, i) => (
@@ -318,8 +318,10 @@ export default function StatusPage() {
   }, []);
 
   const onlineServices = status?.details?.filter(service => service.status === 'online').length || 0;
+  
+  // ** PERBAIKAN ERROR 2: Menambahkan fallback `|| []` sebelum reduce **
   const totalServices = status?.details?.length || 0;
-  const averageLatency = status?.details?.reduce((acc, service) => acc + service.latency, 0) / totalServices || 0;
+  const averageLatency = (status?.details || []).reduce((acc, service) => acc + service.latency, 0) / (totalServices || 1);
   const uptime = totalServices > 0 ? ((onlineServices / totalServices) * 100).toFixed(1) : '0';
   const maxLatency = Math.max(...(status?.details?.map(s => s.latency) || [0]));
   const minLatency = Math.min(...(status?.details?.map(s => s.latency) || [0]));
@@ -422,20 +424,19 @@ export default function StatusPage() {
                 <LiveIndicator />
               </div>
               
-              <AnimatePresence mode="wait">
-                {loading ? (
-                  <StatusSkeleton key="skeleton" />
-                ) : (
-                  <motion.div 
-                    key="content" 
-                    className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3"
-                  >
-                    {status?.details?.map((service, index) => (
-                      <ServiceStatusRow key={service.name} {...service} index={index} />
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
+                <AnimatePresence mode="wait">
+                  {loading ? (
+                    <StatusSkeleton key="skeleton" />
+                  ) : (
+                    <motion.div key="content" className="contents">
+                      {status?.details?.map((service, index) => (
+                        <ServiceStatusRow key={service.name} {...service} index={index} />
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
             <div className="pt-6 border-t border-white/50 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
