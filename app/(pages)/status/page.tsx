@@ -33,22 +33,22 @@ interface StatusData {
   details?: EndpointDetail[];
 }
 
-// ** PERBAIKAN ERROR 1: Mengubah tipe `icon` menjadi lebih fleksibel **
 interface SummaryCardProps {
   title: string;
   value: string;
   trend?: string;
   status: 'positive' | 'warning' | 'negative' | 'neutral';
-  icon: React.ElementType; 
+  icon: React.ComponentType<{ size?: number; className?: string }>;
   description?: string;
 }
 
 // --- Komponen-Komponen UI yang Disesuaikan ---
 
+// ** PERBAIKAN DI SINI: Skeleton tidak lagi memiliki div pembungkus grid **
 const StatusSkeleton = () => (
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 animate-pulse">
+  <>
     {[...Array(6)].map((_, i) => (
-      <div key={i} className="flex items-center justify-between rounded-xl bg-white/70 p-4 h-[76px] border border-white/50">
+      <div key={i} className="flex animate-pulse items-center justify-between rounded-xl bg-white/70 p-4 h-[76px] border border-white/50">
           <div className="flex items-center gap-3">
               <div className="h-3 w-3 bg-gray-300 rounded-full"></div>
               <div className="h-4 w-32 bg-gray-300 rounded-md"></div>
@@ -56,7 +56,7 @@ const StatusSkeleton = () => (
           <div className="h-4 w-12 bg-gray-300 rounded-md"></div>
       </div>
     ))}
-  </div>
+  </>
 );
 
 const SummaryCard = ({ title, value, trend, status, icon: Icon, description }: SummaryCardProps) => {
@@ -318,10 +318,8 @@ export default function StatusPage() {
   }, []);
 
   const onlineServices = status?.details?.filter(service => service.status === 'online').length || 0;
-  
-  // ** PERBAIKAN ERROR 2: Menambahkan fallback `|| []` sebelum reduce **
   const totalServices = status?.details?.length || 0;
-  const averageLatency = (status?.details || []).reduce((acc, service) => acc + service.latency, 0) / (totalServices || 1);
+  const averageLatency = status?.details?.reduce((acc, service) => acc + service.latency, 0) / totalServices || 0;
   const uptime = totalServices > 0 ? ((onlineServices / totalServices) * 100).toFixed(1) : '0';
   const maxLatency = Math.max(...(status?.details?.map(s => s.latency) || [0]));
   const minLatency = Math.min(...(status?.details?.map(s => s.latency) || [0]));
@@ -429,11 +427,9 @@ export default function StatusPage() {
                   {loading ? (
                     <StatusSkeleton key="skeleton" />
                   ) : (
-                    <motion.div key="content" className="contents">
-                      {status?.details?.map((service, index) => (
-                        <ServiceStatusRow key={service.name} {...service} index={index} />
-                      ))}
-                    </motion.div>
+                    status?.details?.map((service, index) => (
+                      <ServiceStatusRow key={service.name} {...service} index={index} />
+                    ))
                   )}
                 </AnimatePresence>
               </div>
