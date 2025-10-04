@@ -33,18 +33,19 @@ interface StatusData {
   details?: EndpointDetail[];
 }
 
+// ** PERBAIKAN ERROR 1: Tipe 'icon' diubah menjadi React.ElementType **
 interface SummaryCardProps {
   title: string;
   value: string;
   trend?: string;
   status: 'positive' | 'warning' | 'negative' | 'neutral';
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: React.ElementType;
   description?: string;
 }
 
 // --- Komponen-Komponen UI yang Disesuaikan ---
 
-// ** PERBAIKAN DI SINI: Skeleton tidak lagi memiliki div pembungkus grid **
+// ** PERBAIKAN SKELETON: Menghapus div pembungkus yang tidak perlu **
 const StatusSkeleton = () => (
   <>
     {[...Array(6)].map((_, i) => (
@@ -318,8 +319,9 @@ export default function StatusPage() {
   }, []);
 
   const onlineServices = status?.details?.filter(service => service.status === 'online').length || 0;
+  
   const totalServices = status?.details?.length || 0;
-  const averageLatency = status?.details?.reduce((acc, service) => acc + service.latency, 0) / totalServices || 0;
+  const averageLatency = (status?.details || []).reduce((acc, service) => acc + service.latency, 0) / (totalServices || 1);
   const uptime = totalServices > 0 ? ((onlineServices / totalServices) * 100).toFixed(1) : '0';
   const maxLatency = Math.max(...(status?.details?.map(s => s.latency) || [0]));
   const minLatency = Math.min(...(status?.details?.map(s => s.latency) || [0]));
