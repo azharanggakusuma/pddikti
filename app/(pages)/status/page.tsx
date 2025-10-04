@@ -244,10 +244,11 @@ const StatusHeader = ({ status, loading }: { status: StatusData['status'] | null
 const ServiceStatusRow = ({ name, status, latency, index }: EndpointDetail & { index: number }) => {
   const isOnline = status === 'online';
 
-  const getLatencyColor = (ms: number) => {
-    if (ms < 200) return 'bg-emerald-100 text-emerald-800';
-    if (ms < 500) return 'bg-amber-100 text-amber-800';
-    return 'bg-rose-100 text-rose-800';
+  const getLatencyStyle = (ms: number) => {
+    if (ms < 1000) return 'bg-emerald-100 text-emerald-800'; // Sangat Cepat
+    if (ms < 3000) return 'bg-lime-100 text-lime-800';      // Cepat
+    if (ms < 5000) return 'bg-amber-100 text-amber-800';    // Lambat
+    return 'bg-rose-100 text-rose-800';                   // Sangat Lambat
   };
   
   return (
@@ -274,7 +275,7 @@ const ServiceStatusRow = ({ name, status, latency, index }: EndpointDetail & { i
         </div>
         
         <div className="flex items-center justify-end gap-3 sm:gap-4">
-          <div className={`text-xs font-semibold font-mono px-2.5 py-1 rounded-full ${getLatencyColor(latency)}`}>
+          <div className={`text-xs font-semibold font-mono px-2.5 py-1 rounded-full ${getLatencyStyle(latency)}`}>
             {latency}ms
           </div>
         </div>
@@ -331,6 +332,13 @@ export default function StatusPage() {
   const uptime = totalServices > 0 ? ((onlineServices / totalServices) * 100).toFixed(1) : '0';
   const maxLatency = Math.max(...(status?.details?.map(s => s.latency) || [0]));
   const minLatency = Math.min(...(status?.details?.map(s => s.latency) || [0]));
+
+  const getAvgLatencyTrend = (ms: number) => {
+    if (ms < 1000) return "Sangat Cepat";
+    if (ms < 3000) return "Cepat";
+    if (ms < 5000) return "Lambat";
+    return "Sangat Lambat";
+  };
   
   const breadcrumbItems = [{ label: "Status Layanan" }];
 
@@ -397,8 +405,8 @@ export default function StatusPage() {
                 <SummaryCard 
                   title="Avg Latency" 
                   value={`${Math.round(averageLatency)}ms`}
-                  trend={averageLatency < 150 ? "Sangat Cepat" : averageLatency < 300 ? "Cepat" : "Lambat"}
-                  status={averageLatency < 200 ? "positive" : averageLatency < 500 ? "warning" : "negative"}
+                  trend={getAvgLatencyTrend(averageLatency)}
+                  status={averageLatency < 3000 ? "positive" : averageLatency < 5000 ? "warning" : "negative"}
                   icon={Activity}
                   description="Rata-rata waktu respons"
                 />
@@ -414,7 +422,7 @@ export default function StatusPage() {
                   title="Peak Latency" 
                   value={`${maxLatency}ms`}
                   trend={`Min: ${minLatency}ms`}
-                  status={maxLatency < 300 ? "positive" : maxLatency < 600 ? "warning" : "negative"}
+                  status={maxLatency < 3000 ? "positive" : maxLatency < 5000 ? "warning" : "negative"}
                   icon={Globe}
                   description="Respons paling lambat"
                 />
