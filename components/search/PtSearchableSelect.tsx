@@ -1,4 +1,4 @@
-// components/PtSearchableSelect.tsx
+// components/search/PtSearchableSelect.tsx
 'use client';
 
 import { useState, useRef, useEffect, useCallback, useLayoutEffect, useMemo } from 'react';
@@ -111,9 +111,9 @@ export const PtSearchableSelect: React.FC<PtSearchableSelectProps> = ({
       return;
     }
 
-    const key = `${apiPath}?q=${query.trim().toLowerCase()}`;
-    if (cache.has(key)) {
-      setOptions(cache.get(key)!.slice(0, maxItems));
+    const cacheKey = query.trim().toLowerCase();
+    if (cache.has(cacheKey)) {
+      setOptions(cache.get(cacheKey)!.slice(0, maxItems));
       setStatus('success');
       setErrorMsg(null);
       return;
@@ -126,13 +126,32 @@ export const PtSearchableSelect: React.FC<PtSearchableSelectProps> = ({
     setStatus('loading');
     setErrorMsg(null);
     try {
-      const res = await fetch(`${apiPath}?q=${encodeURIComponent(query)}`, { signal: ac.signal });
+      // Langkah 1: Inisiasi pencarian untuk mendapatkan 'key'
+      const initiateResponse = await fetch('/api/search/initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: ac.signal,
+        body: JSON.stringify({ query }),
+      });
+
+      if (!initiateResponse.ok) {
+        throw new Error('Gagal memulai sesi pencarian.');
+      }
+
+      const { key } = await initiateResponse.json();
+
+      // Langkah 2: Gunakan 'key' untuk mengambil data
+      const res = await fetch(`${apiPath}?key=${key}`, { signal: ac.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = (await res.json()) as unknown;
-      const arr = Array.isArray(data) ? (data as PerguruanTinggi[]) : [];
-      cache.set(key, arr);
+      
+      const result = await res.json();
+      const arr = Array.isArray(result.data) ? (result.data as PerguruanTinggi[]) : [];
+
+      // Simpan ke cache menggunakan query asli
+      cache.set(cacheKey, arr);
       setOptions(arr.slice(0, maxItems));
       setStatus('success');
+
     } catch (err: any) {
       if (err?.name === 'AbortError') return;
       console.error('Fetch PT error:', err);
@@ -141,6 +160,7 @@ export const PtSearchableSelect: React.FC<PtSearchableSelectProps> = ({
       setErrorMsg('Gagal memuat data. Coba lagi.');
     }
   }, [apiPath, maxItems, minChars]);
+
 
   useEffect(() => {
     fetchPt(debounced);

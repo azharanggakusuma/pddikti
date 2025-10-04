@@ -1,4 +1,4 @@
-// components/ProdiByPtSearchableSelect.tsx
+// components/search/ProdiByPtSearchableSelect.tsx
 'use client';
 
 import { useState, useRef, useEffect, useCallback, useLayoutEffect, useMemo } from 'react';
@@ -57,7 +57,6 @@ export const ProdiByPtSearchableSelect: React.FC<ProdiByPtSearchableSelectProps>
     setOptions([]);
     setActiveIndex(-1);
     setIsOpen(false);
-    // jangan reset lastFetchedPtKeyRef di sini—biar saat pindah PT, key beda & akan fetch
   }, [selectedPt, onChange]);
 
   const openDropdown = () => {
@@ -92,18 +91,37 @@ export const ProdiByPtSearchableSelect: React.FC<ProdiByPtSearchableSelectProps>
     };
   }, [isOpen, updateCoords]);
 
-  // --- FETCH (tetap, tapi skip kalau sudah pernah dimuat untuk PT yang sama) ---
+  // --- FETCH (diubah untuk menggunakan alur 'key') ---
   const fetchProdi = useCallback(async () => {
-    if (!selectedPt) { setOptions([]); return; }
+    if (!selectedPt) {
+      setOptions([]);
+      return;
+    }
     setLoading(true);
     try {
-      const res = await fetch(`/api/prodi?q=${encodeURIComponent(selectedPt.nama)}`);
-      const data = await res.json();
-      const filtered = Array.isArray(data)
-        ? (data as ProgramStudi[]).filter(p => p.pt.toLowerCase() === selectedPt.nama.toLowerCase())
-        : [];
+      // Langkah 1: Inisiasi pencarian untuk mendapatkan 'key'
+      const initiateResponse = await fetch('/api/search/initiate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: selectedPt.nama }),
+      });
+
+      if (!initiateResponse.ok) {
+        throw new Error('Gagal memulai sesi pencarian prodi.');
+      }
+      const { key } = await initiateResponse.json();
+
+      // Langkah 2: Gunakan 'key' untuk mengambil data prodi
+      const res = await fetch(`/api/prodi?key=${key}`);
+      const result = await res.json();
+      
+      const prodiData = Array.isArray(result.data) ? (result.data as ProgramStudi[]) : [];
+      
+      // Filter lagi di frontend untuk memastikan hanya prodi dari PT yang dipilih
+      const filtered = prodiData.filter(p => p.pt.toLowerCase() === selectedPt.nama.toLowerCase());
+
       setOptions(filtered);
-      lastFetchedPtKeyRef.current = ptKey; // tandai PT ini sudah dimuat
+      lastFetchedPtKeyRef.current = ptKey;
     } catch (e) {
       console.error('Gagal mengambil data prodi:', e);
       setOptions([]);
@@ -117,10 +135,8 @@ export const ProdiByPtSearchableSelect: React.FC<ProdiByPtSearchableSelectProps>
     if (!isOpen) return;
     const alreadyLoadedForThisPt = lastFetchedPtKeyRef.current === ptKey && options.length > 0;
     if (!alreadyLoadedForThisPt) {
-      // belum pernah dimuat utk PT ini → fetch
       fetchProdi();
     }
-    // kalau sudah pernah dimuat & masih ada options, jangan fetch dan jangan tampilkan loading
   }, [isOpen, ptKey, options.length, fetchProdi]);
 
   // --- Filter (tetap) ---
@@ -209,7 +225,6 @@ export const ProdiByPtSearchableSelect: React.FC<ProdiByPtSearchableSelectProps>
         </div>
       );
     }
-    // tampilkan "Memuat…" hanya bila belum ada data sama sekali
     if (loading && options.length === 0) {
       return (
         <div className="flex items-center gap-2 text-sm text-gray-600">

@@ -1,7 +1,7 @@
 // app/(pages)/layout.tsx
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
-import "../globals.css"; // Perubahan di sini
+import "../globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PageTransitionLoader } from "@/components/layout/PageTransitionLoader";
@@ -37,6 +37,8 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          {/* Tambahkan div ini untuk portal */}
+          <div id="portal-root" />
         </StatusProvider>
       </body>
     </html>
