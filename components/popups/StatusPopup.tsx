@@ -1,4 +1,4 @@
-// components/StatusPopup.tsx
+// components/popups/StatusPopup.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,26 +7,29 @@ import { useApiStatus } from '@/lib/context/StatusContext';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export const StatusPopup = () => {
-  const { status, isLoading } = useApiStatus();
+  const { status: apiStatus, isLoading } = useApiStatus();
   const [isOpen, setIsOpen] = useState(true);
 
   useEffect(() => {
-    if (status && status.status !== 'online') {
+    // Tampilkan popup jika status BUKAN 'online'
+    if (apiStatus && apiStatus.status !== 'online') {
       setIsOpen(true);
     }
-  }, [status]);
+  }, [apiStatus]);
 
-  const shouldShow = !isLoading && status && status.status !== 'online' && isOpen;
+  // --- PERBAIKAN DI SINI ---
+  // Kondisi diubah dari 'normal' menjadi 'online' agar sesuai dengan tipe data
+  const shouldShow = !isLoading && apiStatus && apiStatus.status !== 'online' && isOpen;
 
   const statusConfig = {
-    error: {
+    error: { // 'error' cocok untuk gangguan sebagian
       icon: <AlertTriangle size={32} strokeWidth={2.5} />,
       iconContainerColor: 'bg-amber-100 text-amber-500',
       title: 'Layanan Terganggu',
       message: "Terjadi gangguan pada sistem yang dapat memengaruhi beberapa fitur pencarian untuk sementara waktu.",
       buttonColor: 'bg-amber-500 hover:bg-amber-600 focus:ring-amber-400',
     },
-    offline: {
+    offline: { // 'offline' cocok untuk gangguan total
       icon: <WifiOff size={32} strokeWidth={2.5} />,
       iconContainerColor: 'bg-rose-100 text-rose-500',
       title: 'Layanan Tidak Tersedia',
@@ -35,7 +38,7 @@ export const StatusPopup = () => {
     },
   };
 
-  const config = shouldShow ? statusConfig[status.status as 'error' | 'offline'] : null;
+  const config = shouldShow ? statusConfig[apiStatus.status as 'error' | 'offline'] : null;
 
   return (
     <AnimatePresence>

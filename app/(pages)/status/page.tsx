@@ -3,62 +3,102 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Server, Zap, Clock, AlertTriangle, CheckCircle, Loader2, RefreshCw, Globe } from 'lucide-react';
+import { Server, Zap, Clock, AlertTriangle, CheckCircle, Loader2, RefreshCw, WifiOff } from 'lucide-react';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 
+interface EndpointDetail {
+  name: string;
+  status: 'online' | 'offline';
+  latency: number;
+}
+
+// Tipe data disesuaikan dengan respons API yang baru
 interface StatusData {
   status: 'online' | 'offline' | 'error';
   message: string;
   latency?: string;
+  details?: EndpointDetail[];
 }
 
 const StatusSkeleton = () => (
-    <div className="space-y-6 animate-pulse">
-        {[...Array(4)].map((_, i) => (
-            <div key={i} className="flex items-center justify-between">
-                <div className="flex items-center gap-3 w-1/3">
-                    <div className="h-5 w-5 bg-gray-200 rounded-md"></div>
-                    <div className="h-4 w-20 bg-gray-200 rounded-md"></div>
+    <div className="space-y-4 animate-pulse">
+        {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center justify-between rounded-lg bg-gray-50 p-4">
+                <div className="h-4 w-1/3 bg-gray-200 rounded-md"></div>
+                <div className="flex items-center gap-3">
+                    <div className="h-4 w-16 bg-gray-200 rounded-md"></div>
+                    <div className="h-6 w-6 rounded-full bg-gray-200"></div>
                 </div>
-                <div className="h-6 w-40 bg-gray-200 rounded-md"></div>
             </div>
         ))}
     </div>
 );
 
+// Komponen Header disesuaikan dengan status baru
 const StatusHeader = ({ status, loading }: { status: StatusData['status'] | null, loading: boolean }) => {
     const statusConfig = {
-        loading: { Icon: Loader2, label: 'Memeriksa...', iconColor: 'text-gray-500', textColor: 'text-gray-800', animate: true },
-        online: { Icon: CheckCircle, label: 'Layanan Berfungsi Normal', iconColor: 'text-emerald-500', textColor: 'text-emerald-900', animate: false },
-        offline: { Icon: AlertTriangle, label: 'Layanan Tidak Terjangkau', iconColor: 'text-rose-500', textColor: 'text-rose-900', animate: false },
-        error: { Icon: AlertTriangle, label: 'Layanan Mengalami Gangguan', iconColor: 'text-amber-500', textColor: 'text-amber-900', animate: false },
+        loading: { Icon: Loader2, label: 'Memeriksa Layanan...', iconColor: 'text-gray-500', bgColor: 'bg-gray-100', animate: true },
+        online: { Icon: CheckCircle, label: 'Layanan Berfungsi Normal', iconColor: 'text-emerald-500', bgColor: 'bg-emerald-50', animate: false },
+        error: { Icon: AlertTriangle, label: 'Layanan Terganggu', iconColor: 'text-amber-500', bgColor: 'bg-amber-50', animate: false },
+        offline: { Icon: WifiOff, label: 'Layanan Tidak Tersedia', iconColor: 'text-rose-500', bgColor: 'bg-rose-50', animate: false },
     };
+    
     const currentKey = loading ? 'loading' : status || 'loading';
-    const { Icon, label, iconColor, textColor, animate } = statusConfig[currentKey];
+    const { Icon, label, iconColor, bgColor, animate } = statusConfig[currentKey];
 
     return (
-        <div className="flex flex-col items-center text-center">
-            <motion.div
-                key={currentKey}
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                className={`flex items-center justify-center w-20 h-20 rounded-full bg-white shadow-lg mb-5 border-4 border-gray-50 ${iconColor}`}
-            >
-                <Icon size={40} className={animate ? 'animate-spin' : ''} strokeWidth={2.5} />
-            </motion.div>
-            <motion.h2
-                 key={label}
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: 0.1 }}
-                 className={`text-3xl font-bold tracking-tight ${textColor}`}
-            >
-                {label}
-            </motion.h2>
-        </div>
+        <motion.div 
+            className={`p-8 sm:p-10 transition-colors duration-500 rounded-t-2xl ${bgColor}`}
+            initial={false}
+            animate={{ backgroundColor: bgColor }}
+        >
+            <div className="flex flex-col items-center text-center">
+                <motion.div
+                    key={currentKey}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                    className={`flex items-center justify-center w-20 h-20 rounded-full bg-white shadow-lg mb-5 border-4 border-gray-50 ${iconColor}`}
+                >
+                    <Icon size={40} className={animate ? 'animate-spin' : ''} strokeWidth={2.5} />
+                </motion.div>
+                <motion.h2
+                    key={label}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className={`text-3xl font-bold tracking-tight text-gray-900`}
+                >
+                    {label}
+                </motion.h2>
+            </div>
+        </motion.div>
     );
 };
+
+const ServiceStatusRow = ({ name, status, latency, index }: EndpointDetail & { index: number }) => {
+    const isOnline = status === 'online';
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
+            className="flex items-center justify-between rounded-lg bg-gray-50/80 p-4 border border-gray-200/80"
+        >
+            <p className="font-semibold text-gray-800">{name}</p>
+            <div className="flex items-center gap-3">
+                <span className="font-mono text-xs text-gray-500">{latency}ms</span>
+                <div className="flex items-center gap-2">
+                    <span className={`text-xs font-semibold ${isOnline ? 'text-emerald-700' : 'text-rose-700'}`}>
+                        {isOnline ? 'Normal' : 'Gangguan'}
+                    </span>
+                    <div className={`h-3 w-3 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-rose-400'}`}></div>
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
 
 export default function StatusPage() {
   const [status, setStatus] = useState<StatusData | null>(null);
@@ -76,7 +116,7 @@ export default function StatusPage() {
     } catch (error) {
       setStatus({
         status: 'offline',
-        message: 'Gagal menghubungi server.',
+        message: 'Gagal menghubungi server pengecekan status.',
       });
     } finally {
       setLoading(false);
@@ -91,14 +131,6 @@ export default function StatusPage() {
   }, []);
   
   const breadcrumbItems = [{ label: "Status Layanan" }];
-
-  const headerBgConfig = {
-    loading: 'bg-gray-100',
-    online: 'bg-emerald-50',
-    offline: 'bg-rose-50',
-    error: 'bg-amber-50',
-  };
-  const currentStatusKey = loading ? 'loading' : status?.status || 'loading';
 
   return (
     <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center bg-gray-50 text-gray-800">
@@ -118,49 +150,35 @@ export default function StatusPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
         >
-            <div className={`p-8 sm:p-10 transition-colors duration-500 ${headerBgConfig[currentStatusKey]}`}>
-                <StatusHeader status={status?.status || null} loading={loading} />
-            </div>
+            <StatusHeader status={status?.status || null} loading={loading} />
             
             <div className="border-t-2 border-dashed border-gray-200"></div>
 
             <div className="p-6 sm:p-8">
-                {loading ? (
-                    <StatusSkeleton />
-                ) : (
-                <motion.dl 
-                    className="space-y-6"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                >
-                    <div className="flex items-center justify-between">
-                        <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium"><Server size={16} /><span>Server</span></dt>
-                        <dd className="text-sm font-semibold text-gray-800">PDDikti Public API</dd>
+                {/* Pesan Kesimpulan dari API */}
+                {!loading && status?.message && (
+                    <div className="mb-6 p-4 text-center text-sm font-medium text-gray-700 bg-gray-50 rounded-lg border border-gray-200/80">
+                        {status.message}
                     </div>
-                     <div className="flex items-center justify-between">
-                        <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium"><Globe size={16} /><span>Endpoint</span></dt>
-                        <dd>
-                            <code className="text-sm font-semibold font-mono bg-gray-100 px-2 py-1 rounded-md border border-gray-200">
-                                GET /search/.../...
-                            </code>
-                        </dd>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium"><Clock size={16} /><span>Latensi</span></dt>
-                        <dd className="font-mono text-sm font-semibold text-gray-800">{status?.latency || '-'}</dd>
-                    </div>
-                    <div className="flex items-start justify-between">
-                        <dt className="flex items-center gap-3 text-sm text-gray-500 font-medium pt-0.5"><Zap size={16} /><span>Pesan</span></dt>
-                        <dd className="text-sm font-semibold text-gray-800 text-right max-w-sm">{status?.message}</dd>
-                    </div>
-                </motion.dl>
                 )}
+                
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Rincian Layanan</h3>
+                
+                <div className="space-y-3">
+                    {loading ? (
+                        <StatusSkeleton />
+                    ) : (
+                        status?.details?.map((service, index) => (
+                            <ServiceStatusRow key={service.name} {...service} index={index} />
+                        ))
+                    )}
+                </div>
 
                 <div className="mt-10 pt-6 border-t border-gray-200/80 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
                      <p className="text-xs text-gray-500">
                         {lastChecked ? (
                             <>
-                                Terakhir diperbarui: <span className="font-semibold">{lastChecked.toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' })}</span>
+                                Terakhir diperbarui: <span className="font-semibold">{lastChecked.toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit' })}</span>
                             </>
                         ) : (
                             'Memuat...'
