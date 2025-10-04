@@ -33,7 +33,6 @@ interface StatusData {
   details?: EndpointDetail[];
 }
 
-// ** PERBAIKAN ERROR 1: Tipe 'icon' diubah menjadi React.ElementType **
 interface SummaryCardProps {
   title: string;
   value: string;
@@ -45,7 +44,6 @@ interface SummaryCardProps {
 
 // --- Komponen-Komponen UI yang Disesuaikan ---
 
-// ** PERBAIKAN SKELETON: Menghapus div pembungkus yang tidak perlu **
 const StatusSkeleton = () => (
   <>
     {[...Array(6)].map((_, i) => (
@@ -217,7 +215,7 @@ const StatusHeader = ({ status, loading }: { status: StatusData['status'] | null
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
             className={`flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/90 backdrop-blur-sm shadow-2xl mb-4 sm:mb-6 ring-4 ${ringColor} ${iconColor}`}
           >
-            <Icon size={32} className={`${animate ? 'animate-spin' : ''} sm:size-36 lg:size-40`} strokeWidth={2} />
+            <Icon size={32} className={`${animate ? 'animate-spin' : ''}`} strokeWidth={2} />
           </motion.div>
         </AnimatePresence>
         
@@ -245,6 +243,12 @@ const StatusHeader = ({ status, loading }: { status: StatusData['status'] | null
 
 const ServiceStatusRow = ({ name, status, latency, index }: EndpointDetail & { index: number }) => {
   const isOnline = status === 'online';
+
+  const getLatencyColor = (ms: number) => {
+    if (ms < 200) return 'bg-emerald-100 text-emerald-800';
+    if (ms < 500) return 'bg-amber-100 text-amber-800';
+    return 'bg-rose-100 text-rose-800';
+  };
   
   return (
     <motion.div
@@ -270,7 +274,9 @@ const ServiceStatusRow = ({ name, status, latency, index }: EndpointDetail & { i
         </div>
         
         <div className="flex items-center justify-end gap-3 sm:gap-4">
-          <span className="font-mono text-sm text-gray-500">{latency}ms</span>
+          <div className={`text-xs font-semibold font-mono px-2.5 py-1 rounded-full ${getLatencyColor(latency)}`}>
+            {latency}ms
+          </div>
         </div>
       </div>
     </motion.div>
@@ -358,7 +364,7 @@ export default function StatusPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Monitoring real-time untuk semua layanan API PDDikti dengan pemantauan 24/7 dan notifikasi instan.
+            Laman ini menyediakan pemantauan real-time untuk semua layanan API PDDikti, memastikan Anda selalu mendapatkan informasi status terkini.
           </motion.p>
         </header>
 
