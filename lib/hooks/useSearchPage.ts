@@ -87,7 +87,6 @@ export function useSearchPage<T>({ historyKey, sortingFn }: UseSearchPageOptions
 
       const { key, query: returnedQuery } = await response.json();
 
-      // PERUBAHAN: Simpan query di sessionStorage sebagai fallback
       sessionStorage.setItem(`search_query_${key}`, returnedQuery);
 
       const basePath = window.location.pathname;
@@ -112,6 +111,20 @@ export function useSearchPage<T>({ historyKey, sortingFn }: UseSearchPageOptions
         setAllResults([]);
         return;
       }
+
+      // --- LOGIKA CACHE BARU (UNTUK REFRESH CEPAT) ---
+      const cacheKey = `search_results_${searchKey}`;
+      const cachedResults = sessionStorage.getItem(cacheKey);
+
+      if (cachedResults) {
+        const { data, query: cachedQuery } = JSON.parse(cachedResults);
+        setAllResults(data);
+        setQuery(cachedQuery);
+        setLoading(false);
+        return; // Hentikan eksekusi jika data dari cache ditemukan
+      }
+      // --- AKHIR LOGIKA CACHE ---
+
       setLoading(true);
       setError(null);
       setSuggestion(null);
@@ -123,7 +136,6 @@ export function useSearchPage<T>({ historyKey, sortingFn }: UseSearchPageOptions
       try {
         const path = window.location.pathname.split('/').pop() || 'search';
         
-        // PERUBAHAN: Ambil fallback query dari sessionStorage dan kirimkan jika ada
         const fallbackQuery = sessionStorage.getItem(`search_query_${searchKey}`);
         const url = `/api/${path}?key=${searchKey}${fallbackQuery ? `&fallback_q=${encodeURIComponent(fallbackQuery)}` : ''}`;
 
@@ -133,10 +145,13 @@ export function useSearchPage<T>({ historyKey, sortingFn }: UseSearchPageOptions
         if (!response.ok) throw new Error(result.message || "Gagal terhubung ke server");
 
         const resultsData = Array.isArray(result.data) ? result.data : [];
+        
         setAllResults(resultsData);
         setQuery(result.query);
 
-        // Hapus query dari sessionStorage setelah berhasil digunakan
+        // --- SIMPAN HASIL KE CACHE SETELAH FETCH BERHASIL ---
+        sessionStorage.setItem(cacheKey, JSON.stringify({ data: resultsData, query: result.query }));
+
         if (fallbackQuery) {
           sessionStorage.removeItem(`search_query_${searchKey}`);
         }
@@ -150,6 +165,7 @@ export function useSearchPage<T>({ historyKey, sortingFn }: UseSearchPageOptions
     fetchResults();
   }, [searchKey]);
 
+  // ... (sisa kode di hook ini tetap sama)
   const processedResults = useMemo(() => {
     return allResults
       .filter((item: any) => filterPT === "Semua" || item.nama_pt === filterPT || item.pt === filterPT)

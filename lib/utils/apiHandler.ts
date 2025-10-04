@@ -1,18 +1,13 @@
 // lib/utils/apiHandler.ts
 import { NextRequest, NextResponse } from 'next/server';
-// Impor fungsi deleteQueryFromCache yang baru dibuat
+// Kita masih butuh getQueryFromCache, tapi deleteQueryFromCache tidak lagi dipakai di sini
 import { getQueryFromCache, deleteQueryFromCache } from '@/app/api/search/initiate/route';
 
-// Opsi untuk kustomisasi, jika diperlukan di masa depan
 interface FetchOptions {
   errorMessage?: string;
   emptyResponseValue?: any;
 }
 
-/**
- * Helper untuk menangani request ke API eksternal PDDIKTI.
- * Alur ini sekarang MEWAJIBKAN penggunaan 'key' yang didapat dari /api/search/initiate.
- */
 export async function handleApiRequest(
   request: NextRequest,
   buildApiUrl: (query: string) => string,
@@ -20,29 +15,26 @@ export async function handleApiRequest(
 ) {
   const { searchParams } = new URL(request.url);
   const searchKey = searchParams.get('key');
+  let query: string | null = null;
 
-  // --- LOGIKA KEAMANAN ---
-
-  // 1. Jika tidak ada 'key', langsung tolak permintaan.
   if (!searchKey) {
-    // --- PERUBAHAN PESAN ERROR DI SINI ---
     return NextResponse.json({ message: 'Akses tidak diizinkan.' }, { status: 401 });
   }
 
-  // 2. Ambil query dari cache menggunakan 'key'.
-  const query = getQueryFromCache(searchKey);
+  const cachedQuery = getQueryFromCache(searchKey);
 
-  // 3. Jika query tidak ditemukan (key salah atau kedaluwarsa), tolak permintaan.
+  if (cachedQuery) {
+    query = cachedQuery;
+    // HAPUS BARIS INI: deleteQueryFromCache(searchKey);
+  } else if (searchParams.has('fallback_q')) {
+    query = searchParams.get('fallback_q');
+  }
+
   if (!query) {
     return NextResponse.json({ message: 'Sesi pencarian tidak valid atau telah kedaluwarsa. Silakan lakukan pencarian baru.' }, { status: 404 });
   }
 
-  // 4. (PENTING) Langsung hapus key dari cache agar tidak bisa digunakan lagi.
-  deleteQueryFromCache(searchKey);
-
-  // --- AKHIR LOGIKA KEAMANAN ---
-
-
+  // ... (sisa kode tetap sama)
   const {
     errorMessage = 'Gagal mem-parsing data dari API eksternal.',
     emptyResponseValue = [],
@@ -68,7 +60,6 @@ export async function handleApiRequest(
 
     try {
       const data = JSON.parse(responseText);
-      // Sertakan query asli dalam response agar bisa ditampilkan di UI
       return NextResponse.json({ data, query });
     } catch (e) {
       return NextResponse.json({ message: errorMessage, details: responseText }, { status: 500 });
@@ -82,16 +73,13 @@ export async function handleApiRequest(
   }
 }
 
-
-/**
- * Helper untuk menangani request ke API detail PDDIKTI.
- * (Fungsi ini tidak perlu diubah karena sudah aman menggunakan ID unik)
- */
+// Fungsi handleDetailApiRequest tidak perlu diubah
 export async function handleDetailApiRequest(
   request: NextRequest,
   paramName: string,
   buildApiUrl: (paramValue: string) => string
 ) {
+  // ... (kode di sini tidak berubah)
   const paramValue = request.nextUrl.searchParams.get(paramName);
 
   if (!paramValue) {
@@ -103,7 +91,7 @@ export async function handleDetailApiRequest(
   try {
     const response = await fetch(apiUrl, {
       headers: { 'Accept': 'application/json' },
-      next: { revalidate: 3600 } // Revalidasi cache setiap 1 jam
+      next: { revalidate: 3600 }
     });
 
     if (!response.ok) {
