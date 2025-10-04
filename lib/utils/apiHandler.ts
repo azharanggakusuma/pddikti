@@ -1,19 +1,17 @@
 // lib/utils/apiHandler.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getQueryFromCache } from '@/app/api/search/initiate/route';
+// Impor fungsi deleteQueryFromCache yang baru dibuat
+import { getQueryFromCache, deleteQueryFromCache } from '@/app/api/search/initiate/route';
 
 // Opsi untuk kustomisasi, jika diperlukan di masa depan
 interface FetchOptions {
   errorMessage?: string;
-  emptyResponseValue?: any; // Nilai default jika respons kosong (misal: [])
+  emptyResponseValue?: any;
 }
 
 /**
  * Helper untuk menangani request ke API eksternal PDDIKTI.
- * Mengenkapsulasi logika fetch, error handling, dan parsing JSON.
- * @param request - Objek NextRequest yang masuk.
- * @param buildApiUrl - Fungsi untuk membangun URL API eksternal berdasarkan query.
- * @param options - Opsi kustomisasi.
+ * Alur ini sekarang MEWAJIBKAN penggunaan 'key' yang didapat dari /api/search/initiate.
  */
 export async function handleApiRequest(
   request: NextRequest,
@@ -21,24 +19,29 @@ export async function handleApiRequest(
   options: FetchOptions = {}
 ) {
   const { searchParams } = new URL(request.url);
-  let query = searchParams.get('q');
-  const searchKey = searchParams.get('key'); // Parameter baru
+  const searchKey = searchParams.get('key');
 
-  if (searchKey) {
-    const cachedQuery = getQueryFromCache(searchKey);
-    if (cachedQuery) {
-      query = cachedQuery;
-    } else if (searchParams.has('fallback_q')) {
-      query = searchParams.get('fallback_q');
-    } else {
-      // PERUBAHAN DI SINI: Pesan error yang lebih informatif
-      return NextResponse.json({ message: 'URL pencarian ini tidak valid atau telah kedaluwarsa. Silakan lakukan pencarian baru.' }, { status: 404 });
-    }
+  // --- LOGIKA KEAMANAN ---
+
+  // 1. Jika tidak ada 'key', langsung tolak permintaan.
+  if (!searchKey) {
+    // --- PERUBAHAN PESAN ERROR DI SINI ---
+    return NextResponse.json({ message: 'Akses tidak diizinkan.' }, { status: 401 });
   }
 
+  // 2. Ambil query dari cache menggunakan 'key'.
+  const query = getQueryFromCache(searchKey);
+
+  // 3. Jika query tidak ditemukan (key salah atau kedaluwarsa), tolak permintaan.
   if (!query) {
-    return NextResponse.json({ message: 'Parameter "q" atau "key" dibutuhkan' }, { status: 400 });
+    return NextResponse.json({ message: 'Sesi pencarian tidak valid atau telah kedaluwarsa. Silakan lakukan pencarian baru.' }, { status: 404 });
   }
+
+  // 4. (PENTING) Langsung hapus key dari cache agar tidak bisa digunakan lagi.
+  deleteQueryFromCache(searchKey);
+
+  // --- AKHIR LOGIKA KEAMANAN ---
+
 
   const {
     errorMessage = 'Gagal mem-parsing data dari API eksternal.',
@@ -79,12 +82,10 @@ export async function handleApiRequest(
   }
 }
 
+
 /**
  * Helper untuk menangani request ke API detail PDDIKTI.
- * Mengenkapsulasi logika fetch, error handling, dan parsing JSON untuk endpoint detail.
- * @param request - Objek NextRequest yang masuk.
- * @param paramName - Nama parameter yang dicari (misalnya "id").
- * @param buildApiUrl - Fungsi untuk membangun URL API eksternal berdasarkan nilai parameter.
+ * (Fungsi ini tidak perlu diubah karena sudah aman menggunakan ID unik)
  */
 export async function handleDetailApiRequest(
   request: NextRequest,

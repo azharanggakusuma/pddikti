@@ -16,11 +16,11 @@ export async function POST(request: NextRequest) {
     const searchKey = randomBytes(8).toString('hex');
     queryCache.set(searchKey, query);
 
+    // Tetap hapus otomatis setelah 10 menit sebagai fallback
     setTimeout(() => {
       queryCache.delete(searchKey);
     }, 10 * 60 * 1000); // 10 menit
 
-    // PERUBAHAN: Kembalikan juga query-nya
     return NextResponse.json({ key: searchKey, query: query });
 
   } catch (error) {
@@ -30,4 +30,10 @@ export async function POST(request: NextRequest) {
 
 export function getQueryFromCache(key: string): string | undefined {
   return queryCache.get(key);
+}
+
+// --- TAMBAHAN DI SINI ---
+// Fungsi untuk menghapus key setelah digunakan
+export function deleteQueryFromCache(key: string): void {
+  queryCache.delete(key);
 }
