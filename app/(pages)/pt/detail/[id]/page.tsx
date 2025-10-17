@@ -133,7 +133,7 @@ function LocationSection({
 
   const lat = toNumber(latRaw);
   const lng = toNumber(lngRaw);
-  const coordsValid = Number.isFinite(lat) && Number.isFinite(lng);
+  const coordsValid = Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0 && lng !== 0;
 
   // State peta
   const [mapType, setMapType] = useState<'osm' | 'sat'>('osm'); // 'osm' standard, 'sat' Esri imagery
@@ -204,7 +204,7 @@ function LocationSection({
         center: [lat, lng],
         zoom,
         zoomControl: false,
-        attributionControl: false // --- PERUBAHAN DI SINI ---
+        attributionControl: false
       });
 
       // turunkan pane bawaan agar overlay tombol selalu di atas
@@ -278,6 +278,10 @@ function LocationSection({
   
   const openInGMaps = () => window.open(gmapsLink, '_blank', 'noopener,noreferrer');
   const openDirections = () => window.open(directionsLink, '_blank', 'noopener,noreferrer');
+  
+  if (!coordsValid) {
+      return null;
+  }
 
   return (
     <div className="mt-12">
@@ -542,14 +546,12 @@ export default function PtDetailPage() {
                 </div>
                 </div>
                 
-                {(pt.lintang_pt && pt.bujur_pt) && (
-                    <LocationSection
-                        name={pt.nama_pt}
-                        address={fullAddress}
-                        latRaw={pt.lintang_pt}
-                        lngRaw={pt.bujur_pt}
-                    />
-                )}
+                <LocationSection
+                    name={pt.nama_pt}
+                    address={fullAddress}
+                    latRaw={pt.lintang_pt}
+                    lngRaw={pt.bujur_pt}
+                />
             </motion.div>
             
             {/* ====== Program Studi ====== */}
