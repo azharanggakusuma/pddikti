@@ -10,7 +10,7 @@ import { useDetailPage } from '@/lib/hooks/useDetailPage';
 import { Pagination } from '@/components/search/Pagination';
 import {
     University, MapPin, Globe, Mail, Phone, Calendar, ArrowLeft,
-    Users, Building, FileText, Shield, CheckCircle, User, ArrowRight, Search
+    Users, Building, FileText, Shield, CheckCircle, User, ArrowRight, Search, Printer
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -21,7 +21,7 @@ const InfoItem = ({ label, value, icon }: { label: string, value: string | React
             <div className="flex-shrink-0 h-10 w-10 bg-white rounded-full flex items-center justify-center text-gray-500 shadow-sm border border-gray-200">{icon}</div>
             <div>
                 <p className="text-sm text-gray-500">{label}</p>
-                <p className="font-semibold text-gray-800 text-base break-words">{value}</p>
+                <div className="font-semibold text-gray-800 text-base break-words">{value}</div>
             </div>
         </div>
     );
@@ -204,11 +204,16 @@ export default function PtDetailPage() {
                         <InfoItem label="Kode PT" value={pt.kode_pt.trim()} icon={<Building size={20}/>} />
                         <InfoItem label="Wilayah" value={pt.pembina} icon={<Users size={20}/>} />
                         <InfoItem label="Tanggal Berdiri" value={formatDate(pt.tgl_berdiri_pt)} icon={<Calendar size={20}/>} />
-                        <InfoItem label="SK Pendirian" value={pt.sk_pendirian_sp} icon={<FileText size={20}/>} />
+                        <InfoItem 
+                            label="SK Pendirian" 
+                            value={<>{pt.sk_pendirian_sp} <span className="block text-sm font-normal text-gray-500 mt-1">Tanggal: {formatDate(pt.tgl_sk_pendirian_sp)}</span></>} 
+                            icon={<FileText size={20}/>} 
+                        />
                         <InfoItem label="Alamat" value={fullAddress} icon={<MapPin size={20}/>} />
                         <InfoItem label="Website" value={pt.website ? <a href={`http://${pt.website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{pt.website}</a> : '-'} icon={<Globe size={20}/>} />
                         <InfoItem label="Email" value={pt.email ? <a href={`mailto:${pt.email}`} className="text-blue-600 hover:underline">{pt.email}</a> : '-'} icon={<Mail size={20}/>} />
                         <InfoItem label="Telepon" value={pt.no_tel} icon={<Phone size={20}/>} />
+                        <InfoItem label="Fax" value={pt.no_fax} icon={<Printer size={20}/>} />
                     </div>
                 </div>
 
