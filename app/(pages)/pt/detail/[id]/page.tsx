@@ -10,7 +10,7 @@ import { useDetailPage } from '@/lib/hooks/useDetailPage';
 import { Pagination } from '@/components/search/Pagination';
 import {
     University, MapPin, Globe, Mail, Phone, Calendar, ArrowLeft,
-    Users, Building, FileText, Shield, CheckCircle, User, ArrowRight, Search, Printer
+    Users, Building, FileText, Shield, CheckCircle, User, ArrowRight, Search, Printer, AlertTriangle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -165,13 +165,25 @@ export default function PtDetailPage() {
 
     const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
     const fullAddress = [pt.alamat, pt.kecamatan_pt, pt.kab_kota_pt, pt.provinsi_pt, pt.kode_pos].filter(part => part && part !== 'Tidak Diisi').join(', ');
+    const isAktif = pt.status_pt.toLowerCase() === 'aktif';
+    const statusInfo = {
+        label: pt.status_pt,
+        color: isAktif ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800',
+        icon: isAktif ? <CheckCircle size={14} className="text-green-700" /> : <AlertTriangle size={14} className="text-yellow-700" />
+    };
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="min-h-screen bg-gray-50 p-4 sm:p-8 antialiased">
             <main className="max-w-4xl mx-auto">
                 <Breadcrumbs items={breadcrumbItems} />
                 <div className="mt-8 bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-200">
-                    <div className="p-6 sm:p-8">
+                    <div className="relative p-6 sm:p-8">
+                        <div className="absolute top-6 right-6">
+                            <div className={`inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full ${statusInfo.color}`}>
+                                {statusInfo.icon}
+                                <span>{statusInfo.label}</span>
+                            </div>
+                        </div>
                         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
                             <div id="logo-placeholder" style={{ display: 'none' }} className="h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 flex items-center justify-center rounded-xl border bg-gray-100 text-gray-400 shadow-sm">
                                 <University size={40} />
@@ -199,7 +211,6 @@ export default function PtDetailPage() {
                     </div>
                     <div className="border-t-2 border-dashed border-gray-200"></div>
                     <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <InfoItem label="Status" value={pt.status_pt} icon={<CheckCircle size={20}/>} />
                         <InfoItem label="Akreditasi" value={pt.akreditasi_pt} icon={<Shield size={20}/>} />
                         <InfoItem label="Kode PT" value={pt.kode_pt.trim()} icon={<Building size={20}/>} />
                         <InfoItem label="Wilayah" value={pt.pembina} icon={<Users size={20}/>} />
