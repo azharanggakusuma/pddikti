@@ -32,9 +32,15 @@ const DetailSkeleton = () => (
         <main className="max-w-4xl mx-auto">
           <Breadcrumbs items={[{ label: 'Perguruan Tinggi', href: '/pt' }, {label: 'Detail'}]} />
           <div className="mt-8 animate-pulse bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-200">
-            <div className="p-6 sm:p-8 text-center space-y-3">
-              <div className="h-8 w-3/4 bg-gray-300 rounded mx-auto" />
-              <div className="h-6 w-1/2 bg-gray-300 rounded mx-auto" />
+            <div className="relative p-6 sm:p-8">
+                <div className="absolute top-6 right-6 h-7 w-24 bg-gray-200 rounded-full"></div>
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                    <div className="h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 rounded-xl bg-gray-200"></div>
+                    <div className="flex-grow w-full sm:w-auto text-center sm:text-left">
+                        <div className="h-8 w-3/4 bg-gray-200 rounded mx-auto sm:mx-0"></div>
+                        <div className="h-6 w-1/2 bg-gray-200 rounded mt-2 mx-auto sm:mx-0"></div>
+                    </div>
+                </div>
             </div>
             <div className="border-t-2 border-dashed border-gray-200" />
             <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -42,8 +48,8 @@ const DetailSkeleton = () => (
                 <div key={i} className="flex items-start space-x-4 p-4 rounded-lg bg-gray-50">
                   <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full" />
                   <div className="flex-grow space-y-2">
-                    <div className="h-4 w-1/3 bg-gray-300 rounded" />
-                    <div className="h-5 w-2/3 bg-gray-300 rounded" />
+                    <div className="h-4 w-1/3 bg-gray-200 rounded" />
+                    <div className="h-5 w-2/3 bg-gray-200 rounded" />
                   </div>
                 </div>
               ))}
