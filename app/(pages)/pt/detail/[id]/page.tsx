@@ -194,8 +194,8 @@ function LocationSection({
 
       const tile = Lns.tileLayer(mapType === 'sat' ? TILE_SAT : TILE_OSM, {
         attribution: mapType === 'sat'
-          ? '&copy; Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'
-          : '&copy; OpenStreetMap contributors'
+          ? '© Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'
+          : '© OpenStreetMap contributors'
       }).addTo(map);
 
       const marker = Lns.marker([lat, lng]).addTo(map);
@@ -238,8 +238,8 @@ function LocationSection({
 
     tileRef.current = Lns.tileLayer(mapType === 'sat' ? TILE_SAT : TILE_OsM_SAFE(), {
       attribution: mapType === 'sat'
-        ? '&copy; Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'
-        : '&copy; OpenStreetMap contributors'
+        ? '© Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'
+        : '© OpenStreetMap contributors'
     }).addTo(mapRef.current);
 
     function TILE_OsM_SAFE() {
@@ -250,8 +250,12 @@ function LocationSection({
 
   // Helpers link GMaps
   const gmapsLink = coordsValid
-    ? `https://www.google.com/maps?q=${lat},${lng}`
-    : `https://www.google.com/maps?q=${encodeURIComponent(name)}`;
+    ? `http://googleusercontent.com/maps.google.com/6{lat},${lng}`
+    : `http://googleusercontent.com/maps.google.com/6{encodeURIComponent(name)}`;
+
+  const directionsLink = coordsValid
+    ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+    : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(name)}`;
 
   // Actions
   const copyLink = async () => {
@@ -261,9 +265,9 @@ function LocationSection({
       setTimeout(() => setCopied(false), 1300);
     } catch { /* ignore */ }
   };
+  
   const openInGMaps = () => window.open(gmapsLink, '_blank', 'noopener,noreferrer');
-  const openDirections = () =>
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${coordsValid ? `${lat},${lng}` : encodeURIComponent(name)}`, '_blank', 'noopener,noreferrer');
+  const openDirections = () => window.open(directionsLink, '_blank', 'noopener,noreferrer');
 
   return (
     <div className="mt-12">
@@ -272,7 +276,6 @@ function LocationSection({
           <h2 className="text-2xl font-bold text-gray-900">Lokasi</h2>
           {address && <p className="text-sm text-gray-600 mt-1 line-clamp-2">{address}</p>}
         </div>
-        {/* chip koordinat atas DIHAPUS */}
       </div>
 
       <div className="relative rounded-2xl border border-gray-200 bg-white/70 backdrop-blur-sm shadow-xl overflow-hidden">
@@ -296,7 +299,7 @@ function LocationSection({
           </div>
         </div>
 
-        {/* === OVERLAY tombol diletakkan SETELAH DIV MAP & z-index tinggi === */}
+        {/* --- PERUBAHAN DI SINI --- */}
         {/* Toolbar kiri atas */}
         <div className="absolute z-[10000] top-4 left-4 flex items-center gap-2">
           <div className="inline-flex p-1 rounded-xl border border-gray-200 bg-white/90 shadow pointer-events-auto">
@@ -314,7 +317,7 @@ function LocationSection({
             </button>
           </div>
 
-          <div className="inline-flex items-center gap-1 p-1 rounded-xl border border-gray-200 bg-white/90 shadow pointer-events-auto">
+          <div className="hidden md:inline-flex items-center gap-1 p-1 rounded-xl border border-gray-200 bg-white/90 shadow pointer-events-auto">
             <button
               onClick={() => setZoom((z) => Math.max(10, z - 1))}
               className="h-9 w-9 rounded-lg text-gray-700 hover:bg-gray-100 text-lg leading-none"
@@ -332,63 +335,40 @@ function LocationSection({
             </button>
           </div>
         </div>
-
-        {/* Aksi kanan atas */}
-        <div className="absolute z-[10000] top-4 right-4 hidden md:flex gap-2 pointer-events-auto">
+        
+        {/* Actions (Responsive) */}
+        <div className="md:absolute md:z-[10000] md:top-4 md:right-4 flex gap-2 pointer-events-auto p-4 border-t border-gray-100 bg-white/70 md:p-0 md:border-t-0 md:bg-transparent">
           <button
             onClick={copyLink}
-            className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm shadow transition-colors
+            className={`inline-flex items-center justify-center gap-2 h-10 md:h-auto md:w-auto w-10 md:px-3 md:py-2 rounded-lg border text-sm shadow transition-colors
               ${copied ? 'border-green-200 bg-green-50/90 text-green-700' : 'border-gray-200 bg-white/90 hover:bg-white text-gray-700'}`}
             title={copied ? 'Tautan tersalin' : 'Salin tautan Google Maps'}
           >
             {copied ? <CheckCircle size={16} /> : <Copy size={16} />}
-            {copied ? 'Tersalin' : 'Salin'}
+            <span className="hidden md:inline">{copied ? 'Tersalin' : 'Salin'}</span>
           </button>
           <button
             onClick={openInGMaps}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-blue-200 bg-blue-50/90 hover:bg-blue-100 text-blue-700 text-sm shadow"
+            className="inline-flex items-center justify-center gap-2 h-10 md:h-auto md:w-auto w-10 md:px-3 md:py-2 rounded-lg border border-blue-200 bg-blue-50/90 hover:bg-blue-100 text-blue-700 text-sm shadow"
             title="Buka di Google Maps"
           >
             <ExternalLink size={16} />
-            Buka Maps
+            <span className="hidden md:inline">Buka Maps</span>
           </button>
           <button
             onClick={openDirections}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm shadow"
-            title="Petunjuk Arah"
+            className="inline-flex items-center justify-center gap-2 h-10 md:h-auto md:w-auto w-10 md:px-3 md:py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm shadow"
+            title="Dapatkan Petunjuk Arah"
           >
-            Petunjuk Arah
-          </button>
-        </div>
-
-        {/* Aksi mobile (di bawah peta) */}
-        <div className="md:hidden p-4 flex flex-wrap gap-2 border-t border-gray-100 bg-white/70">
-          <button
-            onClick={copyLink}
-            className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors
-              ${copied ? 'border-green-200 bg-green-50 text-green-700' : 'border-gray-200 bg-white text-gray-700'}`}
-          >
-            {copied ? <CheckCircle size={16} /> : <Copy size={16} />}
-            {copied ? 'Tersalin' : 'Salin Link'}
-          </button>
-          <button
-            onClick={openInGMaps}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm"
-          >
-            <ExternalLink size={16} />
-            Buka Maps
-          </button>
-          <button
-            onClick={openDirections}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm"
-          >
-            Petunjuk Arah
+            <ArrowRight size={16} />
+            <span className="hidden md:inline">Petunjuk Arah</span>
           </button>
         </div>
       </div>
     </div>
   );
 }
+
 
 /* --------------------------------- Page ---------------------------------- */
 
