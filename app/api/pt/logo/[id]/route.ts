@@ -1,11 +1,15 @@
 // app/api/pt/logo/[id]/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
+// Opsional: agar tidak dicache saat build/prerender
+export const dynamic = 'force-dynamic';
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const id = params.id;
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Response> {
+  const { id } = await params; // <-- penting: await!
 
   if (!id) {
     return new NextResponse('Parameter "id" dibutuhkan', { status: 400 });
@@ -14,7 +18,7 @@ export async function GET(
   const apiUrl = `https://api-pddikti.ridwaanhall.com/pt/logo/${id}`;
 
   try {
-    const response = await fetch(apiUrl);
+    const response = await fetch(apiUrl, { cache: 'no-store' });
 
     if (!response.ok) {
       return new NextResponse(`Gagal mengambil logo: ${response.statusText}`, {
@@ -29,19 +33,14 @@ export async function GET(
       status: 200,
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=86400', // Cache gambar selama 1 hari
+        'Cache-Control': 'public, max-age=86400',
       },
     });
   } catch (error) {
-    if (error instanceof Error) {
-      return new NextResponse(
-        JSON.stringify({ message: `Terjadi kesalahan pada server: ${error.message}` }),
-        { status: 500 }
-      );
-    }
-    return new NextResponse(
-      JSON.stringify({ message: 'Terjadi kesalahan tidak diketahui saat memproses data.' }),
-      { status: 500 }
-    );
+    const message =
+      error instanceof Error
+        ? `Terjadi kesalahan pada server: ${error.message}`
+        : 'Terjadi kesalahan tidak diketahui saat memproses data.';
+    return new NextResponse(JSON.stringify({ message }), { status: 500 });
   }
 }
