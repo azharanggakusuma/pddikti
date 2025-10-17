@@ -97,7 +97,7 @@ export default function PtDetailPage() {
     const [filterQuery, setFilterQuery] = useState('');
 
     useEffect(() => {
-        if (pt) {
+        if (pt && pt.nama_pt) {
             const fetchDosen = async () => {
                 setDosenLoading(true);
                 try {
@@ -106,14 +106,23 @@ export default function PtDetailPage() {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ query: pt.nama_pt }),
                     });
-                    if (!initiateResponse.ok) throw new Error('Gagal memulai sesi pencarian dosen.');
+                    if (!initiateResponse.ok) {
+                        const errorJson = await initiateResponse.json();
+                        throw new Error(errorJson.message || 'Gagal memulai sesi pencarian dosen.');
+                    }
                     
                     const { key } = await initiateResponse.json();
                     const response = await fetch(`/api/dosen?key=${key}`);
-                    if (!response.ok) throw new Error('Gagal mengambil data dosen.');
+                    if (!response.ok) {
+                        const errorJson = await response.json();
+                        throw new Error(errorJson.message || 'Gagal mengambil data dosen.');
+                    }
 
                     const result = await response.json();
-                    setDosenList(Array.isArray(result.data) ? result.data : []);
+                    const filteredData = (Array.isArray(result.data) ? result.data : []).filter(
+                        (dosen: Dosen) => dosen.nama_pt.trim().toLowerCase() === pt.nama_pt.trim().toLowerCase()
+                    );
+                    setDosenList(filteredData);
                 } catch (err) {
                     console.error("Gagal mengambil daftar dosen:", err);
                     setDosenList([]);
@@ -122,8 +131,10 @@ export default function PtDetailPage() {
                 }
             };
             fetchDosen();
+        } else if (!loading) {
+            setDosenLoading(false);
         }
-    }, [pt]);
+    }, [pt, loading]);
 
     const filteredDosen = useMemo(() => {
         if (!filterQuery) return dosenList;
@@ -171,9 +182,9 @@ export default function PtDetailPage() {
 
     const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
     const fullAddress = [pt.alamat, pt.kecamatan_pt, pt.kab_kota_pt, pt.provinsi_pt, pt.kode_pos].filter(part => part && part !== 'Tidak Diisi').join(', ');
-    const isAktif = pt.status_pt.toLowerCase() === 'aktif';
+    const isAktif = pt.status_pt?.toLowerCase() === 'aktif';
     const statusInfo = {
-        label: pt.status_pt,
+        label: pt.status_pt || 'N/A',
         color: isAktif ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800',
         icon: isAktif ? <CheckCircle size={14} className="text-green-700" /> : <AlertTriangle size={14} className="text-yellow-700" />
     };
@@ -218,7 +229,7 @@ export default function PtDetailPage() {
                     <div className="border-t-2 border-dashed border-gray-200"></div>
                     <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
                         <InfoItem label="Akreditasi" value={pt.akreditasi_pt} icon={<Shield size={20}/>} />
-                        <InfoItem label="Kode PT" value={pt.kode_pt.trim()} icon={<Building size={20}/>} />
+                        <InfoItem label="Kode PT" value={pt.kode_pt?.trim() || '-'} icon={<Building size={20}/>} />
                         <InfoItem label="Wilayah" value={pt.pembina} icon={<Users size={20}/>} />
                         <InfoItem label="Tanggal Berdiri" value={formatDate(pt.tgl_berdiri_pt)} icon={<Calendar size={20}/>} />
                         <InfoItem 
