@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { PerguruanTinggiDetail, Dosen } from '@/lib/types';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { useDetailPage } from '@/lib/hooks/useDetailPage';
@@ -170,9 +171,31 @@ export default function PtDetailPage() {
             <main className="max-w-4xl mx-auto">
                 <Breadcrumbs items={breadcrumbItems} />
                 <div className="mt-8 bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-200">
-                    <div className="p-6 sm:p-8 text-center">
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{pt.nama_pt}</h1>
-                        <p className="text-gray-500 text-base sm:text-lg mt-1">{pt.kelompok}</p>
+                    <div className="p-6 sm:p-8">
+                        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                            <div id="logo-placeholder" style={{ display: 'none' }} className="h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 flex items-center justify-center rounded-xl border bg-gray-100 text-gray-400 shadow-sm">
+                                <University size={40} />
+                            </div>
+                            <Image
+                                id="pt-logo"
+                                src={`/api/pt/logo/${pt.id_sp}`}
+                                alt={`Logo ${pt.nama_pt}`}
+                                width={96}
+                                height={96}
+                                className="h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 rounded-xl border-2 border-white bg-white object-contain shadow-md"
+                                unoptimized
+                                onError={() => {
+                                    const logoEl = document.getElementById('pt-logo');
+                                    if (logoEl) logoEl.style.display = 'none';
+                                    const placeholder = document.getElementById('logo-placeholder');
+                                    if (placeholder) placeholder.style.display = 'flex';
+                                }}
+                            />
+                            <div className="flex-grow text-center sm:text-left">
+                                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{pt.nama_pt}</h1>
+                                <p className="text-gray-500 text-base sm:text-lg mt-1">{pt.kelompok}</p>
+                            </div>
+                        </div>
                     </div>
                     <div className="border-t-2 border-dashed border-gray-200"></div>
                     <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
