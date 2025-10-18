@@ -18,6 +18,7 @@ import {
 import { useState, FormEvent, useEffect, useRef } from "react";
 import { motion, useInView, useSpring } from "framer-motion";
 import { NewFeaturePopup } from "@/components/popups/NewFeaturePopup";
+import dynamic from 'next/dynamic';
 
 // ---------- Types ----------
 type MenuItemProps = {
@@ -33,6 +34,13 @@ type StatsData = {
   prodi: number;
   pt: number;
 };
+
+// --- Dynamic import untuk komponen peta ---
+const PtDistributionMap = dynamic(() => import('@/components/home/PtDistributionMap'), {
+  ssr: false,
+  loading: () => <div className="aspect-video w-full animate-pulse rounded-2xl bg-gray-200 mt-24"></div>
+});
+
 
 // ---------- Components ----------
 const MenuItem = ({ href, icon, title, description }: MenuItemProps) => {
@@ -386,6 +394,9 @@ export default function Home() {
             )}
           </div>
         </section>
+
+        {/* Peta Sebaran PT */}
+        <PtDistributionMap />
       </main>
 
       {/* Back to top */}
@@ -400,4 +411,4 @@ export default function Home() {
       )}
     </motion.div>
   );
-} 
+}
