@@ -8,11 +8,16 @@ import type * as L from 'leaflet';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
+// Menambahkan properti baru pada interface
 interface PddiktiLocationRaw {
   id_sp: string;
   nama: string;
   lintang: string | number;
   bujur: string | number;
+  kelompok: string;
+  pembina: string;
+  kode: string;
+  kab_kota: string;
 }
 
 const MapPlaceholder = ({ message }: { message: string }) => (
@@ -248,15 +253,72 @@ const PtDistributionMap = () => {
           // Saring utama: benar2 di daratan Indonesia (turf)
           if (!isOnIndonesiaLand(lat, lng, indoGeoJSON)) { dropped++; return; }
 
-          const popup = `
-            <div style="font-family: ui-sans-serif; font-size: 14px;">
-              <p style="font-weight:600; margin:0 0 6px;">${pt.nama}</p>
+          // A unique ID for the logo's container element, sanitized to be a valid CSS selector
+          const logoContainerId = `logo-container-${pt.id_sp.replace(/[^a-zA-Z0-9-_]/g, '')}`;
+
+          const popupContent = `
+            <style>
+              @keyframes pddikti-skeleton-loading {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+              }
+              .pddikti-logo-skeleton {
+                background-color: #e2e8f0;
+                background-image: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+                background-size: 200% 100%;
+                animation: pddikti-skeleton-loading 1.5s infinite linear;
+                width: 50px;
+                height: 50px;
+                border-radius: 4px;
+                flex-shrink: 0; /* Prevent skeleton from shrinking */
+              }
+            </style>
+            <div style="font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px; max-width: 280px;">
+              <div style="display: flex; align-items: center; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid #e5e7eb;">
+                <div id="${logoContainerId}" class="pddikti-logo-skeleton">
+                  <img 
+                    src="/api/pt/logo/${encodeURIComponent(pt.id_sp)}" 
+                    alt="Logo ${pt.nama}" 
+                    style="width: 50px; height: 50px; object-fit: contain; border-radius: 4px; display: none;"
+                    onload="
+                      this.style.display='block';
+                      var container = document.getElementById('${logoContainerId}');
+                      if (container) {
+                        container.style.background='none';
+                        container.style.animation='none';
+                      }
+                    "
+                    onerror="
+                      var container = document.getElementById('${logoContainerId}');
+                      if (container) {
+                        container.style.background='#e2e8f0';
+                        container.style.animation='none';
+                        this.style.display='none'; // Hide broken image icon
+                      }
+                    "
+                  >
+                </div>
+                <p style="font-weight: 600; margin: 0; font-size: 16px; line-height: 1.3;">
+                  ${pt.nama}
+                </p>
+              </div>
+              <div style="display: grid; grid-template-columns: 80px 1fr; gap: 6px 10px; padding-top: 10px;">
+                <strong style="color: #4b5563;">Kelompok:</strong>
+                <span>${pt.kelompok || 'N/A'}</span>
+                <strong style="color: #4b5563;">Pembina:</strong>
+                <span>${pt.pembina || 'N/A'}</span>
+                <strong style="color: #4b5563;">Kode:</strong>
+                <span>${pt.kode ? pt.kode.trim() : 'N/A'}</span>
+                <strong style="color: #4b5563;">Kab./Kota:</strong>
+                <span>${pt.kab_kota || 'N/A'}</span>
+              </div>
               <a href="/pt/detail/${encodeURIComponent(pt.id_sp)}"
-                 style="display:block;text-align:center;background:#2563EB;color:white;padding:6px;border-radius:6px;text-decoration:none">
+                 style="display: block; text-align: center; background-color: #2563EB; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-weight: 500; margin-top: 12px;">
                  Lihat Detail
               </a>
-            </div>`;
-          clusters.addLayer(Lns.marker([lat, lng]).bindPopup(popup));
+            </div>
+          `;
+          clusters.addLayer(Lns.marker([lat, lng]).bindPopup(popupContent));
         });
 
         clusters.addTo(map);
