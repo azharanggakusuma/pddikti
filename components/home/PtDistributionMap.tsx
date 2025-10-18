@@ -24,9 +24,9 @@ const MapPlaceholder = ({ message }: { message: string }) => (
   </div>
 );
 
-// Mask lebih terang (tetap kontras)
+// Mask (gelap ringan agar fokus nyaman)
 const DARK_FILL_COLOR = '#0f172a'; // slate-900
-const DARK_FILL_OPACITY = 0.32;    // turunkan sedikit dari versi gelap
+const DARK_FILL_OPACITY = 0.32;
 
 const PtDistributionMap = () => {
   const mapRef = useRef<L.Map | null>(null);
@@ -44,7 +44,7 @@ const PtDistributionMap = () => {
   const [zoom, setZoom] = useState(5);
   const [focusOn, setFocusOn] = useState(true);
 
-  // Lazy-load saat terlihat
+  // Lazy-load saat komponen terlihat
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
@@ -56,8 +56,19 @@ const PtDistributionMap = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Re-layout tiles bila container resize (fix kotak kecil)
   useEffect(() => {
-    if (!isVisible || !mapContainerRef.current || mapRef.current) return;
+    if (!isVisible || !mapRef.current || !mapContainerRef.current) return;
+    const ro = new ResizeObserver(() => {
+      mapRef.current?.invalidateSize();
+    });
+    ro.observe(mapContainerRef.current);
+    return () => ro.disconnect();
+  }, [isVisible]);
+
+  useEffect(() => {
+    // Guard awal: hanya jalan jika terlihat & belum ada map & container ada
+    if (!isVisible || mapRef.current || !mapContainerRef.current) return;
 
     let cancelled = false;
 
@@ -65,6 +76,38 @@ const PtDistributionMap = () => {
       try {
         const Lns = (await import('leaflet')).default;
         await import('leaflet.markercluster');
+
+        // Turf (point-in-polygon)
+        const { default: booleanPointInPolygon } = await import('@turf/boolean-point-in-polygon');
+        const { point } = await import('@turf/helpers');
+
+        // Helper normalisasi & validasi titik
+        const normalizeLatLng = (rawLat: any, rawLng: any): { lat: number; lng: number } | null => {
+          let lat = parseFloat(String(rawLat));
+          let lng = parseFloat(String(rawLng));
+          if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
+
+          // dugaan lat<->lng tertukar
+          const looksSwapped = (lng >= -11 && lng <= 6) && (lat >= 95 && lat <= 141);
+          if (looksSwapped) [lat, lng] = [lng, lat];
+
+          // koreksi tanda umum
+          if (lat > 10 && lat <= 20) lat = -lat;
+
+          if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+          return { lat, lng };
+        };
+
+        const isOnIndonesiaLand = (lat: number, lng: number, geojson: any): boolean => {
+          const p = point([lng, lat]); // turf: [lng, lat]
+          if (geojson.type === 'FeatureCollection') {
+            for (const f of geojson.features || []) {
+              try { if (booleanPointInPolygon(p, f)) return true; } catch {}
+            }
+            return false;
+          }
+          try { return booleanPointInPolygon(p, geojson); } catch { return false; }
+        };
 
         // Inject CSS Leaflet jika belum ada
         if (!document.getElementById('leaflet-css')) {
@@ -75,6 +118,7 @@ const PtDistributionMap = () => {
           document.head.appendChild(link);
         }
 
+        // Default ikon marker
         const DefaultIcon = Lns.icon({
           iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
           shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
@@ -85,7 +129,11 @@ const PtDistributionMap = () => {
         });
         (Lns.Marker.prototype.options as any).icon = DefaultIcon;
 
-        const map = Lns.map(mapContainerRef.current, {
+        // >>> FIX TS2345: simpan container non-null ke variabel lokal
+        const container = mapContainerRef.current as HTMLDivElement;
+
+        // Buat peta di container yang sudah dipastikan HTMLElement
+        const map = Lns.map(container, {
           center: [-2.548926, 118.0148634],
           zoom,
           zoomControl: false,
@@ -95,43 +143,37 @@ const PtDistributionMap = () => {
         });
         mapRef.current = map;
 
+        // Perbaiki layout saat map ready (fix kotak 256px)
+        map.whenReady(() => {
+          requestAnimationFrame(() => map.invalidateSize());
+          setTimeout(() => map.invalidateSize(), 250);
+        });
+
         // Panes (z-index)
         map.createPane('pane-mask');    map.getPane('pane-mask')!.style.zIndex = '300';
         map.createPane('pane-outline'); map.getPane('pane-outline')!.style.zIndex = '350';
         map.createPane('pane-markers'); map.getPane('pane-markers')!.style.zIndex = '400';
 
+        // Tiles
         const TILE_OSM = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
         const TILE_SAT = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
         tileRef.current = Lns.tileLayer(mapType === 'osm' ? TILE_OSM : TILE_SAT, { attribution: '' }).addTo(map);
 
         map.on('zoomend', () => setZoom(map.getZoom()));
 
-        // Baca batas Indonesia
+        // Batas Indonesia
         const gjRes = await fetch('/data/indonesia.geojson');
         if (!gjRes.ok) throw new Error('Gagal memuat /data/indonesia.geojson');
         const indoGeoJSON = await gjRes.json();
 
-        // Glow halus
+        // Glow + Outline
         outlineGlowRef.current = Lns.geoJSON(indoGeoJSON, {
-          style: () => ({
-            color: '#0ea5e9',
-            weight: 6,
-            opacity: 0.18,
-            fillOpacity: 0,
-            pane: 'pane-outline',
-          }),
+          style: () => ({ color: '#0ea5e9', weight: 6, opacity: 0.18, fillOpacity: 0, pane: 'pane-outline' }),
           interactive: false,
         }).addTo(map);
 
-        // Outline tipis
         outlineRef.current = Lns.geoJSON(indoGeoJSON, {
-          style: () => ({
-            color: '#2563eb',
-            weight: 1.6,
-            opacity: 0.9,
-            fillOpacity: 0,
-            pane: 'pane-outline',
-          }),
+          style: () => ({ color: '#2563eb', weight: 1.6, opacity: 0.9, fillOpacity: 0, pane: 'pane-outline' }),
           interactive: false,
         }).addTo(map);
 
@@ -179,7 +221,7 @@ const PtDistributionMap = () => {
           interactive: false,
         }).addTo(map);
 
-        // Marker PT
+        // DATA MARKER PT + FILTER LAUT (bbox + turf)
         const res = await fetch('/pt-locations.json');
         if (!res.ok) throw new Error('Gagal memuat /pt-locations.json');
         const pts: PddiktiLocationRaw[] = await res.json();
@@ -191,25 +233,39 @@ const PtDistributionMap = () => {
           pane: 'pane-markers',
         });
 
+        let dropped = 0;
+
         pts.forEach((pt) => {
-          const lat = parseFloat(String(pt.lintang));
-          const lng = parseFloat(String(pt.bujur));
-          const inIndonesia = lat >= -11 && lat <= 6 && lng >= 95 && lng <= 141;
-          if (!isNaN(lat) && !isNaN(lng) && inIndonesia) {
-            const popup = `
-              <div style="font-family: ui-sans-serif; font-size: 14px;">
-                <p style="font-weight:600; margin:0 0 6px;">${pt.nama}</p>
-                <a href="/pt/detail/${encodeURIComponent(pt.id_sp)}"
-                   style="display:block;text-align:center;background:#2563EB;color:white;padding:6px;border-radius:6px;text-decoration:none">
-                   Lihat Detail
-                </a>
-              </div>`;
-            clusters.addLayer(Lns.marker([lat, lng]).bindPopup(popup));
-          }
+          const norm = normalizeLatLng(pt.lintang, pt.bujur);
+          if (!norm) { dropped++; return; }
+
+          const { lat, lng } = norm;
+
+          // Saring kasar bbox
+          const inBBox = lat >= -11 && lat <= 6 && lng >= 95 && lng <= 141;
+          if (!inBBox) { dropped++; return; }
+
+          // Saring utama: benar2 di daratan Indonesia (turf)
+          if (!isOnIndonesiaLand(lat, lng, indoGeoJSON)) { dropped++; return; }
+
+          const popup = `
+            <div style="font-family: ui-sans-serif; font-size: 14px;">
+              <p style="font-weight:600; margin:0 0 6px;">${pt.nama}</p>
+              <a href="/pt/detail/${encodeURIComponent(pt.id_sp)}"
+                 style="display:block;text-align:center;background:#2563EB;color:white;padding:6px;border-radius:6px;text-decoration:none">
+                 Lihat Detail
+              </a>
+            </div>`;
+          clusters.addLayer(Lns.marker([lat, lng]).bindPopup(popup));
         });
 
         clusters.addTo(map);
         markersRef.current = clusters;
+
+        // Paksa re-layout lagi setelah semua layer masuk
+        map.invalidateSize();
+
+        if (dropped > 0) console.warn(`Markers dibuang (di laut/invalid): ${dropped}`);
 
         setStatus('success');
       } catch (err) {
@@ -236,13 +292,19 @@ const PtDistributionMap = () => {
     const TILE_OSM = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     const TILE_SAT = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
     tileRef.current.setUrl(mapType === 'osm' ? TILE_OSM : TILE_SAT);
+    mapRef.current.invalidateSize();
   }, [mapType]);
 
-  // Toggle fokus (ubah opacity mask)
+  // Toggle Fokus (ubah opacity mask)
   useEffect(() => {
     if (!maskRef.current) return;
     maskRef.current.setStyle({ fillOpacity: focusOn ? DARK_FILL_OPACITY : 0 });
   }, [focusOn]);
+
+  // Sinkronkan perubahan zoom dari UI
+  useEffect(() => {
+    if (mapRef.current) mapRef.current.setZoom(zoom);
+  }, [zoom]);
 
   return (
     <section className="mt-24">
@@ -283,6 +345,25 @@ const PtDistributionMap = () => {
                   }`}
                 >
                   Satelit
+                </button>
+              </div>
+
+              {/* Zoom (opsional) */}
+              <div className="hidden md:inline-flex items-center gap-1 p-1 rounded-xl border border-gray-200 bg-white/90 shadow pointer-events-auto backdrop-blur">
+                <button
+                  onClick={() => setZoom((z) => Math.max(3, z - 1))}
+                  className="h-9 w-9 rounded-lg text-gray-700 hover:bg-gray-100 text-lg leading-none"
+                  aria-label="Zoom out"
+                >
+                  −
+                </button>
+                <div className="px-2 text-sm text-gray-600 tabular-nums">{Math.round(zoom)}</div>
+                <button
+                  onClick={() => setZoom((z) => Math.min(18, z + 1))}
+                  className="h-9 w-9 rounded-lg text-gray-700 hover:bg-gray-100 text-lg leading-none"
+                  aria-label="Zoom in"
+                >
+                  +
                 </button>
               </div>
             </div>
